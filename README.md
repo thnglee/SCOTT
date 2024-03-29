@@ -1,2 +1,2 @@
 # SE-Project
-Music Streaming Service
+Music Streaming Web Application

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}
+        {% endblock %}
+    </title>
+    <link rel="icon" type="image/x-icon" href="{% static 'image/favicon.ico' %}">
+</head>
+
+<body>
+    <main>
+        {% block content %}
+
+        {% endblock %}
+    </main>
+
+</body>
+</html>

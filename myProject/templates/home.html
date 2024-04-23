@@ -2,12 +2,17 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}
-    SCOTT
-{% endblock %}
-
 
 {% block content %}
     <h1>Hello</h1>
     <img src="{% static 'image/image.jpg' %}" alt="logo?">
+    <h1>Welcome to our music site!</h1>
+    {% for song in songs %}
+        <h2>{{ song.name }}</h2>
+        <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="song cover">
+        <audio controls>
+            <source src="{{ MEDIA_URL }}{{ song.get_uri }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    {% endfor %}
 {% endblock %}

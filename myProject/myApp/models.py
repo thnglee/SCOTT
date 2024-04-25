@@ -79,7 +79,7 @@ class Song(models.Model):
         return "/media/image/song/" + self.image_uri
 
     def get_uri(self):
-        return "/media/audio/" + self.uri
+        return "/audio/" + self.uri
 
 
 class Album(models.Model):

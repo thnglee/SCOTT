@@ -1,3 +1,5 @@
+import os
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
@@ -80,6 +82,18 @@ class Song(models.Model):
 
     def get_uri(self):
         return "/audio/" + self.uri
+
+    def get_artists(self):
+        return self.artists.all()[0]
+
+    def get_mime_type(self):
+        _, file_extension = os.path.splitext(self.uri)
+        if file_extension.lower() == '.mp3':
+            return 'audio/mpeg'
+        elif file_extension.lower() == '.flac':
+            return 'audio/flac'
+        else:
+            return 'application/octet-stream'
 
 
 class Album(models.Model):

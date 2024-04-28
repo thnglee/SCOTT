@@ -4,16 +4,39 @@
 
 
 {% block content %}
-    <h1>Hello</h1>
+    {% if user.is_authenticated %}
+        <div class="d-flex align-items-center">
+        
+            <h1>Hello <img src="{{ MEDIA_URL }}{{ user_profile.get_image_uri }}" alt="User avatar" width="30" height="30" style="margin-bottom: 5px;" >{{ user.username }}, where to leave? logout here ---></h1>
+            <form method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary">Logout</button>
+            </form>
+        </div>
+    {% else %}
+        <div class="d-flex align-items-center">
+            <h1>Hello...? Oh you haven't logged in, login here ---></h1>
+            <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+        </div>
+    {% endif %}
     <img src="{% static 'image/image.jpg' %}" alt="logo?">
     <h1>Welcome to our music site!</h1>
- 
+    
+    
+    
     {% for song in songs %}
-        <h2>{{ song.name }}</h2>
-        <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="song cover">
-        <audio controls>
-            <source src="{% url 'stream-song' song.id %}" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
+        <h4>{{ song.name }} - {{ song.get_artists}}</h4>
+        <div class="d-flex align-items-center">
+            <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="song cover" width="100" height="100">
+            <audio controls>
+                <source src="{% url 'stream-song' song.id %}" type="{{ song.get_mime_type }}">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
     {% endfor %}
+    
+    <br>
+    <!-- Upload_Song -->
+    <a href="{% url 'upload_song' %}" class="btn btn-primary">Upload a new song</a>
 {% endblock %}
+

@@ -83,6 +83,9 @@ class Song(models.Model):
     def get_uri(self):
         return "/audio/" + self.uri
 
+    def get_artists(self):
+        return self.artists.all()[0]
+
     def get_mime_type(self):
         _, file_extension = os.path.splitext(self.uri)
         if file_extension.lower() == '.mp3':

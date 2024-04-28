@@ -7,13 +7,19 @@
     <h1>Hello</h1>
     <img src="{% static 'image/image.jpg' %}" alt="logo?">
     <h1>Welcome to our music site!</h1>
- 
+    
+    <br>
+    <!-- Upload_Song -->
+    <a href="{% url 'upload_song' %}">Upload a new song</a>
+    
     {% for song in songs %}
         <h2>{{ song.name }}</h2>
-        <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="song cover">
+        <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="song cover" width="128" height="128">
         <audio controls>
-            <source src="{% url 'stream-song' song.id %}" type="audio/mpeg">
+            <source src="{% url 'stream-song' song.id %}" type="{{ song.get_mime_type }}">
             Your browser does not support the audio element.
         </audio>
     {% endfor %}
+    
 {% endblock %}
+

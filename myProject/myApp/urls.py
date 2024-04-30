@@ -8,7 +8,10 @@ urlpatterns = [
     path('login/', Login.as_view(), name='login'),
     path('logout/', Logout.as_view(), name='logout'),
     path('register/', views.register, name='register'),
-    path('user/<str:username>/', views.user_detail, name='user-detail'),
+    path('update_info/', views.update_user_info, name='update_user_info'),
+
     path('upload_song/', views.upload_song, name='upload_song'),
-    path('stream_song/<int:song_id>/', views.stream_song, name='stream-song'),
+    path('stream_song/<int:song_id>/', views.stream_song, name='stream_song'),
+    path('update_song/<int:song_id>/', views.update_song, name='update_song'),
+    path('delete_song/<int:song_id>/', views.delete_song, name='delete_song'),
 ]

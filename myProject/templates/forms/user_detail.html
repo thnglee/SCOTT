@@ -1,8 +1,0 @@
-<!-- user_detail.html -->
-{% extends "templates/base.html" %}
-
-{% block content %}
-    <h1>{{ user.username }}</h1>
-    <p>Email: {{ user_profile.get_absolute_url }}</p>
-    <img src="{{ MEDIA_URL }}{{ user_profile.get_image_uri }}" alt="User image">
-{% endblock %}

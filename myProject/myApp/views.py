@@ -2,21 +2,22 @@ import os
 import re
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
 from django.core.files.storage import default_storage
 from django.http import StreamingHttpResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from myApp.forms import UserInfo, SongInfo, SongInfoUpdate, UserInfoUpdate, UserProfileInfoUpdate, AlbumInfo
+from myApp.forms import (CreateUserForm, UploadSongForm, UpdateSongForm, UpdateUserForm,
+                         UpdateUserProfileForm, CreateAlbumForm)
 from myApp.models import Song, UserProfile, Artist, Album
 
 
 # Create your views here.
 class Login(LoginView):
-    template_name = 'forms/user/authentication/login.html'
+    template_name = 'user/authentication/login.html'
     next_page = 'home'
 
 
@@ -26,7 +27,7 @@ class Logout(LogoutView):
 
 def register(request):
     if request.method == 'POST':
-        form = UserInfo(request.POST, request.FILES)
+        form = CreateUserForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
             user.email = form.cleaned_data['email']
@@ -43,23 +44,38 @@ def register(request):
                 new_image_name = 'default.png'
                 print(new_image_name)
 
-            user_profile = UserProfile(user=user,
-                                       image_uri=new_image_name,
-                                       age=form.cleaned_data['age'],
-                                       sex=form.cleaned_data['sex'])
-            user_profile.save()
+            profile = UserProfile(user=user,
+                                  image_uri=new_image_name,
+                                  age=form.cleaned_data['age'],
+                                  sex=form.cleaned_data['sex'])
+            profile.save()
             form.save()
             return redirect('login')
     else:
-        form = UserInfo()
-    return render(request, 'forms/user/authentication/register.html', {'form': form})
+        form = CreateUserForm()
+    return render(request, 'user/authentication/register.html', {'form': form})
 
 
-def update_user_info(request):
-    user_profile = UserProfile.objects.get(user=request.user)
+def user_profile(request, user_name):
+    try:
+        user = get_object_or_404(User, username=user_name)
+    except Http404:
+        return redirect('home')
+
+    profile = UserProfile.objects.get(user=user)
+    current_user = request.user
+    return render(request,
+                  'user/user_profile.html',
+                  {'user': user, 'user_profile': profile, 'current_user': current_user})
+
+
+@login_required(login_url='/login/')
+def update_profile(request):
+    user = request.user
+    profile = UserProfile.objects.get(user=user)
     if request.method == 'POST':
-        user_form = UserInfoUpdate(request.POST, instance=request.user)
-        user_profile_form = UserProfileInfoUpdate(request.POST, request.FILES, instance=user_profile)
+        user_form = UpdateUserForm(request.POST, instance=user)
+        user_profile_form = UpdateUserProfileForm(request.POST, request.FILES, instance=profile)
         if user_form.is_valid() and user_profile_form.is_valid():
             user_form.save()
             profile = user_profile_form.save(commit=False)
@@ -67,44 +83,44 @@ def update_user_info(request):
             # Image
             if 'image_file' in request.FILES:
                 # Delete the old image file
-                if user_profile.image_uri:
-                    default_storage.delete('image/user/' + user_profile.image_uri)
+                if profile.image_uri != 'default.png':
+                    default_storage.delete('image/user/' + profile.image_uri)
 
                 image = request.FILES['image_file']
-                new_image_name = user_profile.user.username + os.path.splitext(image.name)[1]
+                new_image_name = profile.user.username + os.path.splitext(image.name)[1]
                 default_storage.save('image/user/' + new_image_name, image)
                 profile.image_uri = new_image_name
 
             # Artist
             if user_profile_form.cleaned_data.get('become_artist'):
-                if hasattr(user_profile, 'artist'):
-                    user_profile.artist.Artist_name = user_profile_form.cleaned_data.get('artist_name')
-                    user_profile.artist.save()
+                if hasattr(profile, 'artist'):
+                    profile.artist.Artist_name = user_profile_form.cleaned_data.get('artist_name')
+                    profile.artist.save()
                 else:
-                    Artist.objects.create(user=user_profile,
+                    Artist.objects.create(user=profile,
                                           Artist_name=user_profile_form.cleaned_data.get('artist_name'))
             else:
-                if hasattr(user_profile, 'artist'):
-                    user_profile.artist.delete()
+                if hasattr(profile, 'artist'):
+                    profile.artist.delete()
 
             profile.save()
 
-            return redirect('home')
+            return redirect('user_profile', user_name=user.username)
     else:
-        user_form = UserInfoUpdate(instance=request.user)
-        user_profile_form = UserProfileInfoUpdate(instance=user_profile)
+        user_form = UpdateUserForm(instance=request.user)
+        user_profile_form = UpdateUserProfileForm(instance=profile)
 
-    return render(request, 'forms/user/update_user_info.html',
+    return render(request, 'user/update_profile.html',
                   {'user_form': user_form, 'profile_form': user_profile_form})
 
 
 @login_required(login_url='/login/')
 def delete_user(request):
-    User = get_user_model()
     user = get_object_or_404(User, username=request.user.username)
-    user_profile = UserProfile.objects.get(user=user)
+    profile = UserProfile.objects.get(user=user)
 
-    songs = Song.objects.filter(artists__user=user_profile)
+    songs = Song.objects.filter(artists__user=profile)
+    albums = Album.objects.filter(artist__user=profile)
 
     # Delete song files and images
     for song in songs:
@@ -114,9 +130,14 @@ def delete_user(request):
             default_storage.delete('image/song/' + song.image_uri)
         song.delete()
 
+    # Delete album images
+    for album in albums:
+        if album.image_uri != 'default.png':
+            default_storage.delete('image/album/' + album.image_uri)
+
     # Delete user image
-    if user_profile.image_uri != 'default.png':
-        default_storage.delete('image/user/' + user_profile.image_uri)
+    if profile.image_uri != 'default.png':
+        default_storage.delete('image/user/' + profile.image_uri)
     user.delete()
 
     return redirect('home')
@@ -126,26 +147,26 @@ def home(request):
     songs = Song.objects.all()  # get all songs in the database
     if request.user.is_authenticated:
         user = request.user  # get the username of the current user
-        user_profile = UserProfile.objects.get(user=user)  # get the user profile object
-        artist = Artist.objects.filter(user=user_profile)  # get the artist object
+        profile = UserProfile.objects.get(user=user)  # get the user profile object
+        artist = Artist.objects.filter(user=profile)  # get the artist object
         return render(request,
                       'home.html',
-                      {'songs': songs, 'user': user, 'user_profile': user_profile, 'artist': artist})
+                      {'songs': songs, 'user': user, 'profile': profile, 'artist': artist})
     else:
         return render(request, 'home.html', {'songs': songs})
 
 
 @login_required(login_url='/login/')
 def upload_song(request):
-    user_profile = UserProfile.objects.get(user=request.user)
-    if not hasattr(user_profile, 'artist'):
-        return redirect('update_user_info')
+    profile = UserProfile.objects.get(user=request.user)
+    if not hasattr(profile, 'artist'):
+        return redirect('update_profile')
     if request.method == 'POST':
-        form = SongInfo(request.POST, request.FILES)
+        form = UploadSongForm(request.POST, request.FILES, profile=profile)
         if form.is_valid():
             song = form.save(commit=False)
-            user_profile = UserProfile.objects.get(user=request.user)
-            artist = Artist.objects.get(user=user_profile)
+            profile = UserProfile.objects.get(user=request.user)
+            artist = Artist.objects.get(user=profile)
             new_name = artist.Artist_name + "_" + clean_filename(form.cleaned_data['song_name'])
 
             # Name
@@ -173,7 +194,8 @@ def upload_song(request):
             song.save()
 
             # Album
-            song.albums.add(form.cleaned_data['album'])
+            if 'albums' in form.changed_data:
+                song.albums.set(form.cleaned_data['albums'])
 
             # Artist
             song.artists.add(artist)
@@ -181,9 +203,9 @@ def upload_song(request):
             form.save_m2m()  # save many-to-many data
             return redirect('home')
     else:
-        form = SongInfo()
+        form = UploadSongForm(profile=profile)
 
-    return render(request, 'forms/song/upload_song.html', {'form': form})
+    return render(request, 'song/upload_song.html', {'form': form})
 
 
 def stream_song(request, song_id):
@@ -219,16 +241,16 @@ def update_song(request, song_id):
         song = get_object_or_404(Song, id=song_id)
     except Http404:
         return redirect('home')
-    user_profile = UserProfile.objects.get(user=request.user)
-    if not song.artists.filter(user=user_profile).exists():
+    profile = UserProfile.objects.get(user=request.user)
+    if not song.artists.filter(user=profile).exists():
         return redirect('home')
 
     if request.method == 'POST':
-        form = SongInfoUpdate(request.POST, request.FILES, instance=song)
+        form = UpdateSongForm(request.POST, request.FILES, profile=profile, instance=song)
         if form.is_valid():
             song = form.save(commit=False)
 
-            artist = Artist.objects.get(user=user_profile)
+            artist = Artist.objects.get(user=profile)
             new_name = artist.Artist_name + "_" + clean_filename(form.cleaned_data['name'])
 
             # Name
@@ -267,12 +289,12 @@ def update_song(request, song_id):
             if 'albums' in form.changed_data:
                 song.albums.set(form.cleaned_data['albums'])
 
-            form.save_m2m()  #
+            form.save_m2m()
             return redirect('home')
     else:
-        form = SongInfoUpdate(instance=song)
+        form = UpdateSongForm(instance=song, profile=profile)
 
-    return render(request, 'forms/song/update_song.html', {'form': form})
+    return render(request, 'song/update_song.html', {'form': form})
 
 
 @require_POST
@@ -289,29 +311,26 @@ def delete_song(request, song_id):
 
 
 @login_required(login_url='/login/')
-def artist_page(request, artist_id):
-    user_profile = UserProfile.objects.get(user=request.user)
-    if not hasattr(user_profile, 'artist'):
-        return redirect('home')
+def artist_profile(request, artist_name):
 
-    artist = Artist.objects.get(id=artist_id)
+    artist = Artist.objects.get(Artist_name=artist_name)
     songs = Song.objects.filter(artists=artist)
     albums = Album.objects.filter(artist=artist)
 
-    return render(request, 'forms/user/artist_page.html', {'artist': artist, 'songs': songs, 'albums': albums})
+    return render(request, 'user/artist_profile.html', {'artist': artist, 'songs': songs, 'albums': albums})
 
 
 @login_required(login_url='/login/')
 def create_album(request):
-    user_profile = UserProfile.objects.get(user=request.user)
-    if not hasattr(user_profile, 'artist'):
-        return redirect('update_user_info')
+    profile = UserProfile.objects.get(user=request.user)
+    if not hasattr(profile, 'artist'):
+        return redirect('update_profile')
 
     if request.method == 'POST':
-        form = AlbumInfo(request.POST, request.FILES)
+        form = CreateAlbumForm(request.POST, request.FILES, profile=profile)
         if form.is_valid():
             album = form.save(commit=False)
-            album.artist = user_profile.artist
+            album.artist = profile.artist
 
             # Name
             album.name = form.cleaned_data['album_name']
@@ -331,9 +350,9 @@ def create_album(request):
             form.save_m2m()
             return redirect('home')
     else:
-        form = AlbumInfo(user=request.user)
+        form = CreateAlbumForm(profile=profile)
 
-    return render(request, 'forms/album/create_album.html', {'form': form})
+    return render(request, 'album/create_album.html', {'form': form})
 
 
 def clean_filename(filename):

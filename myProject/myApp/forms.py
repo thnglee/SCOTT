@@ -7,33 +7,6 @@ from myApp.models import Song, Album
 from myApp.models import UserProfile
 
 
-class SongInfo(forms.ModelForm):
-    song_name = forms.CharField(max_length=100)  # for song name
-    song_file = forms.FileField()  # for song file upload
-    image_file = forms.ImageField(required=False)  # for picture upload
-    genres = forms.ChoiceField(choices=Song.GENRE)  # for selecting a genre
-    album = forms.ModelChoiceField(queryset=Album.objects.all(), required=False)  # for selecting an album
-
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
-        super(SongInfo, self).__init__(*args, **kwargs)
-        if user:
-            self.fields['album'].queryset = Album.objects.filter(artist__user__user=user)
-
-    class Meta:
-        model = Song
-        fields = ['song_name', 'song_file', 'image_file', 'album', 'genres']
-
-
-class SongInfoUpdate(forms.ModelForm):
-    song_file = forms.FileField(required=False)  # for song file upload
-    image_file = forms.ImageField(required=False)  # for picture upload
-
-    class Meta:
-        model = Song
-        fields = ['name', 'song_file', 'image_file', 'genres', 'albums']
-
-
 class UserInfo(UserCreationForm):
     email = forms.EmailField(required=True)
     first_name = forms.CharField(max_length=30)
@@ -67,3 +40,46 @@ class UserProfileInfoUpdate(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ['age', 'sex', 'image_file', 'become_artist', 'artist_name']
+
+
+class SongInfo(forms.ModelForm):
+    song_name = forms.CharField(max_length=100)  # for song name
+    song_file = forms.FileField()  # for song file upload
+    image_file = forms.ImageField(required=False)  # for picture upload
+    genres = forms.ChoiceField(choices=Song.GENRE)  # for selecting a genre
+    album = forms.ModelChoiceField(queryset=Album.objects.all(), required=False)  # for selecting an album
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(SongInfo, self).__init__(*args, **kwargs)
+        if user:
+            self.fields['album'].queryset = Album.objects.filter(artist__user__user=user)
+
+    class Meta:
+        model = Song
+        fields = ['song_name', 'song_file', 'image_file', 'album', 'genres']
+
+
+class SongInfoUpdate(forms.ModelForm):
+    song_file = forms.FileField(required=False)  # for song file upload
+    image_file = forms.ImageField(required=False)  # for picture upload
+
+    class Meta:
+        model = Song
+        fields = ['name', 'song_file', 'image_file', 'genres', 'albums']
+
+
+class AlbumInfo(forms.ModelForm):
+    album_name = forms.CharField(max_length=255)  # for album name
+    image_file = forms.ImageField(required=False)  # for album cover image
+    songs = forms.ModelMultipleChoiceField(queryset=Song.objects.all(), required=False)  # for selecting songs
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(AlbumInfo, self).__init__(*args, **kwargs)
+        if user and hasattr(user, 'artist'):
+            self.fields['songs'].queryset = Song.objects.filter(artists=user.artist)
+
+    class Meta:
+        model = Album
+        fields = ['album_name', 'image_file', 'songs']

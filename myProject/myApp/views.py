@@ -10,8 +10,8 @@ from django.http import StreamingHttpResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from myApp.forms import UserInfo, SongInfo, SongInfoUpdate, UserInfoUpdate, UserProfileInfoUpdate
-from myApp.models import Song, UserProfile, Artist
+from myApp.forms import UserInfo, SongInfo, SongInfoUpdate, UserInfoUpdate, UserProfileInfoUpdate, AlbumInfo
+from myApp.models import Song, UserProfile, Artist, Album
 
 
 # Create your views here.
@@ -114,6 +114,9 @@ def delete_user(request):
             default_storage.delete('image/song/' + song.image_uri)
         song.delete()
 
+    # Delete user image
+    if user_profile.image_uri != 'default.png':
+        default_storage.delete('image/user/' + user_profile.image_uri)
     user.delete()
 
     return redirect('home')
@@ -124,13 +127,19 @@ def home(request):
     if request.user.is_authenticated:
         user = request.user  # get the username of the current user
         user_profile = UserProfile.objects.get(user=user)  # get the user profile object
-        return render(request, 'home.html', {'songs': songs, 'user': user, 'user_profile': user_profile})
+        artist = Artist.objects.filter(user=user_profile)  # get the artist object
+        return render(request,
+                      'home.html',
+                      {'songs': songs, 'user': user, 'user_profile': user_profile, 'artist': artist})
     else:
         return render(request, 'home.html', {'songs': songs})
 
 
 @login_required(login_url='/login/')
 def upload_song(request):
+    user_profile = UserProfile.objects.get(user=request.user)
+    if not hasattr(user_profile, 'artist'):
+        return redirect('update_user_info')
     if request.method == 'POST':
         form = SongInfo(request.POST, request.FILES)
         if form.is_valid():
@@ -277,6 +286,54 @@ def delete_song(request, song_id):
 
     song.delete()
     return redirect('home')
+
+
+@login_required(login_url='/login/')
+def artist_page(request, artist_id):
+    user_profile = UserProfile.objects.get(user=request.user)
+    if not hasattr(user_profile, 'artist'):
+        return redirect('home')
+
+    artist = Artist.objects.get(id=artist_id)
+    songs = Song.objects.filter(artists=artist)
+    albums = Album.objects.filter(artist=artist)
+
+    return render(request, 'forms/user/artist_page.html', {'artist': artist, 'songs': songs, 'albums': albums})
+
+
+@login_required(login_url='/login/')
+def create_album(request):
+    user_profile = UserProfile.objects.get(user=request.user)
+    if not hasattr(user_profile, 'artist'):
+        return redirect('update_user_info')
+
+    if request.method == 'POST':
+        form = AlbumInfo(request.POST, request.FILES)
+        if form.is_valid():
+            album = form.save(commit=False)
+            album.artist = user_profile.artist
+
+            # Name
+            album.name = form.cleaned_data['album_name']
+
+            # Image
+            if 'image_file' in request.FILES:
+                image = request.FILES['image_file']
+                new_image_name = (album.artist.Artist_name + "_"
+                                  + clean_filename(form.cleaned_data['album_name'])
+                                  + os.path.splitext(image.name)[1])
+                default_storage.save('image/album/' + new_image_name, image)
+                album.image_uri = new_image_name
+            else:
+                album.image_uri = 'default.png'
+
+            album.save()
+            form.save_m2m()
+            return redirect('home')
+    else:
+        form = AlbumInfo(user=request.user)
+
+    return render(request, 'forms/album/create_album.html', {'form': form})
 
 
 def clean_filename(filename):

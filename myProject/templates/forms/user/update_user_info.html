@@ -25,6 +25,11 @@
     <br>
     <button type="submit">Update</button>
   </form>
+  <form method="post" action="{% url 'delete_user' %}">
+     {% csrf_token %}
+     <button type="submit" class="btn btn-danger">Delete User</button>
+  </form>
+    
   <script>
   document.addEventListener('DOMContentLoaded', function() {
       let becomeArtistCheckbox = document.getElementById('become_artist');

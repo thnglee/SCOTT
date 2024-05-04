@@ -77,7 +77,7 @@ def user_profile(request, user_name):
     profile = UserProfile.objects.get(user=user)
     current_user = request.user
     return render(request,
-                  'user/user_profile.html',
+                  'user/profile.html',
                   {'user': user, 'user_profile': profile, 'current_user': current_user})
 
 
@@ -235,7 +235,12 @@ def upload_song(request):
     else:
         form = UploadSongForm(profile=profile)
 
-    return render(request, 'song/upload_song.html', {'form': form})
+    return render(request, 'song/upload.html', {'form': form})
+
+
+def song_info(request, song_id):
+    song = get_object_or_404(Song, id=song_id)
+    return render(request, 'song/info.html', {'song': song})
 
 
 def stream_song(request, song_id):
@@ -324,7 +329,7 @@ def update_song(request, song_id):
     else:
         form = UpdateSongForm(instance=song, profile=profile)
 
-    return render(request, 'song/update_song.html', {'form': form})
+    return render(request, 'song/update.html', {'form': form})
 
 
 @require_POST
@@ -348,7 +353,16 @@ def artist_profile(request, artist_name):
     songs = Song.objects.filter(artists=artist)
     albums = Album.objects.filter(artist=artist)
 
-    return render(request, 'user/artist/artist_profile.html', {'artist': artist, 'songs': songs, 'albums': albums})
+    return render(request, 'user/artist/profile.html', {'artist': artist, 'songs': songs, 'albums': albums})
+
+
+@login_required(login_url='/login/')
+def artist_workspace(request):
+    artist = Artist.objects.get(Artist_name=request.user.userprofile.artist.Artist_name)
+    songs = Song.objects.filter(artists=artist)
+    albums = Album.objects.filter(artist=artist)
+
+    return render(request, 'user/artist/workspace.html', {'artist': artist, 'songs': songs, 'albums': albums})
 
 
 @login_required(login_url='/login/')
@@ -383,11 +397,15 @@ def create_album(request):
     else:
         form = CreateAlbumForm(profile=profile)
 
-    return render(request, 'album/create_album.html', {'form': form})
+    return render(request, 'album/create.html', {'form': form})
+
+
+def album_info(request, album_id):
+    album = get_object_or_404(Album, id=album_id)
+    return render(request, 'album/info.html', {'album': album})
 
 
 def clean_filename(filename):
-
     invalid_chars_pattern = r'[\\/*?:"<>|]'
 
     cleaned_filename = re.sub(invalid_chars_pattern, '', filename)
@@ -396,5 +414,3 @@ def clean_filename(filename):
 
 def search_song(query):
     return Song.objects.filter(Q(name__icontains=query))
-
-

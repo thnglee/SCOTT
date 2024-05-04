@@ -1,35 +1,28 @@
 {% extends "templates/base.html" %}
 
 {% block content %}
-  <h2>Update User Information</h2>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ user_form.as_p }}
-    {{ profile_form.age.label_tag }}
-    {{ profile_form.age }}
-    <br><br>
-    {{ profile_form.sex.label_tag }}
-    {{ profile_form.sex }}
-    <br><br>
-    {{ profile_form.image_file.label_tag }}
-    {{ profile_form.image_file }}
-    <br>
-    <img id="userImage" src="{{ MEDIA_URL }}{{ profile_form.instance.get_image_uri }}" alt="User Image" height="200" width="200">
-    <br><br>
-    {{ profile_form.become_artist.label_tag }}
-    {{ profile_form.become_artist }}
-    <div style="display: flex; align-items: center;">
-      {{ profile_form.artist_name.label_tag }}
-      {{ profile_form.artist_name }}
-    </div>
-    <br>
-    <button type="submit">Update</button>
-  </form>
-  <form method="post" action="{% url 'delete_user' %}">
-     {% csrf_token %}
-     <button type="submit" class="btn btn-danger">Delete User</button>
-  </form>
-    
+   <div class="container">
+    <h2 class="my-3">Update User Information</h2>
+    <form method="post" enctype="multipart/form-data" class="mb-3">
+      {% csrf_token %}
+      {{ user_form.as_p }}
+      {{ profile_form.age.label_tag }} {{ profile_form.age }}<br><br>
+      {{ profile_form.sex.label_tag }} {{ profile_form.sex }}<br><br>
+      {{ profile_form.image_file.label_tag }} {{ profile_form.image_file }}<br><br>
+      <img id="userImage" src="{{ MEDIA_URL }}{{ profile_form.instance.get_image_uri }}" alt="User Image" height="120" width="120" >
+        <br><br>
+        {{ profile_form.become_artist.label_tag }} {{ profile_form.become_artist }}
+      <div class="d-flex align-items-center">
+        {{ profile_form.artist_name.label_tag }} {{ profile_form.artist_name }}
+      </div>
+      <br>
+      <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+    <form method="post" action="{% url 'delete_user' %}" class="mb-3">
+       {% csrf_token %}
+       <button type="submit" class="btn btn-danger">Delete User</button>
+    </form>
+  </div>
   <script>
   document.addEventListener('DOMContentLoaded', function() {
       let becomeArtistCheckbox = document.getElementById('become_artist');

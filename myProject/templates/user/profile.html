@@ -1,0 +1,30 @@
+{% extends "templates/base.html" %}
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 ">
+        
+        <h1>User Information</h1>
+        <img src="{{ MEDIA_URL }}{{ user_profile.get_image_uri }}" alt="User Image" >
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>First Name:</strong> {{ user.first_name }}</p>
+        <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+        <p><strong>Age:</strong> {{ user_profile.age }}</p>
+        <p><strong>Sex:</strong> {{ user_profile.sex }}</p>
+        <p><strong>Artist name:</strong> {{ user_profile.artist.Artist_name }}</p>
+      </div>
+    </div>
+
+    {% if user == current_user %}
+      <div class="row">
+        <div class="col-md-6">
+          <form action="{% url 'update_profile' %}" method="get">
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

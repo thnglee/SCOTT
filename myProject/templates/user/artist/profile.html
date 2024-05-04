@@ -1,0 +1,35 @@
+{% extends "templates/base.html" %}
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h2>{{ artist.Artist_name }}</h2>
+        <img src="{{ MEDIA_URL }}{{ artist.user.get_image_uri }}" alt="{{ artist.Artist_name }}" class="img-fluid">
+      </div>
+      <div class="col-md-6">
+        <h3>Songs</h3>
+        <ul class="list-group">
+          {% for song in artist.songs.all %}
+            <li class="list-group-item">
+              <a href="{% url 'song_info' song.id %}">{{ song.name }}</a>
+            </li>
+          {% empty %}
+            <li class="list-group-item">No songs available.</li>
+          {% endfor %}
+        </ul>
+
+        <h3>Albums</h3>
+        <ul class="list-group">
+          {% for album in artist.album_set.all %}
+            <li class="list-group-item">
+              <a href="{% url 'album_info' album.id %}">{{ album.name }}</a>
+            </li>
+          {% empty %}
+            <li class="list-group-item">No albums available.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "templates/base.html" %}
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col mr-5">
+        <h2>{{ album.name }}</h2>
+        <img src="{{ MEDIA_URL }}{{ album.get_image_uri }}" alt="{{ album.name }}" class="img-fluid">
+      </div>
+      <div class="col ml-6">
+        <h3>Songs</h3>
+        <ul class="list-group">
+          {% for song in album.songs.all %}
+            <li class="list-group-item">
+              <a href="{% url 'song_info' song.id %}">{{ song.name }}</a>
+            </li>
+          {% empty %}
+            <li class="list-group-item">No songs available.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endblock %}

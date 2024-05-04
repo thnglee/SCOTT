@@ -7,10 +7,10 @@
     {% if user.is_authenticated %}
         <div class="d-flex align-items-center">
 
-            <h1>Hello <img src="{{ MEDIA_URL }}{{ user_profile.get_image_uri }}" alt="User avatar" width="30" height="30" style="margin-bottom: 5px;" >
-                <a href="{% url 'update_user_info' user.id %}">{{ user.username }}</a>,
+            <h1>Hello <img src="{{ MEDIA_URL }}{{ profile.get_image_uri }}" alt="User avatar" width="30" height="30" style="margin-bottom: 5px;" >
+                <a href="{% url 'user_profile' user.username %}">{{ user.username }}</a>,
                 {% if user.userprofile.artist %}
-                    Artist: <a href="{% url 'artist_page' user_profile.artist.id %}">{{ user_profile.artist.Artist_name }}</a>,
+                    Artist: <a href="{% url 'artist_profile' profile.artist.Artist_name %}">{{ profile.artist.Artist_name }}</a>,
                 {% endif %} 
                  where to leave? logout here --->
             </h1>

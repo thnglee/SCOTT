@@ -2,12 +2,14 @@ import os
 import re
 
 from django.conf import settings
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.core.files.storage import default_storage
 from django.http import StreamingHttpResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 
 from myApp.forms import (CreateUserForm, UploadSongForm, UpdateSongForm, UpdateUserForm,
@@ -23,6 +25,15 @@ class Login(LoginView):
 
 class Logout(LogoutView):
     next_page = 'home'
+
+
+class ChangePassword(PasswordChangeView):
+    success_url = reverse_lazy('login')
+    template_name = 'user/authentication/change_password.html'
+
+    def form_valid(self, form):
+        logout(self.request)
+        return super().form_valid(form)
 
 
 def register(request):
@@ -101,7 +112,23 @@ def update_profile(request):
                                           Artist_name=user_profile_form.cleaned_data.get('artist_name'))
             else:
                 if hasattr(profile, 'artist'):
-                    profile.artist.delete()
+                    artist = profile.artist
+
+                    songs = Song.objects.filter(artists=artist)
+                    for song in songs:
+                        if song.uri:
+                            default_storage.delete('audio/' + song.uri)
+                        if song.image_uri != 'default.png':
+                            default_storage.delete('image/song/' + song.image_uri)
+                    songs.delete()
+
+                    albums = Album.objects.filter(artist=artist)
+                    for album in albums:
+                        if album.image_uri != 'default.png':
+                            default_storage.delete('image/album/' + album.image_uri)
+                    albums.delete()
+
+                    artist.delete()
 
             profile.save()
 
@@ -302,9 +329,11 @@ def delete_song(request, song_id):
     song = get_object_or_404(Song, id=song_id)
 
     # Delete the song file and image file
-    force_delete_media_file('audio/' + song.uri)
+    if song.uri:
+        default_storage.delete('audio/' + song.uri)
+
     if song.image_uri != 'default.png':
-        force_delete_media_file('image/song/' + song.image_uri)
+        default_storage.delete('image/song/' + song.image_uri)
 
     song.delete()
     return redirect('home')
@@ -317,7 +346,7 @@ def artist_profile(request, artist_name):
     songs = Song.objects.filter(artists=artist)
     albums = Album.objects.filter(artist=artist)
 
-    return render(request, 'user/artist_profile.html', {'artist': artist, 'songs': songs, 'albums': albums})
+    return render(request, 'user/artist/artist_profile.html', {'artist': artist, 'songs': songs, 'albums': albums})
 
 
 @login_required(login_url='/login/')
@@ -361,8 +390,3 @@ def clean_filename(filename):
     # Replace the invalid characters with an empty string
     cleaned_filename = re.sub(invalid_chars_pattern, '', filename)
     return cleaned_filename
-
-
-def force_delete_media_file(file_path):
-    if default_storage.exists(file_path):
-        default_storage.delete(file_path)

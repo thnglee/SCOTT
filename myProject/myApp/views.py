@@ -329,9 +329,11 @@ def delete_song(request, song_id):
     song = get_object_or_404(Song, id=song_id)
 
     # Delete the song file and image file
-    force_delete_media_file('audio/' + song.uri)
+    if song.uri:
+        default_storage.delete('audio/' + song.uri)
+
     if song.image_uri != 'default.png':
-        force_delete_media_file('image/song/' + song.image_uri)
+        default_storage.delete('image/song/' + song.image_uri)
 
     song.delete()
     return redirect('home')
@@ -388,8 +390,3 @@ def clean_filename(filename):
     # Replace the invalid characters with an empty string
     cleaned_filename = re.sub(invalid_chars_pattern, '', filename)
     return cleaned_filename
-
-
-def force_delete_media_file(file_path):
-    if default_storage.exists(file_path):
-        default_storage.delete(file_path)

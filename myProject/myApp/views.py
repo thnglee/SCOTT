@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.core.files.storage import default_storage
+from django.db.models import Q
 from django.http import StreamingHttpResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -171,16 +172,18 @@ def delete_user(request):
 
 
 def home(request):
-    songs = Song.objects.all()  # get all songs in the database
+    songs = Song.objects.all()
+    query = request.GET.get('q', '')
+    songs_query = search_song(query) if query else Song.objects.none()
     if request.user.is_authenticated:
-        user = request.user  # get the username of the current user
-        profile = UserProfile.objects.get(user=user)  # get the user profile object
-        artist = Artist.objects.filter(user=profile)  # get the artist object
+        user = request.user
+        profile = UserProfile.objects.get(user=user)
+        artist = Artist.objects.filter(user=profile)
         return render(request,
                       'home.html',
-                      {'songs': songs, 'user': user, 'profile': profile, 'artist': artist})
+                      {'songs': songs, 'user': user, 'profile': profile, 'artist': artist, 'songs_query': songs_query})
     else:
-        return render(request, 'home.html', {'songs': songs})
+        return render(request, 'home.html', {'songs': songs, 'songs_query': songs_query})
 
 
 @login_required(login_url='/login/')
@@ -341,7 +344,6 @@ def delete_song(request, song_id):
 
 @login_required(login_url='/login/')
 def artist_profile(request, artist_name):
-
     artist = Artist.objects.get(Artist_name=artist_name)
     songs = Song.objects.filter(artists=artist)
     albums = Album.objects.filter(artist=artist)
@@ -385,8 +387,14 @@ def create_album(request):
 
 
 def clean_filename(filename):
-    # Define a regex pattern for the invalid characters
+
     invalid_chars_pattern = r'[\\/*?:"<>|]'
-    # Replace the invalid characters with an empty string
+
     cleaned_filename = re.sub(invalid_chars_pattern, '', filename)
     return cleaned_filename
+
+
+def search_song(query):
+    return Song.objects.filter(Q(name__icontains=query))
+
+

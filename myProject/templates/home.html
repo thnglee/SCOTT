@@ -79,6 +79,39 @@
             <div class="d-flex justify-content-center mt-3">
                 <a href="{% url 'upload_song' %}" class="btn btn-primary">Upload a new song</a>
             </div>
+    
+    {% if user.is_authenticated %}
+        <h2>Your Playlists</h2>
+        {% for playlist in playlists %}
+            <div class="playlist">
+                <h3><a href="{% url 'playlist_info' playlist.name %}">{{ playlist.name }}</a></h3>
+                <ul>
+                {% for song in playlist.songs.all %}
+                    <div class="row mb-3 col-12 align-items-center">
+                        <div>
+                            <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="song cover" class="img-fluid" height="130" width="130">
+                        </div>
+                        <div class="col-md-4" >
+                            <h5>{{ song.name }}</h5>
+                            <audio controls class="default_vol">
+                                <source src="{% url 'stream_song' song.id %}" type="{{ song.get_mime_type }}">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    </div>`
+                {% empty %}
+                    <li>No songs in this playlist yet.</li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% empty %}
+            <p>You have no playlists yet.</p>
+        {% endfor %}
+        <div class="d-flex justify-content-center mt-3">
+            <a href="{% url 'create_playlist' %}" class="btn btn-primary">Create a new playlist</a>
+        </div>
+    {% endif %}
+    
     </div>
     <script>
         let audios = document.getElementsByClassName('default_vol');

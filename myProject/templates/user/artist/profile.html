@@ -23,7 +23,7 @@
         <ul class="list-group">
           {% for album in artist.album_set.all %}
             <li class="list-group-item">
-              <a href="{% url 'album_info' album.id %}">{{ album.name }}</a>
+              <a href="{% url 'album_info' album.name %}">{{ album.name }}</a>
             </li>
           {% empty %}
             <li class="list-group-item">No albums available.</li>

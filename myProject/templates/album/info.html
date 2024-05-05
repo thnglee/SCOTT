@@ -6,6 +6,9 @@
       <div class="col mr-5">
         <h2>{{ album.name }}</h2>
         <img src="{{ MEDIA_URL }}{{ album.get_image_uri }}" alt="{{ album.name }}" class="img-fluid">
+        {% if request.user == album.artist.user.user %}
+          <a href="{% url 'delete_album' album.id %}">Delete this album</a>
+        {% endif %}
       </div>
       <div class="col ml-6">
         <h3>Songs</h3>

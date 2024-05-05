@@ -24,5 +24,10 @@ urlpatterns = [
     path('artist/workspace/', views.artist_workspace, name='artist_workspace'),
 
     path('album/create/', views.create_album, name='create_album'),
-    path('album/<int:album_id>/info/', views.album_info, name='album_info'),
+    path('album/<str:album_name>/info/', views.album_info, name='album_info'),
+    path('album/<int:album_id>/delete/', views.delete_album, name='delete_album'),
+
+    path('playlist/create/', views.create_playlist, name='create_playlist'),
+    path('playlist/<str:playlist_name>/info/', views.playlist_info, name='playlist_info'),
+    path('playlist/<int:playlist_id>/delete/', views.delete_playlist, name='delete_playlist'),
 ]

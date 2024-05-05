@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.core.files.storage import default_storage
+from django.db.models import Q
 from django.http import StreamingHttpResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -76,7 +77,7 @@ def user_profile(request, user_name):
     profile = UserProfile.objects.get(user=user)
     current_user = request.user
     return render(request,
-                  'user/user_profile.html',
+                  'user/profile.html',
                   {'user': user, 'user_profile': profile, 'current_user': current_user})
 
 
@@ -171,16 +172,18 @@ def delete_user(request):
 
 
 def home(request):
-    songs = Song.objects.all()  # get all songs in the database
+    songs = Song.objects.all()
+    query = request.GET.get('q', '')
+    songs_query = search_song(query) if query else Song.objects.none()
     if request.user.is_authenticated:
-        user = request.user  # get the username of the current user
-        profile = UserProfile.objects.get(user=user)  # get the user profile object
-        artist = Artist.objects.filter(user=profile)  # get the artist object
+        user = request.user
+        profile = UserProfile.objects.get(user=user)
+        artist = Artist.objects.filter(user=profile)
         return render(request,
                       'home.html',
-                      {'songs': songs, 'user': user, 'profile': profile, 'artist': artist})
+                      {'songs': songs, 'user': user, 'profile': profile, 'artist': artist, 'songs_query': songs_query})
     else:
-        return render(request, 'home.html', {'songs': songs})
+        return render(request, 'home.html', {'songs': songs, 'songs_query': songs_query})
 
 
 @login_required(login_url='/login/')
@@ -232,7 +235,12 @@ def upload_song(request):
     else:
         form = UploadSongForm(profile=profile)
 
-    return render(request, 'song/upload_song.html', {'form': form})
+    return render(request, 'song/upload.html', {'form': form})
+
+
+def song_info(request, song_id):
+    song = get_object_or_404(Song, id=song_id)
+    return render(request, 'song/info.html', {'song': song})
 
 
 def stream_song(request, song_id):
@@ -321,7 +329,7 @@ def update_song(request, song_id):
     else:
         form = UpdateSongForm(instance=song, profile=profile)
 
-    return render(request, 'song/update_song.html', {'form': form})
+    return render(request, 'song/update.html', {'form': form})
 
 
 @require_POST
@@ -341,12 +349,20 @@ def delete_song(request, song_id):
 
 @login_required(login_url='/login/')
 def artist_profile(request, artist_name):
-
     artist = Artist.objects.get(Artist_name=artist_name)
     songs = Song.objects.filter(artists=artist)
     albums = Album.objects.filter(artist=artist)
 
-    return render(request, 'user/artist/artist_profile.html', {'artist': artist, 'songs': songs, 'albums': albums})
+    return render(request, 'user/artist/profile.html', {'artist': artist, 'songs': songs, 'albums': albums})
+
+
+@login_required(login_url='/login/')
+def artist_workspace(request):
+    artist = Artist.objects.get(Artist_name=request.user.userprofile.artist.Artist_name)
+    songs = Song.objects.filter(artists=artist)
+    albums = Album.objects.filter(artist=artist)
+
+    return render(request, 'user/artist/workspace.html', {'artist': artist, 'songs': songs, 'albums': albums})
 
 
 @login_required(login_url='/login/')
@@ -381,12 +397,20 @@ def create_album(request):
     else:
         form = CreateAlbumForm(profile=profile)
 
-    return render(request, 'album/create_album.html', {'form': form})
+    return render(request, 'album/create.html', {'form': form})
+
+
+def album_info(request, album_id):
+    album = get_object_or_404(Album, id=album_id)
+    return render(request, 'album/info.html', {'album': album})
 
 
 def clean_filename(filename):
-    # Define a regex pattern for the invalid characters
     invalid_chars_pattern = r'[\\/*?:"<>|]'
-    # Replace the invalid characters with an empty string
+
     cleaned_filename = re.sub(invalid_chars_pattern, '', filename)
     return cleaned_filename
+
+
+def search_song(query):
+    return Song.objects.filter(Q(name__icontains=query))

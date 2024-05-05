@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-from myApp.models import Song, Album
+from myApp.models import Song, Album, Playlist
 from myApp.models import UserProfile
 
 
@@ -92,3 +92,24 @@ class CreateAlbumForm(forms.ModelForm):
     class Meta:
         model = Album
         fields = ['album_name', 'image_file', 'songs']
+
+
+class CreatePlaylistForm(forms.ModelForm):
+    search_query = forms.CharField(max_length=255, required=False)
+    songs = forms.ModelMultipleChoiceField(
+        queryset=Song.objects.none(),  # Empty initial queryset
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+
+    class Meta:
+        model = Playlist
+        fields = ['name', 'songs']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        search_query = self.initial.get('search_query') or self.data.get('search_query')
+        if search_query:
+            self.fields['songs'].queryset = Song.objects.filter(name__icontains=search_query)
+        else:
+            self.fields['songs'].queryset = Song.objects.all()

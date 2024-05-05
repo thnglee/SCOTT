@@ -14,8 +14,8 @@ from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 
 from myApp.forms import (CreateUserForm, UploadSongForm, UpdateSongForm, UpdateUserForm,
-                         UpdateUserProfileForm, CreateAlbumForm)
-from myApp.models import Song, UserProfile, Artist, Album
+                         UpdateUserProfileForm, CreateAlbumForm, CreatePlaylistForm)
+from myApp.models import Song, UserProfile, Artist, Album, Playlist
 
 
 # Create your views here.
@@ -178,10 +178,16 @@ def home(request):
     if request.user.is_authenticated:
         user = request.user
         profile = UserProfile.objects.get(user=user)
+        playlists = Playlist.objects.filter(user=profile)
         artist = Artist.objects.filter(user=profile)
         return render(request,
                       'home.html',
-                      {'songs': songs, 'user': user, 'profile': profile, 'artist': artist, 'songs_query': songs_query})
+                      {'songs': songs,
+                       'user': user,
+                       'profile': profile,
+                       'artist': artist,
+                       'songs_query': songs_query,
+                       'playlists': playlists})
     else:
         return render(request, 'home.html', {'songs': songs, 'songs_query': songs_query})
 
@@ -400,9 +406,53 @@ def create_album(request):
     return render(request, 'album/create.html', {'form': form})
 
 
-def album_info(request, album_id):
-    album = get_object_or_404(Album, id=album_id)
+def album_info(request, album_name):
+    album = get_object_or_404(Album, name=album_name)
     return render(request, 'album/info.html', {'album': album})
+
+
+@login_required(login_url='/login/')
+def delete_album(request, album_id):
+    album = get_object_or_404(Album, id=album_id)
+
+    if album.image_uri != 'default.png':
+        default_storage.delete('image/album/' + album.image_uri)
+    album.delete()
+    return redirect('home')
+
+
+@login_required(login_url='/login/')
+def create_playlist(request):
+    search_query = request.GET.get('search_query', '')
+    if request.method == 'POST':
+        form = CreatePlaylistForm(request.POST, initial={'search_query': search_query})
+        if form.is_valid():
+            playlist = form.save(commit=False)
+            playlist.user = UserProfile.objects.get(user=request.user)
+            playlist.save()
+            for song in form.cleaned_data['songs']:
+                playlist.songs.add(song)
+
+            form.save_m2m()
+            return redirect('home')
+    else:
+        form = CreatePlaylistForm(initial={'search_query': search_query})
+
+    return render(request, 'playlist/create.html', {'form': form})
+
+
+@login_required(login_url='/login/')
+def playlist_info(request, playlist_name):
+    profile = UserProfile.objects.get(user=request.user)
+    playlist = get_object_or_404(Playlist, name=playlist_name, user=profile)
+    return render(request, 'playlist/info.html', {'playlist': playlist})
+
+
+@login_required(login_url='/login/')
+def delete_playlist(request, playlist_id):
+    playlist = get_object_or_404(Playlist, id=playlist_id)
+    playlist.delete()
+    return redirect('home')
 
 
 def clean_filename(filename):

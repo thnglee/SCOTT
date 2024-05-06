@@ -101,6 +101,7 @@
   }
   .topbar .navbar ul {
     list-style: none;
+    display: flex;
   }
   .topbar .navbar ul li {
     display: inline-block;
@@ -256,6 +257,7 @@
   }
 
   .recent-list .item {
+    max-width: 50em;
     height: 5em;
     width: 21em;
     border-radius: 0.3em;
@@ -299,4 +301,8 @@
 
 .recently-played .recent-list .item:hover {
   background-color: #252525;
+}
+
+*, ::after, ::before {
+  box-sizing: border-box;
 }

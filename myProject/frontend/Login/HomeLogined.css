@@ -137,6 +137,7 @@
     border-radius: 40px;
     cursor: pointer;
     margin-left: 20px;
+    /* position: fixed; */
   }
   .topbar .navbar button:hover,
   .topbar .navbar button:active,
@@ -257,7 +258,6 @@
   }
 
   .recent-list .item {
-    max-width: 50em;
     height: 5em;
     width: 21em;
     border-radius: 0.3em;
@@ -265,7 +265,9 @@
     margin-bottom: 1em;
     display: flex;
     align-items: center;
+    
   }
+  
 
   .recent-list .item .img-div {
     height: 5em;

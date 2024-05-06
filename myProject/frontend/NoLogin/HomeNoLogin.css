@@ -1,3 +1,4 @@
+
 * {
     padding: 0;
     margin: 0;
@@ -17,7 +18,8 @@
     padding: 24px;
   }
   .sidebar .logo img {
-    width: 200px;
+    width: 8em;
+    align-self: flex-start;
   }
   .sidebar .navigation ul {
     list-style: none;
@@ -153,8 +155,17 @@
   .scott-playlists .list {
     display: flex;
     gap: 20px;
-    overflow: hidden;
+    /* overflow: hidden; */
+    max-width: 100%;
+    overflow-x: auto;
+
   }
+
+  /* .scott-playlists .list::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+} */
+
   .scott-playlists .list .item {
     min-width: 140px;
     width: 160px;
@@ -188,6 +199,7 @@
   .scott-playlists .list .item:hover .play .fa {
     opacity: 1;
     transform: translateY(-20px);
+    transition: all ease 0.4s;
   }
   .scott-playlists .list .item h4 {
     color: #ffffff;
@@ -210,7 +222,7 @@
   
 
 .famous-artist {
-  padding: 20px 40px;
+  padding: 15px 40px;
   }
   .famous-artist h2 {
     color: #ffffff;
@@ -219,23 +231,57 @@
   }
   .famous-artist .list {
     display: flex;
-    gap: 45px;
-    overflow: hidden;
+    gap: 36px;
+    max-width: 100%;
+    overflow-x: auto;
   }
+  /* .famous-artist .list::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  } */
+  
   .famous-artist .list .item {
-    height: 160px; 
-    min-height: 150px;
+    height: 200px;
+    min-height: 170px;
     min-width: 150px;
-    background-color: #181818;
-    border-radius: 50%; 
     transition: all ease 0.4s;
-    overflow: hidden; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center;
-  }
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin-left: 0.4em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.item-image {
+  height: 160px; 
+  min-height: 150px;
+  min-width: 150px;
+  background-color: #181818;
+  border-radius: 50%; 
+  transition: all ease 0.4s;
+  overflow: hidden; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+}
+
+.item-image img {
+    width: 100%; 
+    height: auto; 
+}
+.famous-artist .list .item .artist-name h4{
+  color: #ffffff;
+  font-size: 14px;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  /* overflow: hidden; */
+  text-overflow: ellipsis;
+   margin-top: 10px; 
+    text-align: center;
+}
   .famous-artist .list .item:hover {
-    background-color: #252525;
+    transform: scale(1.08); /* Phóng to lên 1.2 lần khi hover */
   }
   .famous-artist .list .item img {
     height: 100%;
@@ -244,20 +290,7 @@
   .famous-artist .list .item .play {
     position: relative;
   }
-  .famous-artist .list .item .play .fa {
-    position: absolute;
-    right: 10px;
-    top: -60px;
-    padding: 18px;
-    background-color: #1db954;
-    border-radius: 100%;
-    opacity: 0;
-    transition: all ease 0.4s;
-  }
-  .famous-artist .list .item:hover .play .fa {
-    opacity: 1;
-    transform: translate(-110%, 75%);
-  }
+  
   .famous-artist hr {
     margin: 70px 0px 0px;
     border-color: #636363;

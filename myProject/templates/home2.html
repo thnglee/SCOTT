@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="col-12">
+        {% if user.is_authenticated %}
+            <div class="flex items-center">
+                <h1 class="text-lg">Hello <img src="{{ MEDIA_URL }}{{ profile.get_image_uri }}" alt="User avatar" class="w-8 h-8 mb-1" >
+                    <a href="{% url 'user_profile' user.username %}" class="text-blue-500">{{ user.username }}</a>,
+                    {% if user.userprofile.artist %}
+                        Artist: <a href="{% url 'artist_profile' profile.artist.Artist_name %}" class="text-blue-500">{{ profile.artist.Artist_name }}</a>,
+                    {% endif %}
+                     where to leave? logout here --->
+                </h1>
+                <form method="post" action="{% url 'logout' %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-primary">Logout</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="flex items-center">
+                <h1 class="text-lg">Hello...? Oh, you haven't logged in, login here ---></h1>
+                <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+            </div>
+        {% endif %}
+        <img src="{% static 'image/image.jpg' %}" alt="logo?" class="w-full">
+        <h1 class="text-2xl">Welcome to our music site!</h1>
+        <form method="GET" action="{% url 'home' %}">
+            <label>
+                <input type="text" name="q" placeholder="Search for songs..." class="border-2 border-gray-300 p-2 rounded">
+            </label>
+            <input type="submit" value="Search" class="bg-blue-500 text-white p-2 rounded">
+        </form>
+        {% if songs_query %}
+            {% for song in songs_query %}
+                <div class="flex mb-3 col-12 items-center">
+                    <div>
+                        <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="song cover" class="img-fluid h-32 w-32">
+                    </div>
+                    <div class="col-md-4" >
+                        <h5 class="text-lg">{{ song.name }}</h5>
+                        <audio controls class="default_vol">
+                            <source src="{% url 'stream_song' song.id %}" type="{{ song.get_mime_type }}">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <div class="container py-3">
+            {% for song in songs %}
+                {% if forloop.counter0|divisibleby:3 %}
+                    {% if not forloop.first %}</div>{% endif %}
+                    <div class="row mb-3">  
+                {% endif %}
+                <div class="col-lg-4 mb-3"> 
+                    <div class="card mx-2" style="width: 90%;">
+                        <img class="card-img-top" src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="song cover">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ song.name }} <br> {{ song.get_artists }}</h5>
+                            <audio controls class="w-100 mt-3 default_vol" >
+                                <source src="{% url 'stream_song' song.id %}" type="{{ song.get_mime_type }}">
+                                Your browser does not support the audio element.
+                            </audio>
+                            {% if user.is_authenticated and user.userprofile.artist and user.userprofile.artist in song.artists.all %}
+                                <a href="{% url 'update_song' song.id %}" class="btn btn-primary mt-3">Update Song Info</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% if forloop.last %}</div>{% endif %}
+            {% endfor %}
+        
+            <!-- Upload_Song -->
+            <div class="flex justify-center mt-3">
+                <a href="{% url 'upload_song' %}" class="btn btn-primary">Upload a new song</a>
+            </div>
+    
+    {% if user.is_authenticated %}
+        <h2 class="text-2xl">Your Playlists</h2>
+        {% for playlist in playlists %}
+            <div class="playlist">
+                <h3><a href="{% url 'playlist_info' playlist.name %}" class="text-blue-500">{{ playlist.name }}</a></h3>
+                <ul>
+                {% for song in playlist.songs.all %}
+                    <div class="flex mb-3 col-12 items-center">
+                        <div>
+                            <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="song cover" class="img-fluid h-32 w-32">
+                        </div>
+                        <div class="col-md-4" >
+                            <h5 class="text-lg">{{ song.name }}</h5>
+                            <audio controls class="default_vol">
+                                <source src="{% url 'stream_song' song.id %}" type="{{ song.get_mime_type }}">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    </div>`
+                {% empty %}
+                    <li>No songs in this playlist yet.</li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% empty %}
+            <p>You have no playlists yet.</p>
+        {% endfor %}
+        <div class="flex justify-center mt-3">
+            <a href="{% url 'create_playlist' %}" class="btn btn-primary">Create a new playlist</a>
+        </div>
+    {% endif %}
+    
+    </div>
+    <script>
+        let audios = document.getElementsByClassName('default_vol');
+        for(let i = 0; i < audios.length; i++){
+            audios[i].volume = 0.6;
+        }
+    </script>
+    
+{% endblock %}

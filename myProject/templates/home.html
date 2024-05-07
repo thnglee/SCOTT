@@ -1,124 +1,154 @@
+{% extends 'templates/base.html' %}
 
-{% extends "base.html" %}
 {% load static %}
 
-
-{% block content %}
-    <div class="col-12">    
-        {% if user.is_authenticated %}
-            <div class="d-flex align-items-center">
-    
-                <h1>Hello <img src="{{ MEDIA_URL }}{{ profile.get_image_uri }}" alt="User avatar" width="30" height="30" style="margin-bottom: 5px;" >
-                    <a href="{% url 'user_profile' user.username %}">{{ user.username }}</a>,
-                    {% if user.userprofile.artist %}
-                        Artist: <a href="{% url 'artist_profile' profile.artist.Artist_name %}">{{ profile.artist.Artist_name }}</a>,
-                    {% endif %} 
-                     where to leave? logout here --->
-                </h1>
-                <form method="post" action="{% url 'logout' %}">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-primary">Logout</button>
-                </form>
-            </div>
-        {% else %}
-            <div class="d-flex align-items-center">
-                <h1>Hello...? Oh, you haven't logged in, login here ---></h1>
-                <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
-            </div>
-        {% endif %}
-        <img src="{% static 'image/image.jpg' %}" alt="logo?">
-        <h1>Welcome to our music site!</h1>
-        <form method="GET" action="{% url 'home' %}">
-            <label>
-                <input type="text" name="q" placeholder="Search for songs...">
-            </label>
-            <input type="submit" value="Search">
-        </form>
-        {% if songs_query %}
-            {% for song in songs_query %}
-                <div class="row mb-3 col-12 align-items-center">
-                    <div>
-                        <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="song cover" class="img-fluid" height="130" width="130">
-                    </div>
-                    <div class="col-md-4" >
-                        <h5>{{ song.name }}</h5>
-                        <audio controls class="default_vol">
-                            <source src="{% url 'stream_song' song.id %}" type="{{ song.get_mime_type }}">
-                            Your browser does not support the audio element.
-                        </audio>
-                    </div>
-                </div>
-            {% endfor %}
-        {% endif %}
-        
-        <div class="container py-3">
-            {% for song in songs %}
-                {% if forloop.counter0|divisibleby:3 %}
-                    {% if not forloop.first %}</div>{% endif %}
-                    <div class="row mb-3">  
-                {% endif %}
-                <div class="col-lg-4 mb-3"> 
-                    <div class="card mx-2" style="width: 90%;">
-                        <img class="card-img-top" src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="song cover">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ song.name }} <br> {{ song.get_artists }}</h5>
-                            <audio controls class="w-100 mt-3 default_vol" >
-                                <source src="{% url 'stream_song' song.id %}" type="{{ song.get_mime_type }}">
-                                Your browser does not support the audio element.
-                            </audio>
-                            {% if user.is_authenticated and user.userprofile.artist and user.userprofile.artist in song.artists.all %}
-                                <a href="{% url 'update_song' song.id %}" class="btn btn-primary mt-3">Update Song Info</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% if forloop.last %}</div>{% endif %}
-            {% endfor %}
-        
-            <!-- Upload_Song -->
-            <div class="d-flex justify-content-center mt-3">
-                <a href="{% url 'upload_song' %}" class="btn btn-primary">Upload a new song</a>
-            </div>
-    
-    {% if user.is_authenticated %}
-        <h2>Your Playlists</h2>
-        {% for playlist in playlists %}
-            <div class="playlist">
-                <h3><a href="{% url 'playlist_info' playlist.name %}">{{ playlist.name }}</a></h3>
-                <ul>
-                {% for song in playlist.songs.all %}
-                    <div class="row mb-3 col-12 align-items-center">
-                        <div>
-                            <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="song cover" class="img-fluid" height="130" width="130">
-                        </div>
-                        <div class="col-md-4" >
-                            <h5>{{ song.name }}</h5>
-                            <audio controls class="default_vol">
-                                <source src="{% url 'stream_song' song.id %}" type="{{ song.get_mime_type }}">
-                                Your browser does not support the audio element.
-                            </audio>
-                        </div>
-                    </div>`
-                {% empty %}
-                    <li>No songs in this playlist yet.</li>
-                {% endfor %}
-                </ul>
-            </div>
-        {% empty %}
-            <p>You have no playlists yet.</p>
-        {% endfor %}
-        <div class="d-flex justify-content-center mt-3">
-            <a href="{% url 'create_playlist' %}" class="btn btn-primary">Create a new playlist</a>
-        </div>
-    {% endif %}
-    
-    </div>
-    <script>
-        let audios = document.getElementsByClassName('default_vol');
-        for(let i = 0; i < audios.length; i++){
-            audios[i].volume = 0.6;
-        }
-    </script>
-    
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
 {% endblock %}
 
+{% block body_style %}
+    margin:0; padding:0; background:#121212; font-family:Arial, sans-serif; color:#fff;
+{% endblock %}
+
+{% block content %}
+    <div class="sidebar">
+        <div class="logo-container">
+            <img src="{% static 'image/SCOTT_logo.png' %}" alt="Logo"
+                 style="width: 100%; height: auto; padding: 10px; box-sizing: border-box; margin-left: -2px">
+        </div>
+
+        <!-- Welcome User -->
+        <div class="sidebar-section">
+
+            {% if user.is_authenticated %}
+                <div class="profile-image" style="display: flex; justify-content: center;">
+                    <img src="{{ MEDIA_URL }}{{ profile.get_image_uri }}"
+                         style="border-radius: 20px;"
+                         alt="User avatar"
+                         class="gradient-box">
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <b style="margin-top: 10px">Welcome, {{ user.username }}</b>
+                </div>
+            {% else %}
+                <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
+                <b>Welcome, Stranger</b>
+                <br>
+                <br>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+                <a href="{% url 'user_profile' user.username %}" class="sidebar-link">
+                    <span class="sidebar-link-icon">👤</span>
+                    <b>Profile</b>
+                </a>
+                {% if user.userprofile.artist %}
+                    <a href="{% url 'artist_workspace' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon">🎵</span>
+                        <b>Workspace</b>
+                    </a>
+                {% endif %}
+                <a href="{% url 'logout' %}" class="sidebar-link">
+                    <span class="sidebar-link-icon">↪️</span>
+                    <b>Logout</b>
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="sidebar-link">
+                    <span class="sidebar-link-icon">🔑</span>
+                    <b>Login</b>
+                </a>
+            {% endif %}
+            
+        </div>
+
+        <!-- Top section of the sidebar -->
+        <div class="sidebar-section">
+            <a href="{% url 'home' %}" class="sidebar-link active">
+                <span class="sidebar-link-icon">🏠</span>
+                Home
+            </a>
+            <a href="{% url 'home' %}" class="sidebar-link">
+                <span class="sidebar-link-icon">🔍</span>
+                Search
+            </a>
+        </div>
+
+    </div>
+
+    <div style="margin-left:240px; padding:20px;">
+        <header class="header-container">
+            <form action="{% url 'home' %}" method="GET">
+                {% csrf_token %}
+                <div class="search-bar" style="width: 400px;">
+                    <input type="search" name="q" placeholder="What do you want to listen to?" aria-label="Search">
+                    <button type="submit" aria-label="Search">
+                        🔍
+                    </button>
+                </div>
+            </form>
+            <div class="search-title">Top Artists</div>
+        </header>
+
+
+        <main style="padding-top:20px;">
+            <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
+                <!-- Artist Card -->
+                {% for artist in artists %}
+                    <div class="artist-card">
+                        <a href="{% url 'artist_profile' artist.Artist_name %}" style="text-decoration: none;">
+                            <img src="{{ MEDIA_URL }}{{ artist.user.get_image_uri }}" alt="{{ artist.name }}">
+                                <div class="artist-name">
+                                     {{ artist.Artist_name }}
+                                </div>
+                            <div class="artist-title">Artist</div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </section>
+            <!-- Repeat sections for other categories with more content cards -->
+
+            <!-- "Browse All" Section Title -->
+            <div class="browse-all-title">Top Songs</div>
+
+            <!-- "Browse All" Section Content -->
+        
+            <div class="browse-all" style="margin-left: 10px">
+                <!-- Category Card -->
+                {% for song in songs1 %}
+                    <div class="category-card">
+                        <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
+                            <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
+                            <div class="category-title">{{ song.name }}</div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="browse-all">
+                <!-- Category Card -->
+                {% for song in songs2 %}
+                    <div class="category-card">
+                        <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
+                            <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
+                            <div class="category-title">{{ song.name }}</div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="browse-all">
+                <!-- Category Card -->
+                {% for song in songs3 %}
+                    <div class="category-card">
+                        <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
+                            <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
+                            <div class="category-title">{{ song.name }}</div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </main>
+
+    </div>
+{% endblock %}

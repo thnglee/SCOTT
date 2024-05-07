@@ -1,11 +1,73 @@
 {% extends "templates/base.html" %}
 
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login-style.css' %}">
+    <style>
+        .error {
+            color: red;
+            font-weight: bold;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+{% endblock %}
+
+{% block body_class %}
+    bg-black h-screen flex flex-col items-center justify-center
+{% endblock %}
+
 {% block content %}
-  <h2>Login</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-  </form>
-  <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+
+    <div class="max-w-xs w-full px-6">
+        <div class="mb-10 flex flex-col items-center">
+            <img src="{% static 'image/favicon.png' %}" alt="SCOTT_Logo" class="w-20 h-20">
+            <h1 class="text-4xl text-white font-bold mt-2">SCOTT</h1>
+        </div>
+
+        <form method="POST" class="bg-black">
+            {% csrf_token %}
+
+            <div class="mb-2 max-w-x w-full ">
+            
+                {% if form.username.errors %}
+                    <div class="error text-xs mb-1">{{ form.username.errors }}</div>
+                {% endif %}
+                <label>
+                    <input class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-6 w-full mb-4"
+                           type="text" name="{{ form.username.name }}" placeholder="Username">
+                </label>
+                
+            
+                {% if form.password.errors %}
+                    <div class="error text-xs mb-1">{{ form.password.errors }}</div>
+                {% endif %}
+                <label>
+                    <input class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-6 w-full mb-6"
+                           type="password" name="{{ form.password.name }}" placeholder="Password">
+                </label>
+                
+
+                <button type="submit" class="gradient-button text-white font-bold py-2 px-6 rounded w-full mb-4">Login</button>
+
+                {% if form.non_field_errors %}
+                    <div class="error text-xs text-center ">{{ form.non_field_errors }}</div>
+                    <p class="text-center text-gray-400 text-xs mt-2">
+                        Absent-minded?<a href="{% url 'password_reset' %}" class="text-green-500"> Reset Password</a>
+                    </p>
+                {% endif %}
+            </div>
+
+
+            <p class="text-center text-gray-400 text-xs mt-2">
+                Don't have an account?<a href="{% url 'register' %}" class="text-pink-500"> Register</a>
+            </p>
+        </form>
+
+        <p class="text-center text-gray-500 text-xs mt-4">
+            &copy; SCOTT
+        </p>
+    </div>
 {% endblock %}

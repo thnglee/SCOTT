@@ -1,18 +1,32 @@
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, \
+    PasswordResetCompleteView
 from django.urls import path
 
 from . import views
-from .views import Login, Logout, ChangePassword
+from .views import Login, ChangePassword
 
 urlpatterns = [
     path('', views.home, name='home'),
     path('login/', Login.as_view(), name='login'),
-    path('logout/', Logout.as_view(), name='logout'),
+    path('logout/', views.logout, name='logout'),
     path('register/', views.register, name='register'),
 
     path('user/<str:user_name>/profile/', views.user_profile, name='user_profile'),
     path('user/profile/update/', views.update_profile, name='update_profile'),
     path('user/profile/update/change_password/', ChangePassword.as_view(), name='change_password'),
     path('user/delete/', views.delete_user, name='delete_user'),
+
+    path('password_reset/', PasswordResetView.as_view(
+        template_name='user/authentication/password/password_reset/password_reset.html'), name='password_reset'),
+    path('password_reset/done/', PasswordResetDoneView.as_view(
+        template_name='user/authentication/password/password_reset/password_reset_done.html'),
+         name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(
+        template_name='user/authentication/password/password_reset/password_reset_confirm.html'),
+         name='password_reset_confirm'),
+    path('reset/done/', PasswordResetCompleteView.as_view(
+        template_name='user/authentication/password/password_reset/password_reset_complete.html'),
+         name='password_reset_complete'),
 
     path('song/upload/', views.upload_song, name='upload_song'),
     path('song/<int:song_id>/info/', views.song_info, name='song_info'),

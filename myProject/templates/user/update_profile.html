@@ -24,42 +24,42 @@
     </form>
   </div>
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
-      let becomeArtistCheckbox = document.getElementById('become_artist');
-      let artistNameField = document.getElementById('artist_name');
-      let artistNameLabel = document.querySelector("label[for='artist_name']");
-      let imageInput = document.getElementById('id_image_file');
-      let userImage = document.getElementById('userImage');
-
-      // Hide the artist name field and label initially if become_artist is not checked
-    if (!becomeArtistCheckbox.checked) {
-      artistNameField.style.display = 'none';
-      artistNameLabel.style.display = 'none';
-    }
-
-    // Add an event listener to the become_artist checkbox
-    becomeArtistCheckbox.addEventListener('change', function() {
-      if (becomeArtistCheckbox.checked) {
-        artistNameField.style.display = 'block';
-        artistNameLabel.style.display = 'block';
-      } else {
-        artistNameField.style.display = 'none';
-        artistNameLabel.style.display = 'none';
-      }
-    });
-
-    // Update the user image when a new file is selected
-    imageInput.addEventListener('change', function() {
-        if (imageInput.files && imageInput.files[0]) {
-            let reader = new FileReader();
-
-            reader.onload = function(e) {
-                userImage.src = e.target.result;
-            }
-
-            reader.readAsDataURL(imageInput.files[0]);
+      document.addEventListener('DOMContentLoaded', function() {
+          let becomeArtistCheckbox = document.getElementById('become_artist');
+          let artistNameField = document.getElementById('artist_name');
+          let artistNameLabel = document.querySelector("label[for='artist_name']");
+          let imageInput = document.getElementById('id_image_file');
+          let userImage = document.getElementById('userImage');
+    
+          // Hide the artist name field and label initially if become_artist is not checked
+        if (!becomeArtistCheckbox.checked) {
+          artistNameField.style.display = 'none';
+          artistNameLabel.style.display = 'none';
         }
-    });
-  });
-</script>
+    
+        // Add an event listener to the become_artist checkbox
+        becomeArtistCheckbox.addEventListener('change', function() {
+          if (becomeArtistCheckbox.checked) {
+            artistNameField.style.display = 'block';
+            artistNameLabel.style.display = 'block';
+          } else {
+            artistNameField.style.display = 'none';
+            artistNameLabel.style.display = 'none';
+          }
+        });
+    
+        // Update the user image when a new file is selected
+        imageInput.addEventListener('change', function() {
+            if (imageInput.files && imageInput.files[0]) {
+                let reader = new FileReader();
+    
+                reader.onload = function(e) {
+                    userImage.src = e.target.result;
+                }
+    
+                reader.readAsDataURL(imageInput.files[0]);
+            }
+        });
+      });
+    </script>
 {% endblock %}

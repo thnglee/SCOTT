@@ -1,10 +1,176 @@
 {% extends "templates/base.html" %}
 
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login-style.css' %}">
+    <style>
+        .error {
+            color: red;
+            font-weight: bold;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .column {
+            flex: 50%;
+            padding: 5px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: auto;
+        }
+        #imageContainer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+{% endblock %}
+
+{% block body_class %}
+    bg-black h-screen flex flex-col items-center justify-center
+{% endblock %}
+
 {% block content %}
-  <h2>Register</h2>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
-  </form>
+
+    <div>
+        <form method="post" class="bg-black" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-2 max-w-x w-full ">
+                <div class="row">
+                    <div class="column">
+                        <h1 class="text-2xl text-white font-bold mt-2 mr-2 mb-2"> Please fill in the form to register</h1>
+                        {% if form.username.errors %}
+                            <div class="error text-xs mb-1">{{ form.username.errors }}</div>
+                        {% endif %}
+                        <label>
+                            <input class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-6 w-full mb-4"
+                                   type="text" name="{{ form.username.name }}" placeholder="Username">
+                        </label>
+
+                        {% if form.email.errors %}
+                            <div class="error text-xs mb-1">{{ form.email.errors }}</div>
+                        {% endif %}
+                        <label>
+                            <input class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-6 w-full mb-16"
+                                   type="email" name="{{ form.email.name }}" placeholder="Email">
+                        </label>
+
+                        {% if form.password1.errors %}
+                            <div class="error text-xs mb-1">{{ form.password1.errors }}</div>
+                        {% endif %}
+                        <label>
+                            <input class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-6 w-full mb-4"
+                                   type="password" name="{{ form.password1.name }}" placeholder="Password">
+                        </label>
+
+                        {% if form.password2.errors %}
+                            <div class="error text-xs mb-1">{{ form.password2.errors }}</div>
+                        {% endif %}
+                        <label>
+                            <input class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-6 w-full mb-14"
+                                   type="password" name="{{ form.password2.name }}" placeholder="Confirm Password">
+                        </label>
+
+                        <button type="submit" class="gradient-button text-white font-bold py-2.5 px-6 rounded mb-4">
+                            Register
+                        </button>   
+
+                    </div>
+                    <div class="column" id="imageContainer">
+    
+                    </div>
+                    <div class="column">
+                        <p class="text-white text-xl mt-2 mb-2"> User Information</p>
+                        {% if form.first_name.errors %}
+                            <div class="error text-xs mb-1">{{ form.first_name.errors }}</div>
+                        {% endif %}
+                        <label>
+                            <input class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-6 w-full mb-4"
+                                   type="text" name="{{ form.first_name.name }}" placeholder="First Name">
+                        </label>
+                        
+                        {% if form.last_name.errors %}
+                            <div class="error text-xs mb-1">{{ form.last_name.errors }}</div>
+                        {% endif %}
+                        <label>
+                            <input class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-6 w-full mb-6"
+                                   type="text" name="{{ form.last_name.name }}" placeholder="Last Name">
+                        </label>
+                        <p class="text-white text-xl mt-2 mb-2"> Optional</p>
+                        {% if form.age.errors %}
+                            <div class="error text-xs mb-1">{{ form.age.errors }}</div>
+                        {% endif %}
+                        <label>
+                            <input class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-6 w-full mb-2"
+                                   type="number" name="{{ form.age.name }}" placeholder="Age">
+                        </label>
+
+                        {% if form.image.errors %}
+                            <div class="error text-xs mb-1">{{ form.image.errors }}</div>
+                        {% endif %}
+                        <p class="text-white text-x"> Image</p>
+                        <label>
+                            <input class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-6 w-full mb-2"
+                                   type="file" name="{{ form.image_file.name }}" placeholder="Image">
+                        </label>
+
+                        {% if form.sex.errors %}
+                            <div class="error text-xs mb-1">{{ form.sex.errors }}</div>
+                        {% endif %}
+                    
+                        <p class="text-white text-x"> Sex</p>
+                        <label>
+                            <select class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-6 w-full mb-4"
+                                    name="{{ form.sex.name }}">
+                                <option value="N">None</option>
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                            </select>
+                        </label>
+                    
+                    </div>
+                </div>
+                
+                <p class="text-center text-gray-400 text-xs mt-2">
+                    Already have an account?<a href="{% url 'login' %}" class="text-green-500"> Login</a>
+                </p>
+            </div>
+        </form>
+
+    </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let imageInput = document.querySelector('input[type="file"]');
+        let imageContainer = document.getElementById('imageContainer');
+
+        // Update the user image when a new file is selected
+        imageInput.addEventListener('change', function() {
+            if (imageInput.files && imageInput.files[0]) {
+                let reader = new FileReader();
+
+                reader.onload = function(e) {
+                    // Remove any existing images
+                    while (imageContainer.firstChild) {
+                        imageContainer.removeChild(imageContainer.firstChild);
+                    }
+
+                    let img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '330px';
+                    img.style.maxHeight = '330px';
+                    
+                    imageContainer.appendChild(img);
+                }
+
+                reader.readAsDataURL(imageInput.files[0]);
+            }
+        });
+    });
+</script>
 {% endblock %}

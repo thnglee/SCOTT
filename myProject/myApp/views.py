@@ -2,10 +2,12 @@ import os
 import re
 
 from django.conf import settings
+from django.contrib import auth
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, \
+    PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.core.files.storage import default_storage
 from django.db.models import Q
 from django.http import StreamingHttpResponse, Http404
@@ -20,17 +22,19 @@ from myApp.models import Song, UserProfile, Artist, Album, Playlist
 
 # Create your views here.
 class Login(LoginView):
-    template_name = 'user/authentication/login.html'
+    template_name = 'templates/user/authentication/login.html'
     next_page = 'home'
 
 
-class Logout(LogoutView):
-    next_page = 'home'
+@login_required(login_url='login')
+def logout(request):
+    auth.logout(request)
+    return redirect('login')
 
 
 class ChangePassword(PasswordChangeView):
     success_url = reverse_lazy('login')
-    template_name = 'user/authentication/change_password.html'
+    template_name = 'user/authentication/password/change_password.html'
 
     def form_valid(self, form):
         logout(self.request)
@@ -50,11 +54,9 @@ def register(request):
             if 'image_file' in request.FILES:
                 image = request.FILES['image_file']
                 new_image_name = form.cleaned_data['username'] + os.path.splitext(image.name)[1]
-                print(new_image_name)
                 default_storage.save('image/user/' + new_image_name, image)
             else:
                 new_image_name = 'default.png'
-                print(new_image_name)
 
             profile = UserProfile(user=user,
                                   image_uri=new_image_name,
@@ -171,21 +173,48 @@ def delete_user(request):
     return redirect('home')
 
 
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'user/authentication/password/password_reset/password_reset.html'
+    email_template_name = 'user/authentication/password/password_reset/password_reset_email.html'
+    subject_template_name = 'user/authentication/password/password_reset/password_reset_subject.txt'
+    success_url = '/password_reset/done/'
+
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'user/authentication/password/password_reset/password_reset_done.html'
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'user/authentication/password/password_reset/password_reset_confirm.html'
+    success_url = '/reset/done/'
+
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'user/authentication/password/password_reset/password_reset_complete.html'
+
+
 def home(request):
     songs = Song.objects.all()
+    songs1 = songs[:5]
+    songs2 = songs[5:10]
+    songs3 = songs[10:15]
     query = request.GET.get('q', '')
     songs_query = search_song(query) if query else Song.objects.none()
     if request.user.is_authenticated:
         user = request.user
         profile = UserProfile.objects.get(user=user)
         playlists = Playlist.objects.filter(user=profile)
-        artist = Artist.objects.filter(user=profile)
+        artists = Artist.objects.all()
+
         return render(request,
                       'home.html',
                       {'songs': songs,
+                       'songs1': songs1,
+                       'songs2': songs2,
+                       'songs3': songs3,
                        'user': user,
                        'profile': profile,
-                       'artist': artist,
+                       'artists': artists,
                        'songs_query': songs_query,
                        'playlists': playlists})
     else:

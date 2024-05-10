@@ -23,7 +23,7 @@ class CreateUserForm(UserCreationForm):
 class UpdateUserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', ]
+        fields = ['username', 'email', 'first_name', 'last_name' ]
 
 
 class UpdateUserProfileForm(forms.ModelForm):
@@ -33,6 +33,7 @@ class UpdateUserProfileForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(UpdateUserProfileForm, self).__init__(*args, **kwargs)
+        self.fields['age'].validators = [MinValueValidator(0), MaxValueValidator(150)]
         if hasattr(self.instance, 'artist'):
             self.fields['become_artist'].initial = True
             self.fields['artist_name'].initial = self.instance.artist.Artist_name

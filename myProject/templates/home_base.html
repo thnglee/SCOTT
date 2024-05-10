@@ -1,0 +1,132 @@
+{% extends 'templates/base.html' %}
+
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login-style.css' %}"/>
+    <style>
+        .error {
+            color: red;
+            font-weight: bold;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .danger-button {
+        background: #bd0e31;
+            color: #000000;
+        }
+        
+        .danger-button:hover {
+            background: #cd0d0d;
+        }
+        
+        .other-button {
+            background: #0b6aae;
+            color: #ffffff;
+        }
+        
+        .other-button:hover {
+            background: #074470;
+        }
+
+    </style>
+{% endblock %}
+
+{% block body_style %}
+    margin:0; padding:0; background:#121212; font-family:Arial, sans-serif; color:#fff;
+{% endblock %}
+
+{% block content %}
+    <div class="sidebar">
+        <div class="logo-container">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'image/SCOTT_logo.png' %}" alt="Logo"
+                     style="width: 100%; height: auto; padding: 10px; box-sizing: border-box; margin-left: -2px">
+            </a>
+        </div>
+
+        <!-- Welcome User -->
+        <div class="sidebar-section">
+
+            {% if current_user.is_authenticated %}
+                <div class="profile-image" style="display: flex; justify-content: center;">
+                    <img src="{{ MEDIA_URL }}{{ current_user.userprofile.get_image_uri }}"
+                         style="border-radius: 20px;"
+                         alt="User avatar"
+                         class="gradient-box">
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <b style="margin-top: 10px">Welcome, {{ current_user.username }}</b>
+                </div>
+            {% else %}
+                <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
+                <b>Welcome, Stranger</b>
+                <br>
+                <br>
+            {% endif %}
+
+            {% if current_user.is_authenticated %}
+                <a href="{% url 'user_profile' current_user.username %}" class="sidebar-link">
+                    <span class="sidebar-link-icon">👤</span>
+                    <b>Profile</b>
+                </a>
+                {% if current_user.userprofile.artist %}
+                    <a href="{% url 'artist_workspace' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon">🎵</span>
+                        <b>Workspace</b>
+                    </a>
+                {% endif %}
+                <a href="{% url 'logout' %}" class="sidebar-link">
+                    <span class="sidebar-link-icon">↪️</span>
+                    <b>Logout</b>
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="sidebar-link">
+                    <span class="sidebar-link-icon">🔑</span>
+                    <b>Login</b>
+                </a>
+            {% endif %}
+            
+        </div>
+
+        <!-- Top section of the sidebar -->
+        <div class="sidebar-section">
+            <a href="{% url 'home' %}" class="sidebar-link active">
+                <span class="sidebar-link-icon">🏠</span>
+                Home
+            </a>
+            <a href="{% url 'home' %}" class="sidebar-link">
+                <span class="sidebar-link-icon">🔍</span>
+                Search
+            </a>
+        </div>
+
+    </div>
+
+    <div style="margin-left:240px; padding:20px;">
+        <header class="header-container">
+            <form action="{% url 'home' %}" method="GET">
+                {% csrf_token %}
+                <div class="search-bar" style="width: 400px;">
+                    <input type="search" name="q" placeholder="What do you want to listen to?" aria-label="Search">
+                    <button type="submit" aria-label="Search">
+                        🔍
+                    </button>
+                </div>
+            </form>
+            {% block header %}
+            {% endblock %}
+        </header>
+
+
+        <main style="padding-top:20px;">
+            {% block main %}
+                
+            {% endblock %}
+        </main>
+
+    </div>
+{% endblock %}

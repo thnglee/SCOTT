@@ -4,34 +4,37 @@
 {% endblock %}
 
 {% block main %}
-     <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
-                <!-- User Profile -->
-                <div class="profile-card">
-                    <img src="{{ MEDIA_URL }}{{ profile.get_image_uri }}" alt="User Image" width="200px" height="200px" >
-                    <br>
-                    <p><strong>Username:</strong> {{ user.username }}</p>
-                    <p><strong>Email:</strong> {{ user.email }}</p>
-                    <p><strong>First Name:</strong> {{ user.first_name }}</p>
-                    <p><strong>Last Name:</strong> {{ user.last_name }}</p>
-                    <p><strong>Age:</strong> {{ profile.age }}</p>
-                    <p><strong>Sex:</strong> {{ profile.sex }}</p>
-                    
-                    {% if profile.artist %}
-                        <p><strong>Artist name:</strong> {{ profile.artist.Artist_name }}</p>
-                    {% endif %}
-                </div>
+    <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
+        
+        <div class="profile-card">
+            <img src="{{ MEDIA_URL }}{{ profile.get_image_uri }}" alt="User Image" width="200px" height="200px">
+            <br>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>First Name:</strong> {{ user.first_name }}</p>
+            <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+            <p><strong>Age:</strong> {{ profile.age }}</p>
+            <p><strong>Sex:</strong> {{ profile.sex }}</p>
 
-                {% if user == current_user %}
-                    <div class="row">
-                        <div class="col-md-6">
-                            <br>
-                            <form action="{% url 'update_profile' %}" method="get">
-                                <button type="submit" class="gradient-button font-bold py-1.5 px-6 rounded mb-4">Update Profile</button>
-                            </form>
-                            <br>
-                            <a href="{% url 'change_password' %}" class="other-button font-bold py-2.5 px-6 rounded mb-4">Change Password</a>
-                        </div>
-                    </div>
-                {% endif %}
-            </section>
+            {% if profile.artist %}
+                <p><strong>Artist name:</strong> {{ profile.artist.Artist_name }}</p>
+            {% endif %}
+        </div>
+
+        {% if user == current_user %}
+            <div class="row">
+                <div class="col-md-6">
+                    <br>
+                    <form action="{% url 'update_profile' %}" method="get">
+                        <button type="submit" class="gradient-button font-bold py-1.5 px-6 rounded mb-4">Update
+                            Profile
+                        </button>
+                    </form>
+                    <br>
+                    <a href="{% url 'change_password' %}" class="other-button font-bold py-2.5 px-6 rounded mb-4">Change
+                        Password</a>
+                </div>
+            </div>
+        {% endif %}
+    </section>
 {% endblock %}

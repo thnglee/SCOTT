@@ -113,7 +113,8 @@ def update_profile(request):
                         profile.artist.Artist_name = user_profile_form.cleaned_data.get('artist_name')
                 else:
                     if '' != user_profile_form.cleaned_data.get('artist_name'):
-                        Artist.objects.create(user=profile, Artist_name=user_profile_form.cleaned_data.get('artist_name'))
+                        Artist.objects.create(user=profile,
+                                              Artist_name=user_profile_form.cleaned_data.get('artist_name'))
                     else:
                         Artist.objects.create(user=profile, Artist_name=user_form.cleaned_data.get('username'))
                 profile.artist.save()
@@ -200,9 +201,9 @@ class CustomPasswordResetCompleteView(PasswordResetCompleteView):
 def home(request):
     songs = Song.objects.all()
     artists = Artist.objects.all()
-    songs1 = songs[:5]
-    songs2 = songs[5:10]
-    songs3 = songs[10:15]
+    songs1 = songs[:4]
+    songs2 = songs[4:8]
+    songs3 = songs[8:12]
     query = request.GET.get('q', '')
     songs_query = search_song(query) if query else Song.objects.none()
     context = {
@@ -380,18 +381,20 @@ def delete_song(request, song_id):
 
     if song.image_uri != 'default.png':
         default_storage.delete('image/song/' + song.image_uri)
-
     song.delete()
     return redirect('home')
 
 
-@login_required(login_url='/login/')
 def artist_profile(request, artist_name):
+    current_user = request.user
     artist = Artist.objects.get(Artist_name=artist_name)
+    profile = UserProfile.objects.get(user=artist.user.user)
     songs = Song.objects.filter(artists=artist)
     albums = Album.objects.filter(artist=artist)
 
-    return render(request, 'user/artist/profile.html', {'artist': artist, 'songs': songs, 'albums': albums})
+    return render(request, 'user/artist/profile.html',
+                  {'artist': artist, 'songs': songs, 'albums': albums, 'current_user': current_user,
+                   'profile': profile})
 
 
 @login_required(login_url='/login/')

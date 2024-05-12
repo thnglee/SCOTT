@@ -38,19 +38,19 @@
         {% endfor %}
     </div>
 
-    <div class="browse-all">
+    <div class="browse-all" style="margin-left: 10px">
         <!-- Category Card -->
         {% for song in songs2 %}
             <div class="category-card">
                 <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
                     <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
-                    <div class="category-title">{{ song.name }}</div>
                 </a>
+                <div class="category-title">{{ song.name }}</div>
             </div>
         {% endfor %}
     </div>
 
-    <div class="browse-all">
+    <div class="browse-all" style="margin-left: 10px">
         <!-- Category Card -->
         {% for song in songs3 %}
             <div class="category-card">

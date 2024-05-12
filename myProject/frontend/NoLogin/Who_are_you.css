@@ -1,0 +1,103 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .main-container {
+    background-color: #000000; 
+    background-size: cover;
+    background-position: right bottom;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+  }
+  
+  
+  .Who_are_you {
+    width: 344px;
+    height: 422px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+  
+
+
+  .white-text,
+  .green-text {
+    font-size: 48px;
+    font-family: Poppins;
+    font-weight: 700;
+    line-height: 48px;
+    word-wrap: break-word;
+  }
+  
+  .white-text {
+    color: white;
+  }
+  
+  .green-text {
+    color: #1ED760;
+  }
+  
+  .container {
+    width: 344px;
+    height: 422px;
+    padding-top: 47px;
+    padding-bottom: 32px;
+    padding-left: 32px;
+    padding-right: 32px;
+    background: white;
+    border-radius: 32px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    display: inline-flex;
+    margin-left: 2%;
+  }
+  
+  .image-container {
+    align-self: stretch;
+    flex: 1 1 0;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+  }
+  
+  .image-container img {
+    max-width: 100%; 
+    max-height: 100%; 
+    object-fit: cover; 
+  }
+  
+  .spacer {
+    align-self: stretch;
+    height: 32px;
+  }
+  
+  .label-container {
+    width: 212px;
+    height: 32px;
+    padding: 10px;
+    background: black;
+    border-radius: 24px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: inline-flex;
+  }
+  
+  .label {
+    color: white;
+    font-size: 16px;
+    font-family: Poppins;
+    font-weight: 700;
+    line-height: 20px;
+    word-wrap: break-word;
+  }
+  

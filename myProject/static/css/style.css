@@ -307,7 +307,7 @@ section {
 .sidebar-section {
     background: #181818;
     border-radius: 10px;
-    padding: 15px;
+    padding: 5px;
     margin-bottom: 9px;
     overflow: hidden;
 }
@@ -317,7 +317,6 @@ section {
     text-decoration: none;
     display: flex;
     align-items: center;
-    margin-bottom: 4px;
     transition: color 0.3s;
 }
 
@@ -361,7 +360,6 @@ section {
 }
 
 .category-card {
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -373,21 +371,23 @@ section {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     height: 300px;
     width: 250px;
+
 }
 
 .category-card img {
-    width: 100%;
+    width: 240px;
     height: auto;
-    margin-top: 12px;
-    margin-bottom: 10px;
+    margin-top: 8px;
+    margin-bottom: 8px;
     border-radius: 4px;
 }
 
 .category-title {
+    text-align: center;
     font-size: 14px;
     font-weight: bold;
-    margin-bottom: 12px;
-    word-wrap: break-word;
+    margin-bottom: 4px;
+    word-break: auto-phrase;
     overflow-wrap: break-word;
 }
 
@@ -548,4 +548,86 @@ section {
 
 .main {
     z-index: 1;
+}
+
+.list {
+    margin-left: 20px;
+    background: rgb(0,183,108);
+    background: linear-gradient(180deg, rgba(0,183,108,0.7) 0%, rgba(0,183,108,0.5) 18%, rgba(0,183,108,0.3) 34%, rgba(0,183,108,0.1) 59%, rgba(0,183,108,0) 100%);
+    border-radius: 8px;
+    width: 920px;
+}
+
+ul {
+    position: relative;
+    border-radius: 5px;
+    width: 100%;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+ul li {
+    display: flex;
+    border-radius: 5px;
+    padding: 10px 20px;
+    transition: .3s;
+}
+
+ul li:hover
+{
+    background: rgba(255,255,255,.2);
+}
+
+
+ul li span:nth-child(1)
+{
+    width: 30px;
+}
+
+ul li span:nth-child(2)
+{
+    width: 70px;
+}
+ul li span:nth-child(3)
+{
+    width: 720px;
+
+}
+ul li span:nth-child(4)
+{
+    text-align: right;
+}
+
+.artist-block {
+    margin-top: 5px;
+    background: rgb(182,129,136);
+    background: linear-gradient(90deg, rgba(182,129,136,0.7) 0%, rgba(182,129,136,0.5) 18%, rgba(182,129,136,0.3) 34%, rgba(182,129,136,0.1) 59%, rgba(182,129,136,0) 100%);
+    border-radius: 8px;
+    width: 920px;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.danger-button {
+    background: #bd0e31;
+    color: #000000;
+}
+
+.danger-button:hover {
+    background: #cd0d0d;
+}
+
+.other-button {
+    background: #0b6aae;
+    color: #ffffff;
+}
+
+.other-button:hover {
+    background: #074470;
 }

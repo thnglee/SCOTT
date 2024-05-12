@@ -1,35 +1,49 @@
-{% extends "templates/base.html" %}
+{% extends "templates/home_base.html" %}
 
-{% block content %}
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6">
-        <h2>{{ artist.Artist_name }}</h2>
-        <img src="{{ MEDIA_URL }}{{ artist.user.get_image_uri }}" alt="{{ artist.Artist_name }}" class="img-fluid">
-      </div>
-      <div class="col-md-6">
-        <h3>Songs</h3>
-        <ul class="list-group">
-          {% for song in artist.songs.all %}
-            <li class="list-group-item">
-              <a href="{% url 'song_info' song.id %}">{{ song.name }}</a>
-            </li>
-          {% empty %}
-            <li class="list-group-item">No songs available.</li>
-          {% endfor %}
-        </ul>
-
-        <h3>Albums</h3>
-        <ul class="list-group">
-          {% for album in artist.album_set.all %}
-            <li class="list-group-item">
-              <a href="{% url 'album_info' album.name %}">{{ album.name }}</a>
-            </li>
-          {% empty %}
-            <li class="list-group-item">No albums available.</li>
-          {% endfor %}
-        </ul>
-      </div>
+{% block header %}
+    <div class="search-title artist-block" style="display: flex; align-items: center; ">
+    <img src="{{ MEDIA_URL }}{{ profile.get_image_uri }}" alt="Artist Image"  class="artist-card " style="border-radius: 50%;width:150px; height: auto;padding: 5px; margin-left: 20px;">
+        <h1 class="text-6xl pb-5" style="margin-left: 20px;">
+            <strong>{{ artist.Artist_name }}</strong>
+        </h1>
+    
     </div>
-  </div>
+{% endblock %}
+    
+{% block main %}
+    <h2 class="text-2xl font-bold mb-4 pl-5">Song List</h2>
+    <section class="mt-0 py-0 overflow-x-visible whitespace-nowrap list">
+        <br>
+        <ul>
+            {% for song in artist.songs.all %}
+                <li class="flex items-center" >
+                    <span> <strong class="text-xl">{{ forloop.counter }}</strong> </span>
+                    <span>
+                        <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}" class="w-12 h-12" style="border-radius: 5px; color: White;">
+                    </span>
+                    <span> 
+                        <a href="{% url 'song_info' song.id %}" class="text-white-500 hover:underline">
+                           <strong> {{ song.name }} </strong>
+                        </a>    
+                    </span>
+                    <span class="text-gray-400"> {{ song.get_genre }} </span>
+                    
+                </li>
+            {% empty %}
+                <li><strong>No songs available.</strong></li>
+            {% endfor %}
+        </ul>
+    </section>
+    <section>
+        <h2 class="text-2xl font-bold mb-4">Album List</h2>
+        <ul class="list-none">
+            {% for album in artist.album_set.all %}
+                <li class="p-4 bg-gray-200 mb-4 rounded">
+                    {{ album.name }}
+                </li>
+            {% empty %}
+                <li>No albums available.</li>
+            {% endfor %}
+        </ul>
+    </section>
 {% endblock %}

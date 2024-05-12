@@ -1,31 +1,40 @@
-{% extends "templates/base.html" %}
+{% extends 'templates/home_base.html' %}
+{% block header %}
+    <div class="search-title">User Profile</div>
+{% endblock %}
 
-{% block content %}
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6 ">
+{% block main %}
+    <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
+        
+        <div class="profile-card">
+            <img src="{{ MEDIA_URL }}{{ profile.get_image_uri }}" alt="User Image" width="200px" height="200px">
+            <br>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>First Name:</strong> {{ user.first_name }}</p>
+            <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+            <p><strong>Age:</strong> {{ profile.age }}</p>
+            <p><strong>Sex:</strong> {{ profile.sex }}</p>
 
-        <h1>User Information</h1>
-        <img src="{{ MEDIA_URL }}{{ user_profile.get_image_uri }}" alt="User Image" >
-        <p><strong>Username:</strong> {{ user.username }}</p>
-        <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>First Name:</strong> {{ user.first_name }}</p>
-        <p><strong>Last Name:</strong> {{ user.last_name }}</p>
-        <p><strong>Age:</strong> {{ user_profile.age }}</p>
-        <p><strong>Sex:</strong> {{ user_profile.sex }}</p>
-        <p><strong>Artist name:</strong> {{ user_profile.artist.Artist_name }}</p>
-      </div>
-    </div>
-
-    {% if user == current_user %}
-      <div class="row">
-        <div class="col-md-6">
-          <form action="{% url 'update_profile' %}" method="get">
-            <button type="submit" class="btn btn-primary">Update Profile</button>
-          </form>
-          <a href="{% url 'change_password' %}" class="btn btn-secondary">Change Password</a>
+            {% if profile.artist %}
+                <p><strong>Artist name:</strong> {{ profile.artist.Artist_name }}</p>
+            {% endif %}
         </div>
-      </div>
-    {% endif %}
-  </div>
+
+        {% if user == current_user %}
+            <div class="row">
+                <div class="col-md-6">
+                    <br>
+                    <form action="{% url 'update_profile' %}" method="get">
+                        <button type="submit" class="gradient-button font-bold py-1.5 px-6 rounded mb-4">Update
+                            Profile
+                        </button>
+                    </form>
+                    <br>
+                    <a href="{% url 'change_password' %}" class="other-button font-bold py-2.5 px-6 rounded mb-4">Change
+                        Password</a>
+                </div>
+            </div>
+        {% endif %}
+    </section>
 {% endblock %}

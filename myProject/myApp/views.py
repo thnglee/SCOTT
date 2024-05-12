@@ -80,12 +80,13 @@ def user_profile(request, user_name):
     current_user = request.user
     return render(request,
                   'user/profile.html',
-                  {'user': user, 'user_profile': profile, 'current_user': current_user})
+                  {'user': user, 'profile': profile, 'current_user': current_user})
 
 
 @login_required(login_url='/login/')
 def update_profile(request):
     user = request.user
+    current_user = user
     profile = UserProfile.objects.get(user=user)
     if request.method == 'POST':
         user_form = UpdateUserForm(request.POST, instance=user)
@@ -108,11 +109,15 @@ def update_profile(request):
             # Artist
             if user_profile_form.cleaned_data.get('become_artist'):
                 if hasattr(profile, 'artist'):
-                    profile.artist.Artist_name = user_profile_form.cleaned_data.get('artist_name')
-                    profile.artist.save()
+                    if profile.artist.Artist_name != user_profile_form.cleaned_data.get('artist_name'):
+                        profile.artist.Artist_name = user_profile_form.cleaned_data.get('artist_name')
                 else:
-                    Artist.objects.create(user=profile,
-                                          Artist_name=user_profile_form.cleaned_data.get('artist_name'))
+                    if '' != user_profile_form.cleaned_data.get('artist_name'):
+                        Artist.objects.create(user=profile,
+                                              Artist_name=user_profile_form.cleaned_data.get('artist_name'))
+                    else:
+                        Artist.objects.create(user=profile, Artist_name=user_form.cleaned_data.get('username'))
+                profile.artist.save()
             else:
                 if hasattr(profile, 'artist'):
                     artist = profile.artist
@@ -141,7 +146,7 @@ def update_profile(request):
         user_profile_form = UpdateUserProfileForm(instance=profile)
 
     return render(request, 'user/update_profile.html',
-                  {'user_form': user_form, 'profile_form': user_profile_form})
+                  {'user_form': user_form, 'profile_form': user_profile_form, 'current_user': current_user})
 
 
 @login_required(login_url='/login/')
@@ -195,30 +200,29 @@ class CustomPasswordResetCompleteView(PasswordResetCompleteView):
 
 def home(request):
     songs = Song.objects.all()
-    songs1 = songs[:5]
-    songs2 = songs[5:10]
-    songs3 = songs[10:15]
+    artists = Artist.objects.all()
+    songs1 = songs[:4]
+    songs2 = songs[4:8]
+    songs3 = songs[8:12]
     query = request.GET.get('q', '')
     songs_query = search_song(query) if query else Song.objects.none()
+    context = {
+        'songs': songs,
+        'songs1': songs1,
+        'songs2': songs2,
+        'songs3': songs3,
+        'artists': artists,
+        'songs_query': songs_query,
+    }
     if request.user.is_authenticated:
         user = request.user
+        current_user = user
         profile = UserProfile.objects.get(user=user)
         playlists = Playlist.objects.filter(user=profile)
-        artists = Artist.objects.all()
-
-        return render(request,
-                      'home.html',
-                      {'songs': songs,
-                       'songs1': songs1,
-                       'songs2': songs2,
-                       'songs3': songs3,
-                       'user': user,
-                       'profile': profile,
-                       'artists': artists,
-                       'songs_query': songs_query,
-                       'playlists': playlists})
+        context.update({'user': user, 'profile': profile, 'playlists': playlists, 'current_user': current_user})
+        return render(request, 'home.html', context)
     else:
-        return render(request, 'home.html', {'songs': songs, 'songs_query': songs_query})
+        return render(request, 'home.html', context)
 
 
 @login_required(login_url='/login/')
@@ -377,18 +381,20 @@ def delete_song(request, song_id):
 
     if song.image_uri != 'default.png':
         default_storage.delete('image/song/' + song.image_uri)
-
     song.delete()
     return redirect('home')
 
 
-@login_required(login_url='/login/')
 def artist_profile(request, artist_name):
+    current_user = request.user
     artist = Artist.objects.get(Artist_name=artist_name)
+    profile = UserProfile.objects.get(user=artist.user.user)
     songs = Song.objects.filter(artists=artist)
     albums = Album.objects.filter(artist=artist)
 
-    return render(request, 'user/artist/profile.html', {'artist': artist, 'songs': songs, 'albums': albums})
+    return render(request, 'user/artist/profile.html',
+                  {'artist': artist, 'songs': songs, 'albums': albums, 'current_user': current_user,
+                   'profile': profile})
 
 
 @login_required(login_url='/login/')

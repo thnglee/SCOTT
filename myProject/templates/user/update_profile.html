@@ -1,65 +1,133 @@
-{% extends "templates/base.html" %}
+{% extends 'templates/home_base.html' %}
 
-{% block content %}
-   <div class="container">
-    <h2 class="my-3">Update User Information</h2>
-    <form method="post" enctype="multipart/form-data" class="mb-3">
-      {% csrf_token %}
-      {{ user_form.as_p }}
-      {{ profile_form.age.label_tag }} {{ profile_form.age }}<br><br>
-      {{ profile_form.sex.label_tag }} {{ profile_form.sex }}<br><br>
-      {{ profile_form.image_file.label_tag }} {{ profile_form.image_file }}<br><br>
-      <img id="userImage" src="{{ MEDIA_URL }}{{ profile_form.instance.get_image_uri }}" alt="User Image" height="120" width="120" >
-        <br><br>
-        {{ profile_form.become_artist.label_tag }} {{ profile_form.become_artist }}
-      <div class="d-flex align-items-center">
-        {{ profile_form.artist_name.label_tag }} {{ profile_form.artist_name }}
-      </div>
-      <br>
-      <button type="submit" class="btn btn-primary">Update</button>
-    </form>
-    <form method="post" action="{% url 'delete_user' %}" class="mb-3">
-       {% csrf_token %}
-       <button type="submit" class="btn btn-danger">Delete User</button>
-    </form>
-  </div>
-  <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          let becomeArtistCheckbox = document.getElementById('become_artist');
-          let artistNameField = document.getElementById('artist_name');
-          let artistNameLabel = document.querySelector("label[for='artist_name']");
-          let imageInput = document.getElementById('id_image_file');
-          let userImage = document.getElementById('userImage');
-    
-          // Hide the artist name field and label initially if become_artist is not checked
-        if (!becomeArtistCheckbox.checked) {
-          artistNameField.style.display = 'none';
-          artistNameLabel.style.display = 'none';
-        }
-    
-        // Add an event listener to the become_artist checkbox
-        becomeArtistCheckbox.addEventListener('change', function() {
-          if (becomeArtistCheckbox.checked) {
-            artistNameField.style.display = 'block';
-            artistNameLabel.style.display = 'block';
-          } else {
-            artistNameField.style.display = 'none';
-            artistNameLabel.style.display = 'none';
-          }
-        });
-    
-        // Update the user image when a new file is selected
-        imageInput.addEventListener('change', function() {
-            if (imageInput.files && imageInput.files[0]) {
-                let reader = new FileReader();
-    
-                reader.onload = function(e) {
-                    userImage.src = e.target.result;
-                }
-    
-                reader.readAsDataURL(imageInput.files[0]);
+
+{% block header %}
+    <div class="search-title">Update User Profile</div>
+{% endblock %}
+
+{% block main %}
+    <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
+        <!-- User Profile -->
+        <div class="profile-card">
+            <!-- Update profile form -->
+            <form method="post" enctype="multipart/form-data" class="mb-3">
+                {% csrf_token %}
+                {% for field in user_form %}
+                    <div>
+                        {% if field.errors %}
+                            <div class="error text-xs mb-1">{{ field.errors }}</div>
+                        {% endif %}
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}:
+                            <input class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
+                                   type="{{ field.field.widget.input_type }}" name="{{ field.name }}"
+                                   value="{{ field.value }}">
+                        </label>
+                        
+                    </div>
+                {% endfor %}
+
+                <div class="input-box">
+                    {% if profile_form.age.errors %}
+                        <div class="error text-xs mb-1">{{ profile_form.age.errors }}</div>
+                    {% endif %}
+                    <label for="{{ profile_form.age.id_for_label }}">{{ profile_form.age.label }}:
+                        <input type="text" name="{{ profile_form.age.name }}"
+                               class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
+                               style="width: 40px;"
+                               value="{{ profile_form.age.value }}">
+                    </label>
+
+                </div>
+                <div class="input-box">
+                    {% if profile_form.sex.errors %}
+                        <div class="error text-xs mb-1">{{ profile_form.sex.errors }}</div>
+                    {% endif %}
+                    <label for="{{ profile_form.sex.id_for_label }}">{{ profile_form.sex.label }}:
+                        <select class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
+                                name="{{ profile_form.sex.name }}">
+                            {% for value, name in profile_form.sex.field.choices %}
+                                <option value="{{ value }}" {% if profile_form.sex.value == value %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </div>
+                
+                <div class="input-box">
+                    {% if profile_form.image_file.errors %}
+                        <div class="error text-xs mb-1">{{ profile_form.image_file.errors }}</div>
+                    {% endif %}
+                    <label for="{{ profile_form.image_file.id_for_label }}">{{ profile_form.image_file.label }}:
+                        <input type="file" id="id_image_file" name="{{ profile_form.image_file.name }}"
+                               class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1">
+                    </label>
+                </div>
+                <img id="userImage" src="{{ MEDIA_URL }}{{ profile_form.instance.get_image_uri }}" alt="User Image"
+                     height="120" width="120">
+                <br>
+
+                <div class="input-box">
+                    <label for="{{ profile_form.become_artist.id_for_label }}">{{ profile_form.become_artist.label }}? </label>
+                    {{ profile_form.become_artist }}
+                </div>
+
+                <div class="input-box">
+                    {% if profile_form.artist_name.errors %}
+                        <div class="error text-xs mb-1">{{ profile_form.artist_name.errors }}</div>
+                    {% endif %}
+                    <label for="artist_name">{{ profile_form.artist_name.label }}: <br>
+                        <input type="text" id="artist_name" name="artist_name"
+                               class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
+                               value="{{ profile_form.artist_name.value }}">
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="gradient-button font-bold py-2.5 px-6 rounded mb-4">Update</button>
+            </form>
+            <form method="post" action="{% url 'delete_user' %}" class="mb-3">
+                {% csrf_token %}
+                <button type="submit" class="danger-button font-bold py-2.5 px-6 rounded mb-4">Delete User</button>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let becomeArtistCheckbox = document.getElementById('become_artist');
+            let artistNameField = document.getElementById('artist_name');
+            let artistNameLabel = document.querySelector("label[for='artist_name']");
+            let imageInput = document.getElementById('id_image_file');
+            let userImage = document.getElementById('userImage');
+
+            // Hide the artist name field and label initially if become_artist is not checked
+            if (!becomeArtistCheckbox.checked) {
+                artistNameLabel.style.display = 'none';
+                artistNameField.style.display = 'none';
             }
+
+            // Add an event listener to the become_artist checkbox
+            becomeArtistCheckbox.addEventListener('change', function () {
+                if (becomeArtistCheckbox.checked) {
+                    artistNameLabel.style.display = 'block';
+                    artistNameField.style.display = 'block';
+                } else {
+                    artistNameLabel.style.display = 'none';
+                    artistNameField.style.display = 'none';
+                }
+            });
+
+            // Update the user image when a new file is selected
+            imageInput.addEventListener('change', function () {
+                if (imageInput.files && imageInput.files[0]) {
+                    let reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        userImage.src = e.target.result;
+                    }
+
+                    reader.readAsDataURL(imageInput.files[0]);
+                }
+            });
         });
-      });
     </script>
 {% endblock %}

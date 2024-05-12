@@ -1,154 +1,64 @@
-{% extends 'templates/base.html' %}
+{% extends 'templates/home_base.html' %}
 
-{% load static %}
-
-{% block styles %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+{% block header %}
+	<div class="search-title">Top Artists</div>
 {% endblock %}
 
-{% block body_style %}
-    margin:0; padding:0; background:#121212; font-family:Arial, sans-serif; color:#fff;
-{% endblock %}
-
-{% block content %}
-    <div class="sidebar">
-        <div class="logo-container">
-            <img src="{% static 'image/SCOTT_logo.png' %}" alt="Logo"
-                 style="width: 100%; height: auto; padding: 10px; box-sizing: border-box; margin-left: -2px">
-        </div>
-
-        <!-- Welcome User -->
-        <div class="sidebar-section">
-
-            {% if user.is_authenticated %}
-                <div class="profile-image" style="display: flex; justify-content: center;">
-                    <img src="{{ MEDIA_URL }}{{ profile.get_image_uri }}"
-                         style="border-radius: 20px;"
-                         alt="User avatar"
-                         class="gradient-box">
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <b style="margin-top: 10px">Welcome, {{ user.username }}</b>
-                </div>
-            {% else %}
-                <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
-                <b>Welcome, Stranger</b>
-                <br>
-                <br>
-            {% endif %}
-
-            {% if user.is_authenticated %}
-                <a href="{% url 'user_profile' user.username %}" class="sidebar-link">
-                    <span class="sidebar-link-icon">👤</span>
-                    <b>Profile</b>
+{% block main %}
+    <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
+        <!-- Artist Card -->
+        {% for artist in artists %}
+            <div class="artist-card">
+                <a href="{% url 'artist_profile' artist.Artist_name %}" style="text-decoration: none;">
+                    <img src="{{ MEDIA_URL }}{{ artist.user.get_image_uri }}" alt="{{ artist.name }}">
+                        <div class="artist-name">
+                             {{ artist.Artist_name }}
+                        </div>
+                    <div class="artist-title">Artist</div>
                 </a>
-                {% if user.userprofile.artist %}
-                    <a href="{% url 'artist_workspace' %}" class="sidebar-link">
-                        <span class="sidebar-link-icon">🎵</span>
-                        <b>Workspace</b>
-                    </a>
-                {% endif %}
-                <a href="{% url 'logout' %}" class="sidebar-link">
-                    <span class="sidebar-link-icon">↪️</span>
-                    <b>Logout</b>
-                </a>
-            {% else %}
-                <a href="{% url 'login' %}" class="sidebar-link">
-                    <span class="sidebar-link-icon">🔑</span>
-                    <b>Login</b>
-                </a>
-            {% endif %}
-            
-        </div>
+            </div>
+        {% endfor %}
+    </section>
+    <!-- Repeat sections for other categories with more content cards -->
 
-        <!-- Top section of the sidebar -->
-        <div class="sidebar-section">
-            <a href="{% url 'home' %}" class="sidebar-link active">
-                <span class="sidebar-link-icon">🏠</span>
-                Home
-            </a>
-            <a href="{% url 'home' %}" class="sidebar-link">
-                <span class="sidebar-link-icon">🔍</span>
-                Search
-            </a>
-        </div>
+    <!-- "Browse All" Section Title -->
+    <div class="browse-all-title">Top Songs</div>
 
+    <!-- "Browse All" Section Content -->
+
+    <div class="browse-all" style="margin-left: 10px">
+        <!-- Category Card -->
+        {% for song in songs1 %}
+            <div class="category-card">
+                <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
+                    <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
+                    <div class="category-title">{{ song.name }}</div>
+                </a>
+            </div>
+        {% endfor %}
     </div>
 
-    <div style="margin-left:240px; padding:20px;">
-        <header class="header-container">
-            <form action="{% url 'home' %}" method="GET">
-                {% csrf_token %}
-                <div class="search-bar" style="width: 400px;">
-                    <input type="search" name="q" placeholder="What do you want to listen to?" aria-label="Search">
-                    <button type="submit" aria-label="Search">
-                        🔍
-                    </button>
-                </div>
-            </form>
-            <div class="search-title">Top Artists</div>
-        </header>
-
-
-        <main style="padding-top:20px;">
-            <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
-                <!-- Artist Card -->
-                {% for artist in artists %}
-                    <div class="artist-card">
-                        <a href="{% url 'artist_profile' artist.Artist_name %}" style="text-decoration: none;">
-                            <img src="{{ MEDIA_URL }}{{ artist.user.get_image_uri }}" alt="{{ artist.name }}">
-                                <div class="artist-name">
-                                     {{ artist.Artist_name }}
-                                </div>
-                            <div class="artist-title">Artist</div>
-                        </a>
-                    </div>
-                {% endfor %}
-            </section>
-            <!-- Repeat sections for other categories with more content cards -->
-
-            <!-- "Browse All" Section Title -->
-            <div class="browse-all-title">Top Songs</div>
-
-            <!-- "Browse All" Section Content -->
-        
-            <div class="browse-all" style="margin-left: 10px">
-                <!-- Category Card -->
-                {% for song in songs1 %}
-                    <div class="category-card">
-                        <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
-                            <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
-                            <div class="category-title">{{ song.name }}</div>
-                        </a>
-                    </div>
-                {% endfor %}
+    <div class="browse-all" style="margin-left: 10px">
+        <!-- Category Card -->
+        {% for song in songs2 %}
+            <div class="category-card">
+                <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
+                    <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
+                </a>
+                <div class="category-title">{{ song.name }}</div>
             </div>
+        {% endfor %}
+    </div>
 
-            <div class="browse-all">
-                <!-- Category Card -->
-                {% for song in songs2 %}
-                    <div class="category-card">
-                        <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
-                            <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
-                            <div class="category-title">{{ song.name }}</div>
-                        </a>
-                    </div>
-                {% endfor %}
+    <div class="browse-all" style="margin-left: 10px">
+        <!-- Category Card -->
+        {% for song in songs3 %}
+            <div class="category-card">
+                <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
+                    <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
+                    <div class="category-title">{{ song.name }}</div>
+                </a>
             </div>
-
-            <div class="browse-all">
-                <!-- Category Card -->
-                {% for song in songs3 %}
-                    <div class="category-card">
-                        <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
-                            <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
-                            <div class="category-title">{{ song.name }}</div>
-                        </a>
-                    </div>
-                {% endfor %}
-            </div>
-
-        </main>
-
+        {% endfor %}
     </div>
 {% endblock %}

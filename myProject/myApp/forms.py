@@ -95,10 +95,27 @@ class CreateAlbumForm(forms.ModelForm):
         fields = ['album_name', 'image_file', 'songs']
 
 
+class UpdateAlbumForm(forms.ModelForm):
+    songs = forms.ModelMultipleChoiceField(queryset=Song.objects.all(), required=False)
+    image_file = forms.ImageField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        profile = kwargs.pop('profile')
+        super(UpdateAlbumForm, self).__init__(*args, **kwargs)
+        if profile and hasattr(profile, 'artist'):
+            self.fields['songs'].queryset = Song.objects.filter(artists=profile.artist)
+        if self.instance:
+            self.fields['songs'].initial = self.instance.songs.all()
+
+    class Meta:
+        model = Album
+        fields = ['name', 'image_file', 'songs']
+
+
 class CreatePlaylistForm(forms.ModelForm):
     search_query = forms.CharField(max_length=255, required=False)
     songs = forms.ModelMultipleChoiceField(
-        queryset=Song.objects.none(),  # Empty initial queryset
+        queryset=Song.objects.none(),
         widget=forms.CheckboxSelectMultiple,
         required=False
     )

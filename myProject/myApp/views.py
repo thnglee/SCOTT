@@ -10,13 +10,13 @@ from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordRes
     PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.core.files.storage import default_storage
 from django.db.models import Q
-from django.http import StreamingHttpResponse, Http404
+from django.http import Http404, FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 
 from myApp.forms import (CreateUserForm, UploadSongForm, UpdateSongForm, UpdateUserForm,
-                         UpdateUserProfileForm, CreateAlbumForm, CreatePlaylistForm)
+                         UpdateUserProfileForm, CreateAlbumForm, CreatePlaylistForm, UpdateAlbumForm)
 from myApp.models import Song, UserProfile, Artist, Album, Playlist
 
 
@@ -110,6 +110,12 @@ def update_profile(request):
             if user_profile_form.cleaned_data.get('become_artist'):
                 if hasattr(profile, 'artist'):
                     if profile.artist.Artist_name != user_profile_form.cleaned_data.get('artist_name'):
+                        for song in Song.objects.filter(artists=profile.artist):
+                            new_name = user_profile_form.cleaned_data.get('artist_name') + "_" + song.name
+                            rename_file(song, new_name)
+                        for album in Album.objects.filter(artist=profile.artist):
+                            new_name = user_profile_form.cleaned_data.get('artist_name') + "_" + album.name
+                            rename_file_album(album, new_name)
                         profile.artist.Artist_name = user_profile_form.cleaned_data.get('artist_name')
                 else:
                     if '' != user_profile_form.cleaned_data.get('artist_name'):
@@ -140,7 +146,9 @@ def update_profile(request):
 
             profile.save()
 
-            return redirect('user_profile', user_name=user.username)
+            return render(request,
+                          'user/profile.html',
+                          {'user': user, 'profile': profile, 'current_user': current_user})
     else:
         user_form = UpdateUserForm(instance=request.user)
         user_profile_form = UpdateUserProfileForm(instance=profile)
@@ -297,16 +305,9 @@ def stream_song(request, song_id):
     else:
         content_type = 'application/octet-stream'  # Default content type
 
-    # Read the entire file into memory
-    with open(song_path, 'rb') as song_file:
-        song_data = song_file.read()
-
-    def song_generator():
-        yield song_data
-
-    response = StreamingHttpResponse(song_generator(), content_type=content_type)
+    response = FileResponse(open(song_path, 'rb'), content_type=content_type)
     response['Content-Disposition'] = 'attachment; filename="{}"'.format(os.path.basename(song_path))
-
+    response["Accept-Ranges"] = "bytes"
     return response
 
 
@@ -330,10 +331,10 @@ def update_song(request, song_id):
             # Name
             if 'name' in form.changed_data:
                 song.name = form.cleaned_data['name']
+                rename_file(song, new_name)
 
             # Audio
             if 'song_file' in request.FILES:
-                # Delete the old song file
                 if song.uri:
                     default_storage.delete('audio/' + song.uri)
 
@@ -402,8 +403,10 @@ def artist_workspace(request):
     artist = Artist.objects.get(Artist_name=request.user.userprofile.artist.Artist_name)
     songs = Song.objects.filter(artists=artist)
     albums = Album.objects.filter(artist=artist)
+    current_user = request.user
 
-    return render(request, 'user/artist/workspace.html', {'artist': artist, 'songs': songs, 'albums': albums})
+    return render(request, 'user/artist/workspace.html',
+                  {'artist': artist, 'songs': songs, 'albums': albums, 'current_user': current_user})
 
 
 @login_required(login_url='/login/')
@@ -444,6 +447,39 @@ def create_album(request):
 def album_info(request, album_name):
     album = get_object_or_404(Album, name=album_name)
     return render(request, 'album/info.html', {'album': album})
+
+
+@login_required(login_url='/login/')
+def update_album(request, album_id):
+    album = get_object_or_404(Album, id=album_id)
+    if request.method == 'POST':
+        form = UpdateAlbumForm(request.POST, request.FILES, instance=album, profile=request.user.userprofile)
+        if form.is_valid():
+            album = form.save(commit=False)
+            if 'name' in form.changed_data:
+                album.name = form.cleaned_data['name']
+                new_name = album.artist.Artist_name + "_" + form.cleaned_data['name']
+                rename_file_album(album, new_name)
+
+            if 'image_file' in request.FILES:
+                if album.image_uri != 'default.png':
+                    default_storage.delete('image/album/' + album.image_uri)
+                image = request.FILES['image_file']
+                new_image_name = form.cleaned_data['name'] + "_" + os.path.splitext(image.name)[1]
+                default_storage.save('image/album/' + new_image_name, image)
+                album.image_uri = new_image_name
+
+            album.save()
+
+            if 'songs' in form.changed_data:
+                album.songs.set(form.cleaned_data['songs'])
+            form.save_m2m()
+
+            return redirect('artist_workspace')
+
+    else:
+        form = UpdateAlbumForm(instance=album, profile=request.user.userprofile)
+    return render(request, 'album/update.html', {'form': form})
 
 
 @login_required(login_url='/login/')
@@ -499,3 +535,33 @@ def clean_filename(filename):
 
 def search_song(query):
     return Song.objects.filter(Q(name__icontains=query))
+
+
+def rename_file(song, new_name):
+    if song.uri:
+        with default_storage.open('audio/' + song.uri, 'rb') as song_file:
+            new_song_filename = new_name + os.path.splitext(song_file.name)[1]
+            save = default_storage.save('audio/' + new_song_filename, song_file)
+        if save:
+            default_storage.delete('audio/' + song.uri)
+        song.uri = new_song_filename
+
+    if song.image_uri != 'default.png':
+        with default_storage.open('image/song/' + song.image_uri, 'rb') as image:
+            new_image_name = new_name + os.path.splitext(image.name)[1]
+            save = default_storage.save('image/song/' + new_image_name, image)
+        if save:
+            default_storage.delete('image/song/' + song.image_uri)
+        song.image_uri = new_image_name
+    song.save()
+
+
+def rename_file_album(album, new_name):
+    if album.image_uri != 'default.png':
+        with default_storage.open('image/album/' + album.image_uri, 'rb') as image:
+            new_image_name = new_name + os.path.splitext(image.name)[1]
+            save = default_storage.save('image/album/' + new_image_name, image)
+        if save:
+            default_storage.delete('image/album/' + album.image_uri)
+        album.image_uri = new_image_name
+    album.save()

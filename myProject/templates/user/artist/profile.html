@@ -36,14 +36,18 @@
     </section>
     <section>
         <h2 class="text-2xl font-bold mb-4">Album List</h2>
-        <ul class="list-none">
+        <div class="browse-all" style="margin-left: 10px">
+            <!-- Category Card -->
             {% for album in artist.album_set.all %}
-                <li class="p-4 bg-gray-200 mb-4 rounded">
-                    {{ album.name }}
-                </li>
+                <div class="category-card">
+                    <a style="text-decoration: none; color: white;" href="{% url 'album_info' album.name %}">
+                        <img src="{{ MEDIA_URL }}{{ album.get_image_uri }}" alt="{{ album.name }}">
+                        <div class="category-title">{{ album.name }}</div>
+                    </a>
+                </div>
             {% empty %}
-                <li>No albums available.</li>
+                No albums available.
             {% endfor %}
-        </ul>
+        </div>
     </section>
 {% endblock %}

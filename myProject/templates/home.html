@@ -1,11 +1,11 @@
 {% extends 'templates/home_base.html' %}
 
 {% block header %}
-	<div class="search-title">Top Artists</div>
+	<div id="header" class="search-title">Top Artists</div>
 {% endblock %}
 
 {% block main %}
-    <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
+    <section id="main" style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
         <!-- Artist Card -->
         {% for artist in artists %}
             <div class="artist-card">

@@ -558,6 +558,14 @@ section {
     width: 920px;
 }
 
+.list2 {
+    margin-left: 20px;
+    background: rgb(221,93,128);
+    background: linear-gradient(180deg, rgba(221,93,128,0.7) 0%, rgba(221,93,128,0.5) 18%, rgba(221,93,128,0.3) 34%, rgba(221,93,128,0.1) 59%, rgba(221,93,128,0) 100%);
+    border-radius: 8px;
+    width: 920px;
+}
+
 ul {
     position: relative;
     border-radius: 5px;
@@ -590,10 +598,14 @@ ul li span:nth-child(2)
 }
 ul li span:nth-child(3)
 {
-    width: 720px;
+    width: 600px;
 
 }
 ul li span:nth-child(4)
+{
+    width: 100px;
+}
+ul li span:nth-child(5)
 {
     text-align: right;
 }

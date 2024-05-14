@@ -1,0 +1,392 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+  body {
+    margin: 0px;
+    padding: 0px;
+    background-color: black;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .container {
+    height: 98dvh;
+    width: 98dvw;
+    gap: 8px;
+    margin: 8px;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    grid-template-areas: 
+    "nav main main main main main main main"
+    "lib main main main main main main main"
+    "lib main main main main main main main"
+    "lib main main main main main main main"
+    "lib main main main main main main main"
+    "lib main main main main main main main";
+  }
+  
+  .item {
+    background-color: #1D1D1F;
+    border-radius: 12px;
+  }
+  
+  .navigation-list {
+    grid-area: nav;
+    
+    
+  }
+  
+  .library-list {
+    grid-area: lib;
+  
+    padding: 8px 0px 8px 0px;
+  }
+  
+  .main-content {
+    grid-area: main;
+  }
+  
+  /* Navigation list */
+  .navigation-list .layout {
+    padding: 8px 0px 8px 0px;
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+  }
+  .navigation-list .logo img {
+    width: 8em;
+    align-self: flex-start;
+  }
+  .navigation-list .navigation-bar{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .navigation-list .navigation-bar ul {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+  }
+  .navigation-list .navigation-bar ul li {
+    padding: 8px 0px;
+  }
+  .navigation-list .navigation-bar ul li a {
+    color: #b3b3b3;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    word-spacing: 8px;
+  }
+  .navigation-list .navigation-bar .fa {
+    color: #b3b3b3;
+    font-size: 24px;
+  }
+  .navigation-list .navigation-bar .button:hover span{
+    color: #ffffff;
+  }
+  .navigation-list .navigation-bar .active {
+    border-right: solid #1ED760 4px;
+  }
+  .navigation-list .navigation-bar .button {
+    padding-left: 8px;
+  }
+  
+  .navigation-list .policies ul {
+    list-style: none;
+  }
+  .navigation-list .policies ul li {
+    padding-bottom: 4px;
+  }
+  .navigation-list .policies ul li a {
+    color: #b3b3b3;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  
+   /* 
+  Library-bar
+*/
+.library-list .layout {
+  padding: 8px 0px 8px 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.library-list .layout p {
+  margin: 0px;
+  color: #b3b3b3;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  align-self: center;
+}
+
+.library-list a {
+  text-decoration: none;
+  padding: 8px 0px;
+  
+}
+
+.library-list .fa{
+  color: #b3b3b3;
+  font-size: 24px;
+}
+
+.library-list .fa.fa-book {
+  font-size: 24px;
+  margin-right: 8px;
+  margin-left: 8px;
+}
+
+.library-list a span {
+  font-size: 16px;
+}
+
+.library-list.item a:hover > span {
+  color: #ffffff;
+}
+
+.library-list {
+    grid-area: lib;
+
+    padding: 8px 0px 8px 0px;
+}
+
+/* 
+  Library-bar
+*/
+.library-list .layout {
+padding: 8px 0px 8px 0px;
+display: flex;
+flex-direction: column;
+justify-content: flex-start;
+}
+.library-list .layout span {
+margin: 0px;
+color: #b3b3b3;
+text-decoration: none;
+font-weight: bold;
+font-size: 16px;
+align-self: center;
+}
+  
+  /*
+    Main content;
+  */
+  .main-content {
+    padding-bottom: 16px;;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .topbar {
+    min-height: 32px;
+    padding: 8px 0px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+  }
+  .topbar .account-state {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-top-left-radius: 32px;
+    border-bottom-left-radius: 32px;
+  }
+  .topbar .account-state .signup {
+    padding: 8px 16px;
+  }
+  .topbar .account-state .signup:hover a {
+    color: #ffffff;
+  }
+  .topbar .account-state .login {
+    background-color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 32px;
+  }
+  .topbar .account-state .login a {
+    color: black;
+  }
+  .topbar .account-state .login:hover {
+    background-color: #1ED760;
+  }
+  .topbar .account-state a {
+    color: #b3b3b3;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+  
+  .content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  
+  .content .search-section {
+    background-color: red;
+    width: 100%;
+    height: 24%;
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    padding-bottom: 16px;
+  }
+  
+  .content .search-navigation {
+    padding-left: 16px;
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .content .search-content{
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+  .content .search-content::-webkit-scrollbar {
+    margin-top: 4px;
+    width: 8px;
+  }
+  .content .search-content::-webkit-scrollbar-thumb {
+    background: #b3b3b3;
+    border-radius: 4px;;
+  }
+  .content .search-content::-webkit-scrollbar-thumb:hover {
+    background: #3d3d3d;
+  }
+  
+  .search-section .search-bar {
+    max-width: 512px;
+    width: 50%;
+    height: 2%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 16px;
+    border-radius: 32px;
+    background: #1D1D1F;
+  }
+  
+  .search-section .search-bar:focus{
+    border: solid #ffffff 1px;
+  }
+  
+  .search-section .search-bar .search-icon {
+    color: #ffffff;
+  }
+  
+  .search-section .search-bar .search-input {
+    appearance: none;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    color: #f6f6f6;
+    margin-left: 16px;
+    outline: none;
+    border: none;
+    background: transparent;
+    flex: 1;
+  }
+  
+  .search-section .search-bar .search-input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    background-image: url("resource/image/close_24dp_FILL0_wght400_GRAD0_opsz24.png");
+    background-size: 24px 24px;
+    cursor: pointer;
+  }
+  .search-navigation a {
+    text-decoration: none;
+  }
+  .search-navigation .nav {
+    width: max-content;
+    height: 32px;
+    min-height: 32px;
+    background-color: #3d3d3d;
+    border-radius: 48px;
+    align-content: center;
+  }
+  .search-navigation .active {
+    background-color: #ffffff;
+  }
+  .search-navigation .inactive p {
+    padding: 8px 12px;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    color: #f6f6f6;
+  }
+  .search-navigation .inactive:hover {
+    background-color: #636363;
+  }
+  .search-navigation .active p {
+    padding: 8px 12px;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    color: #1D1D1F;
+  }
+.search-content {
+    flex: 1;
+    justify-items: center;
+    align-items: center;
+    display: grid;
+    grid-gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+.search-content .item {
+    width: 160px;
+    height: 180px;
+    padding: 8px;
+    transition: all ease 0.4s;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin: 8px;
+  }
+  
+.search-content .item .item-image {
+    height: 160px; 
+    width: 150px;
+    min-width: 150px;
+    background-color: #1D1D1F;
+    border-radius: 50%; 
+    transition: all ease 0.4s;
+    overflow: hidden; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+  }
+  
+.search-content .item .item-image img {
+      width: 100%; 
+      height: auto; 
+}
+.search-content .item .artist-name h4{
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-top: 8px;
+    text-align: center;
+  }
+.search-content .item:hover {
+      transform: scale(1.08); /* Phóng to lên 1.2 lần khi hover */
+    }
+.search-content .item img {
+  
+      border-radius: 50px;
+    }
+.search-content .item .play {
+      position: relative;
+}
+
+

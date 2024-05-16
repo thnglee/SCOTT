@@ -5,7 +5,13 @@
     font-family: "circular std book", sans-serif;
 }
 
-
+.box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #121212;
+}
 .music-player {
     --primary-color: #ddd;
     --secondary-color: #999;
@@ -23,7 +29,7 @@
     z-index: 9999;
 
 
-    height: 6rem;
+    height: 80px;
     padding: var(--padding);
     color: var(--primary-color);
 }
@@ -51,7 +57,7 @@ i:hover{
     gap: 1em;
 }
 .image-container {
-    --size: 4.5em;
+    --size: 4em;
     flex-shrink: 0;
     width: var(--size);
     height: var(--size);
@@ -83,12 +89,12 @@ i:hover{
     gap: 1em;
 }
 .progress-controller{
+    z-index: 2;
     width: 100%;
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    gap: 0.5em;
     color: var(--secondary-color);
 }
 .control-buttons{
@@ -114,8 +120,7 @@ i:hover{
     gap: 1em;
 }
 .progress-bar{
-    height: 8px;
-    margin-top: 8px;
+    height: 6px;
     border-radius: 10px;
     width: 30%;
     background-color: #ccc4;
@@ -150,6 +155,7 @@ i:hover{
     gap: 1em;
 }
 .volume-bar{
+    z-index: 3;
     display: flex;
     align-items: center;
     gap: .7em;

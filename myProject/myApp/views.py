@@ -29,7 +29,7 @@ class Login(LoginView):
 @login_required(login_url='login')
 def logout(request):
     auth.logout(request)
-    return redirect('login')
+    return redirect('home')
 
 
 class ChangePassword(PasswordChangeView):
@@ -209,16 +209,10 @@ class CustomPasswordResetCompleteView(PasswordResetCompleteView):
 def home(request):
     songs = Song.objects.all()
     artists = Artist.objects.all()
-    songs1 = songs[:4]
-    songs2 = songs[4:8]
-    songs3 = songs[8:12]
     query = request.GET.get('q', '')
     songs_query = search_song(query) if query else Song.objects.none()
     context = {
         'songs': songs,
-        'songs1': songs1,
-        'songs2': songs2,
-        'songs3': songs3,
         'artists': artists,
         'songs_query': songs_query,
     }

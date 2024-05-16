@@ -1,15 +1,19 @@
 {% extends 'templates/home_base.html' %}
-
+{% load static %}
 {% block header %}
-	<div id="header" class="search-title">Top Artists</div>
+	<div class="search-title">Top Artists</div>
 {% endblock %}
 
 {% block main %}
-    <section id="main" style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
+    <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
         <!-- Artist Card -->
         {% for artist in artists %}
             <div class="artist-card">
-                <a href="{% url 'artist_profile' artist.Artist_name %}" style="text-decoration: none;">
+                <a href="{% url 'artist_profile' artist.Artist_name %}" style="text-decoration: none;"
+                    hx-get="{% url 'artist_profile' artist.Artist_name %}"
+                    hx-target="#swap"
+                    hx-swap="outerHTML"
+                >
                     <img src="{{ MEDIA_URL }}{{ artist.user.get_image_uri }}" alt="{{ artist.name }}">
                         <div class="artist-name">
                              {{ artist.Artist_name }}
@@ -19,46 +23,38 @@
             </div>
         {% endfor %}
     </section>
-    <!-- Repeat sections for other categories with more content cards -->
-
-    <!-- "Browse All" Section Title -->
+  
     <div class="browse-all-title">Top Songs</div>
 
-    <!-- "Browse All" Section Content -->
-
     <div class="browse-all" style="margin-left: 10px">
         <!-- Category Card -->
-        {% for song in songs1 %}
+        {% for song in songs %}
             <div class="category-card">
                 <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
                     <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
-                    <div class="category-title">{{ song.name }}</div>
+                    <div class="category-title">{{  song.name  }}</div>
                 </a>
+                <div class="song-buttons">
+                    <button class="play-button round-button mb-2" 
+                            data-url="{% url 'stream_song' song.id %}" 
+                            data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
+                            data-artist="{{  song.get_artist_name  }}"
+                            data-name="{{ song.name }}">
+                        <i class="fas fa-play "></i>
+                    </button>
+                    <button class="add-button round-button" 
+                            data-url="{% url 'stream_song' song.id %}" 
+                            data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
+                            data-artist="{{ song.get_artist_name }}"
+                            data-name="{{ song.name }}">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
             </div>
+             
         {% endfor %}
     </div>
-
-    <div class="browse-all" style="margin-left: 10px">
-        <!-- Category Card -->
-        {% for song in songs2 %}
-            <div class="category-card">
-                <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
-                    <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
-                </a>
-                <div class="category-title">{{ song.name }}</div>
-            </div>
-        {% endfor %}
-    </div>
-
-    <div class="browse-all" style="margin-left: 10px">
-        <!-- Category Card -->
-        {% for song in songs3 %}
-            <div class="category-card">
-                <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
-                    <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
-                    <div class="category-title">{{ song.name }}</div>
-                </a>
-            </div>
-        {% endfor %}
-    </div>
+    <script src="{% static 'js/music-player.js' %}"></script>
+  
+    
 {% endblock %}

@@ -19,283 +19,157 @@
 {% endblock %}
 
 {% block content %}
-    <div hx-ext="multi-swap" hx-boost="true" class="sidebar" style="padding-bottom: 100px;">
-        <div class="logo-container">
-            <a href="{% url 'home' %}"  hx-swap="multi:#main:innerHTML,#header:innerHTML">
-                <img src="{% static 'image/SCOTT_logo.png' %}" alt="Logo"
-                     style="width: 100%; height: auto; padding: 2px; box-sizing: border-box; margin-left: -2px">
-            </a>
-        </div>
-
-        <!-- Welcome User -->
-        <div class="sidebar-section">
-
-            {% if current_user.is_authenticated %}
-                <div class="profile-image" style="display: flex; justify-content: center;">
-                    <img src="{{ MEDIA_URL }}{{ current_user.userprofile.get_image_uri }}"
-                         alt="User avatar"
-                         class="gradient-box">
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <b style="margin-top: 5px">Welcome, {{ current_user.username }}</b>
-                </div>
-            {% else %}
-                <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
-                <b>Welcome, Stranger</b>
-                <br>
-                <br>
-            {% endif %}
-
-            {% if current_user.is_authenticated %}
-                <a href="{% url 'user_profile' current_user.username %}"
-                   class="sidebar-link {% if request.resolver_match.url_name == 'user_profile' %}active{% endif %}"
+    <div id="swap" hx-ext="multi-swap">
+        <div class="sidebar" style="padding-bottom: 100px;">
+            <div class="logo-container">
+                <a href="{% url 'home' %}" 
+                     hx-get="{% url 'home' %}"
+                     hx-target="#swap"
+                     hx-swap="outerHTML"
                 >
-                    <span class="sidebar-link-icon">👤</span>
-                    <b style="font-size: 15px;">Profile</b>
+                    <img src="{% static 'image/SCOTT_logo.png' %}" alt="Logo"
+                         style="width: 100%; height: auto; padding: 2px; box-sizing: border-box; margin-left: -2px">
                 </a>
-                {% if current_user.userprofile.artist %}
-                    <a href="{% url 'artist_workspace' %}" class="sidebar-link {% if request.resolver_match.url_name == 'artist_workspace' %}active{% endif %}">
-                        <span class="sidebar-link-icon">🎵</span>
-                        <b style="font-size: 15px;">Workspace</b>
+            </div>
+    
+            <!-- Welcome User -->
+            <div class="sidebar-section">
+    
+                {% if current_user.is_authenticated %}
+                    <div class="profile-image" style="display: flex; justify-content: center;">
+                        <img src="{{ MEDIA_URL }}{{ current_user.userprofile.get_image_uri }}"
+                             alt="User avatar"
+                             class="gradient-box">
+                    </div>
+                    <div style="display: flex; justify-content: center;">
+                        <b style="margin-top: 5px">Welcome, {{ current_user.username }}</b>
+                    </div>
+                {% else %}
+                    <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
+                    <b>Welcome, Stranger</b>
+                    <br>
+                    <br>
+                {% endif %}
+    
+                {% if current_user.is_authenticated %}
+                    <a href="{% url 'user_profile' current_user.username %}"
+                       hx-get="{% url 'user_profile' current_user.username %}"
+                       hx-target="#swap"
+                       hx-swap="outerHTML"
+                       class="sidebar-link {% if request.resolver_match.url_name == 'user_profile' %}active{% endif %}"
+                    >
+                        <span class="sidebar-link-icon">👤</span>
+                        <b style="font-size: 15px;">Profile</b>
+                    </a>
+                    {% if current_user.userprofile.artist %}
+                        <a href="{% url 'artist_workspace' %}" 
+                            hx-get="{% url 'artist_workspace' %}"
+                            hx-target="#swap"
+                            hx-swap="outerHTML"
+                            class="sidebar-link {% if request.resolver_match.url_name == 'artist_workspace' %}active{% endif %}"
+                        >
+                            <span class="sidebar-link-icon">🎵</span>
+                            <b style="font-size: 15px;">Workspace</b>
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon">↪️</span>
+                        <b style="font-size: 15px;">Logout</b>
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="sidebar-link">
+                        <span class="sidebar-link-icon">🔑</span>
+                        <b style="font-size: 16px;">Login</b>
                     </a>
                 {% endif %}
-                <a href="{% url 'logout' %}" class="sidebar-link">
-                    <span class="sidebar-link-icon">↪️</span>
-                    <b style="font-size: 15px;">Logout</b>
-                </a>
-            {% else %}
-                <a href="{% url 'login' %}" class="sidebar-link">
-                    <span class="sidebar-link-icon">🔑</span>
-                    <b style="font-size: 16px;">Login</b>
-                </a>
-            {% endif %}
-            
-        </div>
-
-        <!-- Top section of the sidebar -->
-        <div class="sidebar-section">
-            <a href="{% url 'home' %}"
-               class="sidebar-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
-            >
-                <span class="sidebar-link-icon">🏠</span>
-                <b style="font-size: 15px;">Home</b>
-            </a>
-            <a href="{% url 'home' %}" class="sidebar-link">
-                <span class="sidebar-link-icon">🔍</span>
-                <strong style="font-size: 15px;">Search</strong>
-            </a>
-        </div>
-
-    </div>
-
-    <div style="margin-left:240px; padding: 20px 20px 100px;">
-        <header id="header" class="header-container">
-            <form action="{% url 'home' %}" method="GET">
-                {% csrf_token %}
-                <div class="search-bar" style="width: 400px;">
-                    <input type="search" name="q" placeholder="What do you want to listen to?" aria-label="Search">
-                    <button type="submit" aria-label="Search">
-                        🔍
-                    </button>
-                </div>
-            </form>
-            {% block header %}
-            {% endblock %}
-        </header>
-
-
-        <main id="main" style="padding-top:20px;">
-            {% block main %}
                 
-            {% endblock %}
-            
-        </main>
-    </div>
+            </div>
     
-    <div class="music-player">
-        <div class="song-bar">
-            <div class="song-infos">
-                <div class="image-container">
-                    <img src="https://d2y6mqrpjbqoe6.cloudfront.net/image/upload/f_auto,q_auto/media/library-400/216_636967437355378335Your_Lie_Small_hq.jpg" alt="" />
-                </div>
-                <div class="song-description">
-                    <p class="title">
-                        Watashitachi wa Sou Yatte Ikite Iku Jinshu na no
-                    </p>
-                    <p class="artist">Masaru Yokoyama</p>
-                </div>
+            <!-- Top section of the sidebar -->
+            <div class="sidebar-section">
+                <a href="{% url 'home' %}"
+                    hx-get="{% url 'home' %}"
+                    hx-target="#swap"
+                    hx-swap="outerHTML"
+                    class="sidebar-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                >
+                    <span class="sidebar-link-icon">🏠</span>
+                    <b style="font-size: 15px;">Home</b>
+                </a>
+                <a href="{% url 'home' %}" class="sidebar-link">
+                    <span class="sidebar-link-icon">🔍</span>
+                    <strong style="font-size: 15px;">Search</strong>
+                </a>
             </div>
-        </div>
-        <div class="progress-controller">
-            <div class="control-buttons">
-                <i class="fas fa-step-backward"></i>
-                <i class="play-pause pause"></i>
-                <i class="fas fa-step-forward"></i>
-                <i class="fas fa-undo-alt"></i>
-            </div>
-            <div class="progress-container">
-                <span>0:00</span>
-                <div class="progress-bar">
-                    <div class="progress"></div>
-                </div>
-                <span></span>
-            </div>
-        </div>
-        <div class="other-features">
-            <div class="volume-bar">
-                <i class="fas fa-volume-down"></i>
-                <div class="progress-bar">
-                    <div class="progress"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-
-        let audioElement = new Audio('{% url "stream_song" 19 %}');
-        audioElement.volume = 1;
-        
-        let playPauseButton = document.querySelector('.play-pause');
-        
-        playPauseButton.addEventListener('click', function() {
-            if (audioElement.paused) {
-                audioElement.play();
-                playPauseButton.classList.remove('pause');
-                playPauseButton.classList.add('play');
-            } else {
-                audioElement.pause();
-                playPauseButton.classList.remove('play');
-                playPauseButton.classList.add('pause');
-            }
-        });
-        
-        // Next and previous buttons
-        let nextButton = document.querySelector('.fa-step-forward');
-        let prevButton = document.querySelector('.fa-step-backward');
-        
-        nextButton.addEventListener('click', function() {
-            // Logic to play the next song
-        });
-        
-        prevButton.addEventListener('click', function() {
-            // Logic to play the previous song
-        });
-        
-        // Repeat button
-        let repeatButton = document.querySelector('.fa-undo-alt');
-        
-        repeatButton.addEventListener('click', function() {
-            if (audioElement.loop) {
-                audioElement.loop = false;
-                repeatButton.style.color = '#fff';
-            } else {
-                audioElement.loop = true;
-                repeatButton.style.color = '#f00';
-            }
-        });
-        
-        // Update the progress bar
-        audioElement.addEventListener('timeupdate', function() {
-            let progressBar = document.querySelector('.progress');
-            let progress = (audioElement.currentTime / audioElement.duration) * 100;
-            progressBar.style.width = progress + '%';
-        });
-        
-        let progressBar = document.querySelector('.progress-bar');
-        let progress = document.querySelector('.progress');
-        let isDraggingProgress = false;
-        let isPlaying = false; 
-        progress.style.width = '0%';
-        
-        progressBar.addEventListener('mousedown', function(e) {
-            isDraggingProgress = true;
-            isPlaying = !audioElement.paused; 
-            audioElement.pause();
-            updateProgress(e);
-        });
-        
-        window.addEventListener('mousemove', function(e) {
-            if (isDraggingProgress) {
-                updateProgress(e);
-            }
-        });
-        
-        window.addEventListener('mouseup', function(e) {
-            if (isDraggingProgress) {
-                isDraggingProgress = false;
-                updateProgress(e);
-                if (isPlaying) {
-                    audioElement.play();
-                }
-            }
-        });
-        
-        function updateProgress(e) {
-            let rect = progressBar.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            let width = rect.right - rect.left;
-            let progressValue = x / width;
-            progressValue = Math.min(Math.max(progressValue, 0), 1); // Ensure progressValue is between 0 and 1
-            audioElement.currentTime = progressValue * audioElement.duration;
-            progress.style.width = (progressValue * 100) + '%';
-        }
-        
-        // Get the time elements
-        let currentTimeElement = document.querySelector('.progress-container span:first-child');
-        let durationTimeElement = document.querySelector('.progress-container span:last-child');
-        
-        // Update the duration time when the metadata is loaded
-        audioElement.addEventListener('loadedmetadata', function() {
-            let durationMinutes = Math.floor(audioElement.duration / 60);
-            let durationSeconds = Math.floor(audioElement.duration % 60);
-            if (durationSeconds < 10) durationSeconds = '0' + durationSeconds;
-            durationTimeElement.textContent = durationMinutes + ':' + durationSeconds;
-        });
-        
-        // Update the current time as the song progresses
-        audioElement.addEventListener('timeupdate', function() {
-            let currentMinutes = Math.floor(audioElement.currentTime / 60);
-            let currentSeconds = Math.floor(audioElement.currentTime % 60);
-            if (currentSeconds < 10) currentSeconds = '0' + currentSeconds;
-            currentTimeElement.textContent = currentMinutes + ':' + currentSeconds;
-        });
-        
-        // Volume control
-        let volumeBar = document.querySelector('.volume-bar .progress-bar');
-        let volumeProgress = document.querySelector('.volume-bar .progress');
-        let isDragging = false;
-        
-        volumeProgress.style.width = '100%';
-        volumeBar.addEventListener('mousedown', function(e) {
-            isDragging = true;
-            updateVolume(e);
-        });
-        
-        window.addEventListener('mousemove', function(e) {
-            if (isDragging) {
-                updateVolume(e);
-            }
-        });
-        
-        window.addEventListener('mouseup', function(e) {
-            if (isDragging) {
-                isDragging = false;
-                updateVolume(e);
-            }
-        });
-        
-        function updateVolume(e) {
-            let rect = volumeBar.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            let width = rect.right - rect.left;
-            let volume = x / width;
-            volume = Math.min(Math.max(volume, 0), 1); 
-            audioElement.volume = volume;
-            volumeProgress.style.width = (volume * 100) + '%';
-        }
     
-    </script>
-   
+        </div>
+    
+        <div style="margin-left:240px; padding: 20px 20px 100px;">
+            <header id="header" class="header-container">
+                <form action="{% url 'home' %}" method="GET">
+                    {% csrf_token %}
+                    <div class="search-bar" style="width: 400px;">
+                        <input type="search" name="q" placeholder="What do you want to listen to?" aria-label="Search">
+                        <button type="submit" aria-label="Search">
+                            🔍
+                        </button>
+                    </div>
+                </form>
+                {% block header %}
+                {% endblock %}
+            </header>
+    
+    
+            <main id="main" style="padding-top:20px;">
+                {% block main %}
+                    
+                {% endblock %}
+                
+            </main>
+        
+        </div>
+    
+    </div>
+    <div hx-preserve="true" class="music-player">
+            <div class="song-bar">
+                <div class="song-infos">
+                    <div class="image-container">
+                        <img src="{{ MEDIA_URL }}{{ '/media/image/song/default.png' }}" alt="" />
+                    </div>
+                    <div class="song-description">
+                        <p class="title">
+                            Name
+                        </p>
+                        <p class="artist">Artist</p>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-controller">
+                <div class="control-buttons">
+                    <i class="fas fa-random"></i>
+                    <i class="fas fa-step-backward"></i>
+                    <i class="play-pause pause"></i>
+                    <i class="fas fa-step-forward"></i>
+                    <i class="fas fa-undo-alt"></i>
+                </div>
+                <div class="progress-container">
+                    <span style="width: 30px; margin-right: 2px;">0:00</span>
+                    <div class="progress-bar">
+                        <div class="progress"></div>
+                    </div>
+                    <span style="width: 30px;">0:00</span>
+                </div>
+            </div>
+            <div class="other-features">
+                <div class="volume-bar">
+                    <i class="fas fa-volume-down"></i>
+                    <div class="progress-bar">
+                        <div class="progress"></div>
+                    </div>
+                </div>
+            </div>
+            <script src="{% static 'js/music-player.js' %}"></script>
+        </div>
+        
     
 {% endblock %}

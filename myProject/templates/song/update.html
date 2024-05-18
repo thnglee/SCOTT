@@ -1,7 +1,7 @@
-{% extends "templates/base.html" %}
+{% extends "templates/home_base.html" %}
 {% load static %}
 
-{% block content %}
+{% block main %}
     <h1 class="ml-3">Update Song </h1>
     <form method="POST" enctype="multipart/form-data" class="form-horizontal">
         {% csrf_token %}

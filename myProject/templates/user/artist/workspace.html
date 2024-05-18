@@ -4,6 +4,7 @@
 {% endblock %}
 
 {% block main %}
+
         <h2 class="text-2xl font-bold mb-4 pl-5">Song List</h2>
         <section class="mt-0 py-0 overflow-x-visible whitespace-nowrap list">
             <ul>
@@ -20,7 +21,11 @@
                         </span>
                         <span class="text-gray-400"> {{ song.get_genre }} </span>
                         <span>
-                            <a href="{% url 'update_song' song.id %}" class="btn btn-primary hover:underline">Update</a>
+                            <a href="{% url 'update_song' song.id %}"
+                               hx-get="{% url 'update_song' song.id %}"
+                               hx-target="#swap" 
+                               hx-swap="outerHTML"
+                               class="btn btn-primary hover:underline">Update</a>
                         </span>
                     </li>
                 {% empty %}
@@ -56,4 +61,5 @@
             <br>
             <a href="{% url 'create_album' %}" class="other-button font-bold py-2.5 px-6 rounded mb-4 mt-4">Add Album</a>
         </section>
+
 {% endblock %}

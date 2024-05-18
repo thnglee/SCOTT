@@ -83,8 +83,8 @@ class Song(models.Model):
     def get_uri(self):
         return "/audio/" + self.uri
 
-    def get_artists(self):
-        return self.artists.all()[0]
+    def get_artist_name(self):
+        return self.artists.all()[0].Artist_name
 
     def get_genre(self):
         return self.genres

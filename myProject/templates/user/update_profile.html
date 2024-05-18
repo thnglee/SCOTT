@@ -1,6 +1,5 @@
 {% extends 'templates/home_base.html' %}
-
-
+{% load static %}
 {% block header %}
     <div class="search-title">Update User Profile</div>
 {% endblock %}
@@ -10,12 +9,17 @@
         <!-- User Profile -->
         <div class="profile-card">
             <!-- Update profile form -->
-            <form method="post" enctype="multipart/form-data" class="mb-3">
+            <form hx-post="{% url 'update_profile' %}" 
+                  hx-encoding="multipart/form-data" 
+                  hx-target="#swap"
+                  hx-swap="outerHTML"
+                  class="mb-3"
+            >
                 {% csrf_token %}
                 {% for field in user_form %}
                     <div>
                         {% if field.errors %}
-                            <div class="error text-xs mb-1">{{ field.errors }}</div>
+                            <div class="error text-xs">{{ field.errors }}</div>
                         {% endif %}
                         <label for="{{ field.id_for_label }}">
                             {{ field.label }}:
@@ -89,45 +93,45 @@
                 <button type="submit" class="danger-button font-bold py-2.5 px-6 rounded mb-4">Delete User</button>
             </form>
         </div>
+   
     </section>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            let becomeArtistCheckbox = document.getElementById('become_artist');
-            let artistNameField = document.getElementById('artist_name');
-            let artistNameLabel = document.querySelector("label[for='artist_name']");
-            let imageInput = document.getElementById('id_image_file');
-            let userImage = document.getElementById('userImage');
+        let becomeArtistCheckbox = document.getElementById('become_artist');
+        let artistNameField = document.getElementById('artist_name');
+        let artistNameLabel = document.querySelector("label[for='artist_name']");
+        let imageInput = document.getElementById('id_image_file');
+        let userImage = document.getElementById('userImage');
 
-            // Hide the artist name field and label initially if become_artist is not checked
-            if (!becomeArtistCheckbox.checked) {
+        // Hide the artist name field and label initially if become_artist is not checked
+        if (!becomeArtistCheckbox.checked) {
+            artistNameLabel.style.display = 'none';
+            artistNameField.style.display = 'none';
+        }
+
+        // Add an event listener to the become_artist checkbox
+        becomeArtistCheckbox.addEventListener('change', function () {
+            if (becomeArtistCheckbox.checked) {
+                artistNameLabel.style.display = 'block';
+                artistNameField.style.display = 'block';
+            } else {
                 artistNameLabel.style.display = 'none';
                 artistNameField.style.display = 'none';
             }
-
-            // Add an event listener to the become_artist checkbox
-            becomeArtistCheckbox.addEventListener('change', function () {
-                if (becomeArtistCheckbox.checked) {
-                    artistNameLabel.style.display = 'block';
-                    artistNameField.style.display = 'block';
-                } else {
-                    artistNameLabel.style.display = 'none';
-                    artistNameField.style.display = 'none';
-                }
-            });
-
-            // Update the user image when a new file is selected
-            imageInput.addEventListener('change', function () {
-                if (imageInput.files && imageInput.files[0]) {
-                    let reader = new FileReader();
-
-                    reader.onload = function (e) {
-                        userImage.src = e.target.result;
-                    }
-
-                    reader.readAsDataURL(imageInput.files[0]);
-                }
-            });
         });
+
+        // Update the user image when a new file is selected
+        imageInput.addEventListener('change', function () {
+            if (imageInput.files && imageInput.files[0]) {
+                let reader = new FileReader();
+
+                reader.onload = function (e) {
+                    userImage.src = e.target.result;
+                }
+
+                reader.readAsDataURL(imageInput.files[0]);
+            }
+        });
+        
     </script>
+    
 {% endblock %}

@@ -1,4 +1,5 @@
 import os
+import random
 import re
 
 from django.conf import settings
@@ -14,6 +15,7 @@ from django.http import Http404, FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
+from pydub import AudioSegment
 
 from myApp.forms import (CreateUserForm, UploadSongForm, UpdateSongForm, UpdateUserForm,
                          UpdateUserProfileForm, CreateAlbumForm, CreatePlaylistForm, UpdateAlbumForm)
@@ -29,7 +31,7 @@ class Login(LoginView):
 @login_required(login_url='login')
 def logout(request):
     auth.logout(request)
-    return redirect('login')
+    return redirect('home')
 
 
 class ChangePassword(PasswordChangeView):
@@ -208,17 +210,13 @@ class CustomPasswordResetCompleteView(PasswordResetCompleteView):
 
 def home(request):
     songs = Song.objects.all()
+    num_songs = min(12, len(songs))
+    random_songs = random.sample(list(songs), num_songs)
     artists = Artist.objects.all()
-    songs1 = songs[:4]
-    songs2 = songs[4:8]
-    songs3 = songs[8:12]
     query = request.GET.get('q', '')
     songs_query = search_song(query) if query else Song.objects.none()
     context = {
-        'songs': songs,
-        'songs1': songs1,
-        'songs2': songs2,
-        'songs3': songs3,
+        'songs': random_songs,
         'artists': artists,
         'songs_query': songs_query,
     }
@@ -231,6 +229,11 @@ def home(request):
         return render(request, 'home.html', context)
     else:
         return render(request, 'home.html', context)
+
+
+def compress_audio(input_path, output_path, target_bitrate="320k"):
+    audio = AudioSegment.from_file(input_path)
+    audio.export(output_path, format="mp3", bitrate=target_bitrate)
 
 
 @login_required(login_url='/login/')
@@ -260,8 +263,13 @@ def upload_song(request):
 
             # Audio
             song_file = request.FILES['song_file']
-            new_song_filename = new_name + os.path.splitext(song_file.name)[1]
-            default_storage.save('audio/' + new_song_filename, song_file)
+            new_song_filename = new_name + ".flac"
+            temp_path = 'audio/temp/' + new_song_filename
+            final_path = 'audio/' + new_song_filename
+            save = default_storage.save(temp_path, song_file)
+            if save:
+                compress_audio('media/' + temp_path, 'media/' + final_path)
+                default_storage.delete(temp_path)
             song.uri = new_song_filename
 
             # Genre
@@ -278,16 +286,18 @@ def upload_song(request):
             song.artists.add(artist)
 
             form.save_m2m()  # save many-to-many data
-            return redirect('home')
+            return render(request, 'user/artist/workspace.html',
+                          {'artist': artist, 'songs': artist.songs, 'albums': artist.album_set,
+                           'current_user': request.user})
     else:
         form = UploadSongForm(profile=profile)
 
-    return render(request, 'song/upload.html', {'form': form})
+    return render(request, 'song/upload.html', {'form': form, 'current_user': request.user})
 
 
 def song_info(request, song_id):
     song = get_object_or_404(Song, id=song_id)
-    return render(request, 'song/info.html', {'song': song})
+    return render(request, 'song/info.html', {'song': song, 'current_user': request.user})
 
 
 def stream_song(request, song_id):
@@ -365,17 +375,22 @@ def update_song(request, song_id):
                 song.albums.set(form.cleaned_data['albums'])
 
             form.save_m2m()
-            return redirect('home')
+            return render(request, 'user/artist/workspace.html',
+                          {'artist': artist, 'songs': artist.songs, 'albums': artist.album_set,
+                           'current_user': request.user})
     else:
         form = UpdateSongForm(instance=song, profile=profile)
 
-    return render(request, 'song/update.html', {'form': form})
+    return render(request, 'song/update.html', {'form': form, 'current_user': request.user})
 
 
 @require_POST
 def delete_song(request, song_id):
     song = get_object_or_404(Song, id=song_id)
-
+    current_user = request.user
+    profile = UserProfile.objects.get(user=current_user)
+    songs = Song.objects.filter(artists=profile.artist)
+    albums = Album.objects.filter(artist=profile.artist)
     # Delete the song file and image file
     if song.uri:
         default_storage.delete('audio/' + song.uri)
@@ -383,7 +398,9 @@ def delete_song(request, song_id):
     if song.image_uri != 'default.png':
         default_storage.delete('image/song/' + song.image_uri)
     song.delete()
-    return redirect('home')
+    return render(request, 'user/artist/workspace.html',
+                          {'artist': profile.artist, 'songs': songs, 'albums': albums,
+                           'current_user': request.user})
 
 
 def artist_profile(request, artist_name):

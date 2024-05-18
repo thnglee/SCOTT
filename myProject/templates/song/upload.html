@@ -5,31 +5,111 @@
 {% endblock %}
 {% block main %}
    <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
-        <form method="post" enctype="multipart/form-data" class="form-horizontal">
+        <form
+                id="uploadForm"
+                hx-post="{% url "upload_song" %}"
+                hx-encoding="multipart/form-data"
+                hx-target="#swap"
+                hx-swap="outerHTML"
+        >
             {% csrf_token %}
-            {% for field in form %}
-                <div class="form-group">
-                    <h5 class="control-label col-sm-2" for="{{ field.id_for_label }}">{{ field.label }}</h5>
-                    <div class="col-sm-10">
-                        {{ field }}
-                        {% if field.help_text %}
-                            <small class="form-text text-muted">{{ field.help_text }}</small>
-                        {% endif %}
-                        {% for error in field.errors %}
-                            <div class="alert alert-danger">
-                                {{ error }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endfor %}
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-primary">Upload</button>
-                </div>
+            <div class="input-box" style="width: 400px">
+                {% if form.song_name.errors %}
+                    <div class="error text-xs">{{ form.song_name.errors }}</div>
+                {% endif %}
+                <label for="{{ form.song_name.id_for_label }}">{{ form.song_name.label }}:
+                    <input class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
+                           type="text" name="{{ form.song_name.name }}" style="width: 400px">
+                </label>
             </div>
+        
+            <div class="input-box">
+                {% if form.song_file.errors %}
+                    <div class="error text-xs">{{ form.song_file.errors }}</div>
+                {% endif %}
+                <label for="{{ form.song_file.id_for_label }}">{{ form.song_file.label }}:
+                    <input type="file" name="{{ form.song_file.name }}"
+                           class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1" accept="audio/*">
+                </label>
+            </div>
+        
+            <div class="input-box">
+                {% if form.image_file.errors %}
+                    <div class="error text-xs ">{{ form.image_file.errors }}</div>
+                {% endif %}
+                <label for="{{ form.image_file.id_for_label }}">{{ form.image_file.label }}:
+                    <input type="file" id="image_file" name="{{ form.image_file.name }}"
+                           class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1" accept="image/*">
+                </label>
+            </div>
+            <img id="songImage" src="{{ MEDIA_URL }}{{ '/media/image/song/default.png' }}" alt="User Image"
+                 height="120" width="120">
+            <br>
+            
+            <div class="input-box">
+                {% if form.genres.errors %}
+                    <div class="error text-xs mb-1">{{ form.genres.errors }}</div>
+                {% endif %}
+                <label for="{{ form.genres.id_for_label }}">{{ form.genres.label }}:
+                    <select class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
+                            name="{{ form.genres.name }}">
+                        {% for value, name in form.genres.field.choices %}
+                            <option value="{{ value }}">{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+        
+            <div class="input-box">
+                {% if form.albums.errors %}
+                    <div class="error text-xs mb-1">{{ form.albums.errors }}</div>
+                {% endif %}
+                <label for="{{ form.albums.id_for_label }}">{{ form.albums.label }}: <br>
+                    <select multiple class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
+                            name="{{ form.albums.name }}">
+                        {% for value, name in form.albums.field.choices %}
+                            <option value="{{ value }}">{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            
+            <br>
+            <button id="upload" type="submit" class="gradient-button font-bold py-2.5 px-6 rounded mb-4">Upload</button>
         </form>
+        <div id="loading" style="display: none;">
+            <p>Uploading song, please wait...</p>
+        </div>
+   
    </section>
-    
+    <script>
+        var songImageInput = document.getElementById('image_file');
+        var songImage = document.getElementById('songImage');
+        var uploadButton = document.getElementById('upload');
+        var loading = document.getElementById('loading');
+        
+        document.getElementById('uploadForm').addEventListener('submit', function() {
+            uploadButton.style.display = 'none';
+            loading.style.display = 'block';
+        });
+        
+        document.getElementById('uploadForm').addEventListener('invalid', function() {
+            uploadButton.style.display = 'block';
+            loading.style.display = 'none';
+        }, true);
+        
+        songImageInput.addEventListener('change', function () {
+            if (songImageInput.files && songImageInput.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    songImage.src = e.target.result;
+                }
+
+                reader.readAsDataURL(songImageInput.files[0]);
+            }
+        });
+        
+    </script>
     
 {% endblock %}

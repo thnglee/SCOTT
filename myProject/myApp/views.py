@@ -233,7 +233,7 @@ def home(request):
 
 def compress_audio(input_path, output_path, target_bitrate="320k"):
     audio = AudioSegment.from_file(input_path)
-    audio.export(output_path, format="mp3", bitrate=target_bitrate)
+    audio.export(output_path, bitrate=target_bitrate)
 
 
 @login_required(login_url='/login/')
@@ -263,7 +263,7 @@ def upload_song(request):
 
             # Audio
             song_file = request.FILES['song_file']
-            new_song_filename = new_name + ".flac"
+            new_song_filename = new_name + os.path.splitext(song_file.name)[1]
             temp_path = 'audio/temp/' + new_song_filename
             final_path = 'audio/' + new_song_filename
             save = default_storage.save(temp_path, song_file)
@@ -347,10 +347,14 @@ def update_song(request, song_id):
             if 'song_file' in request.FILES:
                 if song.uri:
                     default_storage.delete('audio/' + song.uri)
-
-                song_file = request.FILES['song_file']
-                new_song_filename = new_name + os.path.splitext(song_file.name)[1]
-                default_storage.save('audio/' + new_song_filename, song_file)
+                file = request.FILES['song_file']
+                new_song_filename = new_name + os.path.splitext(file.name)[1]
+                final_path = 'audio/' + new_song_filename
+                temp_path = 'audio/temp/' + new_song_filename
+                save = default_storage.save(temp_path, file)
+                if save:
+                    compress_audio('media/' + temp_path, 'media/' + final_path)
+                    default_storage.delete(temp_path)
                 song.uri = new_song_filename
 
             # Image
@@ -399,8 +403,8 @@ def delete_song(request, song_id):
         default_storage.delete('image/song/' + song.image_uri)
     song.delete()
     return render(request, 'user/artist/workspace.html',
-                          {'artist': profile.artist, 'songs': songs, 'albums': albums,
-                           'current_user': request.user})
+                  {'artist': profile.artist, 'songs': songs, 'albums': albums,
+                   'current_user': request.user})
 
 
 def artist_profile(request, artist_name):

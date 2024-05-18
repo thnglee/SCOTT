@@ -13,7 +13,6 @@
                   hx-encoding="multipart/form-data" 
                   hx-target="#swap"
                   hx-swap="outerHTML"
-                  class="mb-3"
             >
                 {% csrf_token %}
                 {% for field in user_form %}
@@ -63,7 +62,7 @@
                     {% endif %}
                     <label for="{{ profile_form.image_file.id_for_label }}">{{ profile_form.image_file.label }}:
                         <input type="file" id="id_image_file" name="{{ profile_form.image_file.name }}"
-                               class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1">
+                               class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1" accept="image/*">
                     </label>
                 </div>
                 <img id="userImage" src="{{ MEDIA_URL }}{{ profile_form.instance.get_image_uri }}" alt="User Image"
@@ -96,11 +95,11 @@
    
     </section>
     <script>
-        let becomeArtistCheckbox = document.getElementById('become_artist');
-        let artistNameField = document.getElementById('artist_name');
-        let artistNameLabel = document.querySelector("label[for='artist_name']");
-        let imageInput = document.getElementById('id_image_file');
-        let userImage = document.getElementById('userImage');
+        var becomeArtistCheckbox = document.getElementById('become_artist');
+        var artistNameField = document.getElementById('artist_name');
+        var artistNameLabel = document.querySelector("label[for='artist_name']");
+        var imageInput = document.getElementById('id_image_file');
+        var userImage = document.getElementById('userImage');
 
         // Hide the artist name field and label initially if become_artist is not checked
         if (!becomeArtistCheckbox.checked) {
@@ -122,7 +121,7 @@
         // Update the user image when a new file is selected
         imageInput.addEventListener('change', function () {
             if (imageInput.files && imageInput.files[0]) {
-                let reader = new FileReader();
+                var reader = new FileReader();
 
                 reader.onload = function (e) {
                     userImage.src = e.target.result;

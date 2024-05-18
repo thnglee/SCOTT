@@ -6,22 +6,25 @@
 
 {% block main %}
     <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
-        <!-- Artist Card -->
-        {% for artist in artists %}
-            <div class="artist-card">
-                <a href="{% url 'artist_profile' artist.Artist_name %}" style="text-decoration: none;"
-                    hx-get="{% url 'artist_profile' artist.Artist_name %}"
-                    hx-target="#swap"
-                    hx-swap="outerHTML"
-                >
-                    <img src="{{ MEDIA_URL }}{{ artist.user.get_image_uri }}" alt="{{ artist.name }}">
-                        <div class="artist-name">
-                             {{ artist.Artist_name }}
-                        </div>
-                    <div class="artist-title">Artist</div>
-                </a>
-            </div>
-        {% endfor %}
+        <div class="artist-list">
+            {% for artist in artists %}
+                {% if forloop.counter <= 6 %}
+                    <div class="artist-card">
+                        <a href="{% url 'artist_profile' artist.Artist_name %}" style="text-decoration: none;"
+                            hx-get="{% url 'artist_profile' artist.Artist_name %}"
+                            hx-target="#swap"
+                            hx-swap="outerHTML"
+                        >
+                            <img src="{{ MEDIA_URL }}{{ artist.user.get_image_uri }}" alt="{{ artist.name }}">
+                                <div class="artist-name">
+                                     {{ artist.Artist_name }}
+                                </div>
+                            <div class="artist-title">Artist</div>
+                        </a>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
     </section>
   
     <div class="browse-all-title">Top Songs</div>
@@ -47,7 +50,7 @@
                                 data-url="{% url 'stream_song' song.id %}" 
                                 data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
                                 data-artist="{{ song.get_artist_name }}"
-                                data-name="{{ song.encode_name }}">
+                                data-name="{{ song.name }}">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>

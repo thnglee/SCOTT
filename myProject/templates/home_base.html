@@ -19,16 +19,15 @@
 {% endblock %}
 
 {% block content %}
-    <div id="swap" hx-ext="multi-swap">
         <div class="sidebar" style="padding-bottom: 100px;">
-            <div class="logo-container">
+            <div class="logo-container ">
                 <a href="{% url 'home' %}" 
                      hx-get="{% url 'home' %}"
                      hx-target="#swap"
                      hx-swap="outerHTML"
                 >
                     <img src="{% static 'image/SCOTT_logo.png' %}" alt="Logo"
-                         style="width: 100%; height: auto; padding: 2px; box-sizing: border-box; margin-left: -2px">
+                         style="width: 70%; height: auto; margin-left: 20px">
                 </a>
             </div>
     
@@ -36,7 +35,7 @@
             <div class="sidebar-section">
     
                 {% if current_user.is_authenticated %}
-                    <div class="profile-image" style="display: flex; justify-content: center;">
+                    <div class="profile-image" style="display: flex; justify-content: center; margin-top: 2px">
                         <img src="{{ MEDIA_URL }}{{ current_user.userprofile.get_image_uri }}"
                              alt="User avatar"
                              class="gradient-box">
@@ -45,10 +44,9 @@
                         <b style="margin-top: 5px">Welcome, {{ current_user.username }}</b>
                     </div>
                 {% else %}
-                    <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
-                    <b>Welcome, Stranger</b>
-                    <br>
-                    <br>
+                    <div style="display: flex; justify-content: center;">
+                        <b style="margin-top: 5px">Welcome,👤 Stranger</b>
+                    </div>
                 {% endif %}
     
                 {% if current_user.is_authenticated %}
@@ -59,7 +57,7 @@
                        class="sidebar-link {% if request.resolver_match.url_name == 'user_profile' %}active{% endif %}"
                     >
                         <span class="sidebar-link-icon">👤</span>
-                        <b style="font-size: 15px;">Profile</b>
+                        <b>Profile</b>
                     </a>
                     {% if current_user.userprofile.artist %}
                         <a href="{% url 'artist_workspace' %}" 
@@ -69,17 +67,17 @@
                             class="sidebar-link {% if request.resolver_match.url_name == 'artist_workspace' %}active{% endif %}"
                         >
                             <span class="sidebar-link-icon">🎵</span>
-                            <b style="font-size: 15px;">Workspace</b>
+                            <b>Workspace</b>
                         </a>
                     {% endif %}
                     <a href="{% url 'logout' %}" class="sidebar-link">
                         <span class="sidebar-link-icon">↪️</span>
-                        <b style="font-size: 15px;">Logout</b>
+                        <b >Logout</b>
                     </a>
                 {% else %}
                     <a href="{% url 'login' %}" class="sidebar-link">
                         <span class="sidebar-link-icon">🔑</span>
-                        <b style="font-size: 16px;">Login</b>
+                        <b>Login</b>
                     </a>
                 {% endif %}
                 
@@ -94,17 +92,18 @@
                     class="sidebar-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
                 >
                     <span class="sidebar-link-icon">🏠</span>
-                    <b style="font-size: 15px;">Home</b>
+                    <b>Home</b>
                 </a>
                 <a href="{% url 'home' %}" class="sidebar-link">
                     <span class="sidebar-link-icon">🔍</span>
-                    <strong style="font-size: 15px;">Search</strong>
+                    <strong>Search</strong>
                 </a>
+                
             </div>
     
         </div>
     
-        <div style="margin-left:240px; padding: 20px 20px 100px;">
+        <div style="margin-left:190px; padding: 20px 20px 100px;">
             <header id="header" class="header-container">
                 <form action="{% url 'home' %}" method="GET">
                     {% csrf_token %}
@@ -129,8 +128,7 @@
         
         </div>
     
-    </div>
-    <div hx-preserve="true" class="music-player">
+    <div hx-preserve="true" id="music-player" class="music-player">
             <div class="song-bar">
                 <div class="song-infos">
                     <div class="image-container">
@@ -168,8 +166,31 @@
                     </div>
                 </div>
             </div>
-            <script src="{% static 'js/music-player.js' %}"></script>
-        </div>
+    </div>
+    <script src="{% static 'js/music-player.js' %}"></script>   
+    <script>
+         document.querySelectorAll('.play-button').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var songUrl = button.getAttribute('data-url');
+                var songImage = button.getAttribute('data-image');
+                var songArtist = button.getAttribute('data-artist');
+                var songName = button.getAttribute('data-name');
+
+                musicPlayer.playSong(songUrl, songImage, songArtist, songName);
+            });
+        });
+
+        document.querySelectorAll('.add-button').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var songUrl = button.getAttribute('data-url');
+                var songImage = button.getAttribute('data-image');
+                var songArtist = button.getAttribute('data-artist');
+                var songName = button.getAttribute('data-name');
+
+                musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
+            });
+        });
+    </script>
         
     
 {% endblock %}

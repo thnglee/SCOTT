@@ -29,32 +29,33 @@
     <div class="browse-all" style="margin-left: 10px">
         <!-- Category Card -->
         {% for song in songs %}
-            <div class="category-card">
-                <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
-                    <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
-                    <div class="category-title">{{  song.name  }}</div>
-                </a>
-                <div class="song-buttons">
-                    <button class="play-button round-button mb-2" 
-                            data-url="{% url 'stream_song' song.id %}" 
-                            data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
-                            data-artist="{{  song.get_artist_name  }}"
-                            data-name="{{ song.name }}">
-                        <i class="fas fa-play "></i>
-                    </button>
-                    <button class="add-button round-button" 
-                            data-url="{% url 'stream_song' song.id %}" 
-                            data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
-                            data-artist="{{ song.get_artist_name }}"
-                            data-name="{{ song.name }}">
-                        <i class="fas fa-plus"></i>
-                    </button>
+            {% if forloop.counter <= 12 %}
+                <div class="category-card">
+                    <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
+                        <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
+                        <div class="category-title">{{  song.name  }}</div>
+                    </a>
+                    <div class="song-buttons">
+                        <button class="play-button round-button mb-2" 
+                                data-url="{% url 'stream_song' song.id %}" 
+                                data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
+                                data-artist="{{  song.get_artist_name  }}"
+                                data-name="{{ song.name }}">
+                            <i class="fas fa-play "></i>
+                        </button>
+                        <button class="add-button round-button" 
+                                data-url="{% url 'stream_song' song.id %}" 
+                                data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
+                                data-artist="{{ song.get_artist_name }}"
+                                data-name="{{ song.encode_name }}">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
-             
+            {% endif %}
         {% endfor %}
     </div>
-    <script src="{% static 'js/music-player.js' %}"></script>
+    
   
     
 {% endblock %}

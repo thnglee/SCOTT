@@ -21,7 +21,11 @@
                         </span>
                         <span class="text-gray-400"> {{ song.get_genre }} </span>
                         <span>
-                            <a href="{% url 'update_song' song.id %}" class="btn btn-primary hover:underline">Update</a>
+                            <a href="{% url 'update_song' song.id %}"
+                               hx-get="{% url 'update_song' song.id %}"
+                               hx-target="#swap" 
+                               hx-swap="outerHTML"
+                               class="btn btn-primary hover:underline">Update</a>
                         </span>
                     </li>
                 {% empty %}

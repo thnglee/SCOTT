@@ -32,6 +32,7 @@ var MusicPlayer = MusicPlayer || (function() {
         audioElement.addEventListener('ended', function() {
         var song;
         var index = -1;
+        var end_playlist = false;
 
         for (var i = 0; i < playlist.length; i++) {
             if (new URL(playlist[i].url, window.location.origin).href === audioElement.src) {
@@ -45,6 +46,7 @@ var MusicPlayer = MusicPlayer || (function() {
 
             if (currentSongIndex >= playlist.length) {
                 currentSongIndex = 0;
+                end_playlist = true;
             }
         } else if (playlist.length > 0) {
 
@@ -62,7 +64,9 @@ var MusicPlayer = MusicPlayer || (function() {
         playPauseButton.classList.remove('play');
         playPauseButton.classList.add('pause');
         progress.style.width = '0%';
-        audioElement.play();
+        if (!end_playlist) {
+            audioElement.play();
+        }
     });
 
         audioElement.addEventListener('play', function() {
@@ -108,32 +112,10 @@ var MusicPlayer = MusicPlayer || (function() {
                 name: songName
             });
 
-            if (!audioElement.src) {
+            if (audioElement.ended || !audioElement.src) {
                 playSong(songUrl, songImage, songArtist, songName);
             }
         }
-
-        document.querySelectorAll('.play-button').forEach(function(button) {
-            button.addEventListener('click', function() {
-                var songUrl = button.getAttribute('data-url');
-                var songImage = button.getAttribute('data-image');
-                var songArtist = button.getAttribute('data-artist');
-                var songName = button.getAttribute('data-name');
-
-                playSong(songUrl, songImage, songArtist, songName);
-            });
-        });
-
-        document.querySelectorAll('.add-button').forEach(function(button) {
-            button.addEventListener('click', function() {
-                var songUrl = button.getAttribute('data-url');
-                var songImage = button.getAttribute('data-image');
-                var songArtist = button.getAttribute('data-artist');
-                var songName = button.getAttribute('data-name');
-
-                addToPlaylist(songUrl, songImage, songArtist, songName);
-            });
-        });
 
         nextButton.addEventListener('click', function() {
             currentSongIndex++;
@@ -277,6 +259,8 @@ var MusicPlayer = MusicPlayer || (function() {
         });
 
         return {
+            playSong: playSong,
+            addToPlaylist: addToPlaylist
         };
     }
 

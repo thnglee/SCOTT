@@ -17,8 +17,9 @@ body {
 /* Sidebar Styles */
 .sidebar {
     background-color: #000;
-    width: 240px;
-    padding: 20px;
+    width: 200px;
+    max-width: 200px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
 }
@@ -102,8 +103,8 @@ section {
     text-decoration: none;
     color: inherit;
     display: block;
-    padding: 5px 15px;
-    margin: 10px 0;
+    padding: 5px 5px;
+    margin: 5px 0;
     border-radius: 4px;
     transition: background-color 0.3s ease;
 }
@@ -308,8 +309,9 @@ section {
 .sidebar-section {
     background: #181818;
     border-radius: 10px;
-    padding: 5px;
-    margin-bottom: 9px;
+    margin-bottom: 5px;
+    padding-left: 4px;
+    padding-right: 4px;
     overflow: hidden;
 }
 
@@ -373,9 +375,12 @@ section {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     height: 260px;
     width: 200px;
-
+    transition: all ease 0.4s;
 }
-
+.category-card:hover {
+    background: rgba(255,255,255,.2);
+    transform: scale(1.05);
+}
 .category-card img {
     width: 200px;
     height: auto;
@@ -405,9 +410,10 @@ section {
 
 
 .gradient-box {
-    height: 100px;
+    height: 80px;
     width: auto;
-    border: 5px solid transparent;
+    margin-top: 3px;
+    border: 2px solid transparent;
     border-image-slice: 1;
     border-image-source: linear-gradient(to bottom right, #00b76c, #ff6a92);
     overflow: visible;
@@ -527,6 +533,8 @@ ul li span:nth-child(5)
     display: block;
 }
 
+
+
 .song-buttons {
     display: none;
     position: absolute;
@@ -545,14 +553,16 @@ ul li span:nth-child(5)
     justify-content: center;
     align-items: center;
     cursor: pointer;
-
 }
 
 .round-button:hover {
     transform: scale(1.1);
+    display: flex;
+
 }
 .round-button:focus {
     outline: none;
+    display: flex;
 }
 .round-button i {
     color: #0e0e0e;
@@ -567,3 +577,4 @@ ul li span:nth-child(5)
     margin-top: 1px;
     margin-left: 1px;
 }
+

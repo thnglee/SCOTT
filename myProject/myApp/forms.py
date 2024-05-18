@@ -23,7 +23,7 @@ class CreateUserForm(UserCreationForm):
 class UpdateUserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name' ]
+        fields = ['username', 'email', 'first_name', 'last_name']
 
 
 class UpdateUserProfileForm(forms.ModelForm):
@@ -44,8 +44,8 @@ class UpdateUserProfileForm(forms.ModelForm):
 
 
 class UploadSongForm(forms.ModelForm):
-    song_name = forms.CharField(max_length=100)
-    song_file = forms.FileField()
+    song_name = forms.CharField(max_length=100, required=True)
+    song_file = forms.FileField(required=True)
     image_file = forms.ImageField(required=False)
     genres = forms.ChoiceField(choices=Song.GENRE)
     albums = forms.ModelMultipleChoiceField(queryset=Album.objects.all(), required=False)

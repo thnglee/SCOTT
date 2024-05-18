@@ -1,65 +1,125 @@
 {% extends "templates/home_base.html" %}
 {% load static %}
-
+{% block header %}
+    <div class="search-title">Update Song</div>
+{% endblock %}
 {% block main %}
-    <h1 class="ml-3">Update Song </h1>
-    <form method="POST" enctype="multipart/form-data" class="form-horizontal">
-        {% csrf_token %}
-        {% for field in form %}
-            <div class="form-group">
-                <h5 class="control-label col-sm-2" for="{{ field.id_for_label }}">{{ field.label }}</h5>
-                <div class="col-sm-10">
-                    {{ field }}
-                    {% if field.name == 'song_file' %}
-                        <br><br>
-                        <div style="display: flex; align-items: center;">
-                            <audio controls>
-                                <source src="{% url 'stream_song' form.instance.id %}" type="{{ form.instance.get_mime_type }}">
-                                Your browser does not support the audio element.
-                            </audio>
-                        </div>
-                    {% endif %}
-                    {% if field.name == 'image_file' %}
-                        <div style="display: flex; align-items: center;">
-                            <img id="songImage" src="{{ MEDIA_URL }}{{ form.instance.get_image_uri }}" alt="Current song image" class="mb-3" width="200" height="200">
-                        </div>
-                    {% endif %}
-                    {% if field.help_text %}
-                        <small class="form-text text-muted">{{ field.help_text }}</small>
-                    {% endif %}
-                    {% for error in field.errors %}
-                        <div class="alert alert-danger">
-                            {{ error }}
-                        </div>
-                    {% endfor %}
-                </div>
+   <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
+        <form
+                id="updateForm"
+                hx-post="{% url "update_song" form.instance.id %}"
+                hx-encoding="multipart/form-data"
+                hx-target="#swap"
+                hx-swap="outerHTML"
+        >
+            {% csrf_token %}
+            <div class="input-box" style="width: 400px">
+                {% if form.name.errors %}
+                    <div class="error text-xs">{{ form.name.errors }}</div>
+                {% endif %}
+                <label for="{{ form.name.id_for_label }}">{{ form.name.label }}:
+                    <input class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
+                           type="text" name="{{ form.name.name }}" style="width: 400px"
+                            value="{{ form.name.value }}">
+                </label>
             </div>
-        {% endfor %}
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                 <button type="submit" class="btn btn-primary mt-3">Save</button>
-
+        
+            <div class="input-box">
+                {% if form.song_file.errors %}
+                    <div class="error text-xs">{{ form.song_file.errors }}</div>
+                {% endif %}
+                <label for="{{ form.song_file.id_for_label }}">{{ form.song_file.label }}:
+                    <input type="file" name="{{ form.song_file.name }}"
+                           class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1" accept="audio/*">
+                </label>
             </div>
+        
+            <div class="input-box">
+                {% if form.image_file.errors %}
+                    <div class="error text-xs ">{{ form.image_file.errors }}</div>
+                {% endif %}
+                <label for="{{ form.image_file.id_for_label }}">{{ form.image_file.label }}:
+                    <input type="file" id="image_file" name="{{ form.image_file.name }}"
+                           class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1" accept="image/*">
+                </label>
+            </div>
+            <img id="songImage" src="{{ MEDIA_URL }}{{ form.instance.get_image_uri }}" alt="User Image"
+                 height="120" width="120">
+            <br>
+            
+            <div class="input-box">
+                {% if form.genres.errors %}
+                    <div class="error text-xs mb-1">{{ form.genres.errors }}</div>
+                {% endif %}
+                <label for="{{ form.genres.id_for_label }}">{{ form.genres.label }}:
+                    <select class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
+                            name="{{ form.genres.name }}">
+                        {% for value, name in form.genres.field.choices %}
+                            <option value="{{ value }}" {% if form.genres.value == value %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+        
+            <div class="input-box">
+                {% if form.albums.errors %}
+                    <div class="error text-xs mb-1">{{ form.albums.errors }}</div>
+                {% endif %}
+                <label for="{{ form.albums.id_for_label }}">{{ form.albums.label }}: <br>
+                    <select multiple class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
+                            name="{{ form.albums.name }}">
+                        {% for value, name in form.albums.field.choices %}
+                            <option value="{{ value }}" {% if value in form.albums.value %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            
+            <br>
+            <button id="update" type="submit" class="gradient-button font-bold py-2.5 px-6 rounded mb-4">Update</button>
+        </form>
+        <div id="loading" style="display: none;">
+            <p>Updating song, please wait...</p>
         </div>
-    </form>
-
-    <!-- Delete Song Form -->
-    <form method="post" action="{% url 'delete_song' form.instance.id %}" onsubmit="return confirm('Are you sure you want to delete this song?');" class="form-horizontal">
-        {% csrf_token %}
-        <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-danger">Delete Song</button>
-            <br><br>
-        </div>
-    </form>
-  
+   
+        <form 
+                hx-post="{% url 'delete_song' form.instance.id %}"
+                hx-target="#swap"
+                hx-swap="outerHTML"
+        >
+            {% csrf_token %}
+            <button type="submit" class="danger-button font-bold py-2.5 px-6 rounded mb-4">Delete Song</button>
+        </form>
+   
+   </section>
     <script>
-        document.getElementById('id_image_file').onchange = function (event) {
-            let reader = new FileReader();
-            reader.onload = function(){
-                let output = document.getElementById('songImage');
-                output.src = reader.result;
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        }
+        var songImageInput = document.getElementById('image_file');
+        var songImage = document.getElementById('songImage');
+        var updateButton = document.getElementById('update');
+        var loading = document.getElementById('loading');
+        
+        document.getElementById('updateForm').addEventListener('submit', function() {
+            updateButton.style.display = 'none';
+            loading.style.display = 'block';
+        });
+        
+        document.getElementById('updateForm').addEventListener('invalid', function() {
+            updateButton.style.display = 'block';
+            loading.style.display = 'none';
+        }, true);
+        
+        songImageInput.addEventListener('change', function () {
+            if (songImageInput.files && songImageInput.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    songImage.src = e.target.result;
+                }
+
+                reader.readAsDataURL(songImageInput.files[0]);
+            }
+        });
+        
     </script>
+    
 {% endblock %}

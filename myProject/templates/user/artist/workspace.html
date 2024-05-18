@@ -5,61 +5,77 @@
 
 {% block main %}
 
-        <h2 class="text-2xl font-bold mb-4 pl-5">Song List</h2>
-        <section class="mt-0 py-0 overflow-x-visible whitespace-nowrap list">
-            <ul>
-                {% for song in artist.songs.all %}
-                    <li class="flex items-center" >
-                        <span> <strong class="text-xl">{{ forloop.counter }}</strong> </span>
-                        <span>
-                            <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}" class="w-12 h-12" style="border-radius: 5px; color: White;">
+    <h2 class="text-2xl font-bold mb-4 pl-5">Song List</h2>
+    <section class="mt-0 py-0 overflow-x-visible whitespace-nowrap list">
+        <ul>
+            {% for song in artist.songs.all %}
+                <li class="flex items-center">
+                    <span> <strong class="text-xl">{{ forloop.counter }}</strong> </span>
+                    <span>
+                            <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}" class="w-12 h-12"
+                                 style="border-radius: 5px; color: White;">
                         </span>
-                        <span> 
+                    <span> 
                             <a href="{% url 'song_info' song.id %}" class="text-white-500 hover:underline">
                                <strong> {{ song.name }} </strong>
                             </a>    
                         </span>
-                        <span class="text-gray-400"> {{ song.get_genre }} </span>
-                        <span>
+                    <span > 
+                        <a class="play-button" 
+                                data-url="{% url 'stream_song' song.id %}" 
+                                data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
+                                data-artist="{{  song.get_artist_name  }}"
+                                data-name="{{ song.name }}">
+                            <i class="fas fa-play "></i>
+                        </a> 
+                    </span>
+                    <span>
                             <a href="{% url 'update_song' song.id %}"
                                hx-get="{% url 'update_song' song.id %}"
-                               hx-target="#swap" 
+                               hx-target="#swap"
                                hx-swap="outerHTML"
                                class="btn btn-primary hover:underline">Update</a>
                         </span>
-                    </li>
+                </li>
                 {% empty %}
-                    <li><strong>No songs available.</strong></li>
-                {% endfor %}
-            </ul>
-            <br>
-            <a href="{% url 'upload_song' %}" class="other-button font-bold py-2.5 px-6 rounded mb-4 mt-4">Upload Song</a>
-        </section>
-    
-        <h2 class="text-2xl font-bold mb-4 pl-5">Album List</h2>
-        <section class="mt-0 py-0 overflow-x-visible whitespace-nowrap list2">
-            <ul>
-                {% for album in artist.album_set.all %}
-                    <li class="flex items-center" >
-                        <span> <strong class="text-xl">{{ forloop.counter }}</strong> </span>
-                        <span>
-                            <img src="{{ MEDIA_URL }}{{ album.get_image_uri }}" alt="{{ album.name }}" class="w-12 h-12" style="border-radius: 5px; color: White;">
+                <li><strong>No songs available.</strong></li>
+            {% endfor %}
+        </ul>
+        <br>
+        <a href="{% url 'upload_song' %}"
+           hx-get="{% url "upload_song" %}"
+           hx-encoding="multipart/form-data"
+           hx-target="#swap"
+           hx-swap="outerHTML"
+           class="other-button font-bold py-2.5 px-6 rounded mb-4 mt-4">Upload Song</a>
+    </section>
+
+    <h2 class="text-2xl font-bold mb-4 pl-5">Album List</h2>
+    <section class="mt-0 py-0 overflow-x-visible whitespace-nowrap list2">
+        <ul>
+            {% for album in artist.album_set.all %}
+                <li class="flex items-center">
+                    <span> <strong class="text-xl">{{ forloop.counter }}</strong> </span>
+                    <span>
+                            <img src="{{ MEDIA_URL }}{{ album.get_image_uri }}" alt="{{ album.name }}" class="w-12 h-12"
+                                 style="border-radius: 5px; color: White;">
                         </span>
-                        <span> 
+                    <span> 
                             <a href="{% url 'album_info' album.name %}" class="text-white-500 hover:underline">
                                <strong> {{ album.name }} </strong>
                             </a>    
                         </span>
-                        <span>
-                            <a href="{% url 'update_album' album.id %}" class="btn btn-primary hover:underline">Update</a>
+                    <span>
+                            <a href="{% url 'update_album' album.id %}"
+                               class="btn btn-primary hover:underline">Update</a>
                         </span>
-                    </li>
+                </li>
                 {% empty %}
-                    <li><strong>No songs available.</strong></li>
-                {% endfor %}
-            </ul>
-            <br>
-            <a href="{% url 'create_album' %}" class="other-button font-bold py-2.5 px-6 rounded mb-4 mt-4">Add Album</a>
-        </section>
+                <li><strong>No songs available.</strong></li>
+            {% endfor %}
+        </ul>
+        <br>
+        <a href="{% url 'create_album' %}" class="other-button font-bold py-2.5 px-6 rounded mb-4 mt-4">Add Album</a>
+    </section>
 
 {% endblock %}

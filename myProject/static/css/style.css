@@ -204,10 +204,11 @@ section {
 }
 
 .artist-card {
+
+    max-width: 200px;
+    min-width: 160px;
+    height: 235px;
     width: auto;
-    max-width: 250px;
-    min-width: 200px;
-    height: 255px;
     background: linear-gradient(to bottom right, #00b76c, #ff6a92);
     border-radius: 10px;
     padding: 16px;
@@ -215,14 +216,20 @@ section {
     text-align: center;
     position: relative;
     overflow: hidden;
-    margin: 0 5px 20px;
+    margin: 0 7px 10px;
     display: inline-block;
+    transition: all ease 0.7s;
+}
+.artist-card:hover {
+    background: linear-gradient(to bottom right, rgb(0, 255, 149), rgb(255, 132, 164));
+    transform: scale(1.05);
+
 }
 
 .artist-card img {
     display: block;
-    width: 150px;
-    height: 150px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
     object-fit: cover;
     margin: 10px auto 8px;
@@ -231,6 +238,7 @@ section {
 .artist-card .artist-name {
     font-size: 18px;
     color: #fff;
+    font-weight: bold;
     margin-top: 8px;
     text-overflow-ellipsis: ellipsis
 }
@@ -353,12 +361,12 @@ section {
 
 /* Additional styles */
 .browse-all {
-    width: 100%;
+    width: 85%;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    column-gap: 145px;
-    row-gap: 80px;
-    padding: 10px;
+    column-gap: 195px;
+    row-gap: 50px;
+    padding: 5px;
     background-color: #121212; /* or any other color you prefer */
 }
 
@@ -373,28 +381,88 @@ section {
     color: white;
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    height: 260px;
-    width: 200px;
+    height: 250px;
+    width: 320px;
     transition: all ease 0.4s;
+    overflow: hidden;
 }
 .category-card:hover {
     background: rgba(255,255,255,.2);
     transform: scale(1.05);
 }
+
 .category-card img {
+    max-width: 200px;
     width: 200px;
     height: auto;
-    margin-top: 8px;
     margin-bottom: 8px;
     border-radius: 4px;
 }
 
 .category-title {
-    text-align: center;
+    text-align: left;
     font-size: 14px;
-    margin-bottom: 4px;
-    word-break: auto-phrase;
-    overflow-wrap: break-word;
+    margin-bottom: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    text-overflow: ellipsis;
+}
+
+
+.category-card:hover .song-buttons {
+    display: block;
+}
+
+
+
+.song-buttons {
+    display: none;
+    position: absolute;
+    top: 15px;
+    right: 32px;
+    gap: 25px;
+}
+
+.round-button {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
+    background: linear-gradient(to bottom right, #00b76c, #ff6a92);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all ease 0.5s;
+    cursor: pointer;
+}
+
+.round-button:hover {
+    transform: scale(1.1);
+    display: flex;
+
+}
+.round-button:focus {
+    outline: none;
+    display: flex;
+}
+.round-button i {
+    color: #0e0e0e;
+    font-size: 14px;
+    margin-top: 1px;
+    margin-left: 1px;
+    transition: all ease 0.5s;
+}
+.round-button:hover i {
+    color: #0e0e0e;
+    font-size: 14px;
+    transform: rotate(90deg);
+    margin-top: 1px;
+    margin-left: 1px;
+}
+.round-button:active {
+    transform: scale(0.9);
+    background: linear-gradient(to top left, #00b76c, #ff6a92);
 }
 
 /* Add more specific styles for badges if needed */
@@ -462,7 +530,7 @@ ul li {
     display: flex;
     border-radius: 5px;
     padding: 10px 20px;
-    transition: .3s;
+    transition: .5s;
 }
 
 ul li:hover
@@ -485,9 +553,21 @@ ul li span:nth-child(3)
     width: 600px;
 
 }
-ul li span:nth-child(4)
-{
+ul li span:nth-child(4) {
     width: 100px;
+    color: #bababa;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+ul li:hover span:nth-child(4) {
+    opacity: 1;
+}
+ul li span:nth-child(4):hover {
+   color: #ffffff;
+}
+ul li span:nth-child(4):active {
+    color: #bababa;
 }
 ul li span:nth-child(5)
 {
@@ -526,55 +606,5 @@ ul li span:nth-child(5)
 
 .other-button:hover {
     background: #074470;
-}
-
-
-.category-card:hover .song-buttons {
-    display: block;
-}
-
-
-
-.song-buttons {
-    display: none;
-    position: absolute;
-    bottom: 70px;
-    right: 17px;
-    gap: 10px;
-}
-
-.round-button {
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
-    background: linear-gradient(to bottom right, #00b76c, #ff6a92);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-
-.round-button:hover {
-    transform: scale(1.1);
-    display: flex;
-
-}
-.round-button:focus {
-    outline: none;
-    display: flex;
-}
-.round-button i {
-    color: #0e0e0e;
-    font-size: 14px;
-    margin-top: 1px;
-    margin-left: 1px;
-}
-.round-button:hover i {
-    color: #0e0e0e;
-    font-size: 14px;
-    transform: scale(1.1);
-    margin-top: 1px;
-    margin-left: 1px;
 }
 

@@ -2,53 +2,72 @@
 
 {% block header %}
     <div class="search-title artist-block" style="display: flex; align-items: center; ">
-    <img src="{{ MEDIA_URL }}{{ profile.get_image_uri }}" alt="Artist Image"  class="artist-card " style="border-radius: 50%;width:150px; height: auto;padding: 5px; margin-left: 20px;">
+        <img src="{{ MEDIA_URL }}{{ profile.get_image_uri }}" alt="Artist Image" class="artist-card "
+             style="border-radius: 50%;width:150px; height: auto;padding: 5px; margin-left: 20px;">
         <h1 class="text-6xl pb-5" style="margin-left: 20px;">
             <strong>{{ artist.Artist_name }}</strong>
         </h1>
-    
+
     </div>
 {% endblock %}
-    
+
 {% block main %}
     <h2 class="text-2xl font-bold mb-4 pl-5">Song List</h2>
     <section class="mt-0 py-0 overflow-x-visible whitespace-nowrap list">
         <br>
         <ul>
             {% for song in artist.songs.all %}
-                <li class="flex items-center" >
+                <li class="flex items-center">
                     <span> <strong class="text-xl">{{ forloop.counter }}</strong> </span>
                     <span>
-                        <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}" class="w-12 h-12" style="border-radius: 5px; color: White;">
+                        <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}" class="w-12 h-12"
+                             style="border-radius: 5px; color: White;">
                     </span>
                     <span> 
                         <a href="{% url 'song_info' song.id %}" class="text-white-500 hover:underline">
                            <strong> {{ song.name }} </strong>
                         </a>    
                     </span>
+                    <span>
+                        <a class="play-button"
+                           data-url="{% url 'stream_song' song.id %}"
+                           data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
+                           data-artist="{{ song.get_artist_name }}"
+                           data-name="{{ song.name }}">
+                            <i class="fas fa-play "></i>
+                        </a>
+                    </span>
                     <span class="text-gray-400"> {{ song.get_genre }} </span>
-                    
+
                 </li>
-            {% empty %}
+                {% empty %}
                 <li><strong>No songs available.</strong></li>
             {% endfor %}
         </ul>
     </section>
-    <section>
-        <h2 class="text-2xl font-bold mb-4">Album List</h2>
-        <div class="browse-all" style="margin-left: 10px">
-            <!-- Category Card -->
+    <h2 class="text-2xl font-bold mb-4">Album List</h2>
+    <section class="mt-0 py-0 overflow-x-visible whitespace-nowrap list2">
+        <ul>
             {% for album in artist.album_set.all %}
-                <div class="category-card">
-                    <a style="text-decoration: none; color: white;" href="{% url 'album_info' album.name %}">
-                        <img src="{{ MEDIA_URL }}{{ album.get_image_uri }}" alt="{{ album.name }}">
-                        <div class="category-title">{{ album.name }}</div>
-                    </a>
-                </div>
-            {% empty %}
-                <p style="width: 150px">No albums available.</p>
+                <li class="flex items-center">
+                    <span> <strong class="text-xl">{{ forloop.counter }}</strong> </span>
+                    <span>
+                            <img src="{{ MEDIA_URL }}{{ album.get_image_uri }}" alt="{{ album.name }}" class="w-12 h-12"
+                                 style="border-radius: 5px; color: White;">
+                    </span>
+                    <span> 
+                            <a href="{% url 'album_info' album.name %}" class="text-white-500 hover:underline">
+                               <strong> {{ album.name }} </strong>
+                            </a>    
+                    </span>
+                    <span>
+                           <a class="add-album-button" data-album="{{ album.get_song_info }}"><i class="fas fa-play "></i></a>
+                    </span>
+                </li>
+                {% empty %}
+                <li><strong>No album available.</strong></li>
             {% endfor %}
-        </div>
+        </ul>
     </section>
-    
+
 {% endblock %}

@@ -167,9 +167,10 @@
                 </div>
             </div>
     </div>
+    
     <script src="{% static 'js/music-player.js' %}"></script>   
     <script>
-         document.querySelectorAll('.play-button').forEach(function(button) {
+        document.querySelectorAll('.play-button').forEach(function(button) {
             button.addEventListener('click', function() {
                 var songUrl = button.getAttribute('data-url');
                 var songImage = button.getAttribute('data-image');
@@ -190,6 +191,23 @@
                 musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
             });
         });
+       
+        document.querySelectorAll('.add-album-button').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var albumInfo = button.getAttribute('data-album');
+                var songInfoArray = JSON.parse(albumInfo);
+                
+                songInfoArray.forEach(function(songInfo) {
+                    var songUrl = songInfo.stream_url;
+                    var songImage = songInfo.image_uri;
+                    var songArtist = songInfo.artist_name;
+                    var songName = songInfo.song_name;
+        
+                    musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
+                });
+            });
+        });
+
     </script>
         
     

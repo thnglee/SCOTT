@@ -1,3 +1,4 @@
+import json
 import os
 
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -113,6 +114,18 @@ class Album(models.Model):
 
     def get_image_uri(self):
         return "/media/image/album/" + self.image_uri
+
+    def get_song_info(self):
+        song_info = []
+        for song in self.songs.all():
+            info = {
+                'stream_url': reverse('stream_song', args=[str(song.id)]),
+                'image_uri': song.get_image_uri(),
+                'artist_name': song.get_artist_name(),
+                'song_name': song.name,
+            }
+            song_info.append(info)
+        return json.dumps(song_info)
 
 
 class Playlist(models.Model):

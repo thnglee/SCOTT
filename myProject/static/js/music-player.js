@@ -68,7 +68,6 @@ var MusicPlayer = MusicPlayer || (function() {
             audioElement.play();
         }
     });
-
         audioElement.addEventListener('play', function() {
             playPauseButton.classList.remove('pause');
             playPauseButton.classList.add('play');
@@ -209,7 +208,6 @@ var MusicPlayer = MusicPlayer || (function() {
             if (currentSeconds < 10) currentSeconds = '0' + currentSeconds;
             currentTimeElement.textContent = currentMinutes + ':' + currentSeconds;
         });
-
 
         volumeBar.addEventListener('mousedown', function(e) {
             isDragging = true;

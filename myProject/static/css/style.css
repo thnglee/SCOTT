@@ -298,7 +298,7 @@ section {
 .search-title {
     color: #fff;
     font-size: 22px;
-    padding-top: 20px;
+    padding-top: 8px;
 }
 
 /* Sidebar Styles */
@@ -401,7 +401,7 @@ section {
 
 .category-title {
     text-align: left;
-    font-size: 14px;
+    font-size: 16px;
     margin-bottom: 8px;
     overflow: hidden;
     white-space: nowrap;
@@ -575,7 +575,6 @@ ul li span:nth-child(5)
 }
 
 .artist-block {
-    margin-top: 5px;
     background: rgb(182,129,136);
     background: linear-gradient(90deg, rgba(182,129,136,0.7) 0%, rgba(182,129,136,0.5) 18%, rgba(182,129,136,0.3) 34%, rgba(182,129,136,0.1) 59%, rgba(182,129,136,0) 100%);
     border-radius: 8px;

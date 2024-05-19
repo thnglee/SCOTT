@@ -71,6 +71,9 @@
                     </span>
                     <span>
                             <a href="{% url 'update_album' album.id %}"
+                               hx-get="{% url 'update_album' album.id %}"
+                               hx-target="#swap"
+                               hx-swap="outerHTML"
                                class="btn btn-primary hover:underline">Update</a>
                     </span>
                 </li>
@@ -79,7 +82,14 @@
             {% endfor %}
         </ul>
         <br>
-        <a href="{% url 'create_album' %}" class="other-button font-bold py-2.5 px-6 rounded mb-4 mt-4">Add Album</a>
+        <a href="{% url 'create_album' %}"
+           hx-get="{% url "create_album" %}"
+           hx-target="#swap"
+           hx-swap="outerHTML"
+           class="other-button font-bold py-2.5 px-6 rounded mb-4 mt-4"
+        >
+            Add Album
+        </a>
     </section>
 
 {% endblock %}

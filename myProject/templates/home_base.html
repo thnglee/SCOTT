@@ -7,33 +7,35 @@
         .play {
             background-image: url({% static 'image/pause.png' %})
         }
+
         .pause {
             background-image: url({% static 'image/play.png' %})
         }
     </style>
-    
+
 {% endblock %}
 
 {% block body_style %}
-    margin:0; padding:0; background:#121212; font-family:Arial, sans-serif; color:#fff; 
+    margin:0; padding:0; background:#121212; font-family:Arial, sans-serif; color:#fff;
 {% endblock %}
 
 {% block content %}
+    <div hx-history-elt>
         <div class="sidebar" style="padding-bottom: 100px;">
             <div class="logo-container ">
-                <a href="{% url 'home' %}" 
-                     hx-get="{% url 'home' %}"
-                     hx-target="#swap"
-                     hx-swap="outerHTML"
+                <a href="{% url 'home' %}"
+                   hx-get="{% url 'home' %}"
+                   hx-target="#swap"
+                   hx-swap="outerHTML"
                 >
                     <img src="{% static 'image/SCOTT_logo.png' %}" alt="Logo"
                          style="width: 70%; height: auto; margin-left: 20px">
                 </a>
             </div>
-    
+
             <!-- Welcome User -->
             <div class="sidebar-section">
-    
+
                 {% if current_user.is_authenticated %}
                     <div class="profile-image" style="display: flex; justify-content: center; margin-top: 2px">
                         <img src="{{ MEDIA_URL }}{{ current_user.userprofile.get_image_uri }}"
@@ -48,7 +50,7 @@
                         <b style="margin-top: 5px">Welcome,👤 Stranger</b>
                     </div>
                 {% endif %}
-    
+
                 {% if current_user.is_authenticated %}
                     <a href="{% url 'user_profile' current_user.username %}"
                        hx-get="{% url 'user_profile' current_user.username %}"
@@ -60,11 +62,11 @@
                         <b>Profile</b>
                     </a>
                     {% if current_user.userprofile.artist %}
-                        <a href="{% url 'artist_workspace' %}" 
-                            hx-get="{% url 'artist_workspace' %}"
-                            hx-target="#swap"
-                            hx-swap="outerHTML"
-                            class="sidebar-link {% if request.resolver_match.url_name == 'artist_workspace' %}active{% endif %}"
+                        <a href="{% url 'artist_workspace' %}"
+                           hx-get="{% url 'artist_workspace' %}"
+                           hx-target="#swap"
+                           hx-swap="outerHTML"
+                           class="sidebar-link {% if request.resolver_match.url_name == 'artist_workspace' %}active{% endif %}"
                         >
                             <span class="sidebar-link-icon">🎵</span>
                             <b>Workspace</b>
@@ -72,7 +74,7 @@
                     {% endif %}
                     <a href="{% url 'logout' %}" class="sidebar-link">
                         <span class="sidebar-link-icon">↪️</span>
-                        <b >Logout</b>
+                        <b>Logout</b>
                     </a>
                 {% else %}
                     <a href="{% url 'login' %}" class="sidebar-link">
@@ -80,16 +82,16 @@
                         <b>Login</b>
                     </a>
                 {% endif %}
-                
+
             </div>
-    
+
             <!-- Top section of the sidebar -->
             <div class="sidebar-section">
                 <a href="{% url 'home' %}"
-                    hx-get="{% url 'home' %}"
-                    hx-target="#swap"
-                    hx-swap="outerHTML"
-                    class="sidebar-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                   hx-get="{% url 'home' %}"
+                   hx-target="#swap"
+                   hx-swap="outerHTML"
+                   class="sidebar-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
                 >
                     <span class="sidebar-link-icon">🏠</span>
                     <b>Home</b>
@@ -98,11 +100,11 @@
                     <span class="sidebar-link-icon">🔍</span>
                     <strong>Search</strong>
                 </a>
-                
+
             </div>
-    
+
         </div>
-    
+
         <div style="margin-left:190px; padding: 20px 20px 100px;">
             <header id="header" class="header-container">
                 <form action="{% url 'home' %}" method="GET">
@@ -117,98 +119,99 @@
                 {% block header %}
                 {% endblock %}
             </header>
-    
-    
+
+
             <main id="main" style="padding-top:20px;">
                 {% block main %}
-                    
+
                 {% endblock %}
-                
+
             </main>
-        
         </div>
-    
-    <div hx-preserve="true" id="music-player" class="music-player">
-            <div class="song-bar">
-                <div class="song-infos">
-                    <div class="image-container">
-                        <img src="{{ MEDIA_URL }}{{ '/media/image/song/default.png' }}" alt="" />
-                    </div>
-                    <div class="song-description">
-                        <p class="title">
-                            Name
-                        </p>
-                        <p class="artist">Artist</p>
-                    </div>
-                </div>
-            </div>
-            <div class="progress-controller">
-                <div class="control-buttons">
-                    <i class="fas fa-random"></i>
-                    <i class="fas fa-step-backward"></i>
-                    <i class="play-pause pause"></i>
-                    <i class="fas fa-step-forward"></i>
-                    <i class="fas fa-undo-alt"></i>
-                </div>
-                <div class="progress-container">
-                    <span style="width: 30px; margin-right: 2px;">0:00</span>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                    <span style="width: 30px;">0:00</span>
-                </div>
-            </div>
-            <div class="other-features">
-                <div class="volume-bar">
-                    <i class="fas fa-volume-down"></i>
-                    <div class="progress-bar">
-                        <div class="progress"></div>
-                    </div>
-                </div>
-            </div>
-    </div>
-    
-    <script src="{% static 'js/music-player.js' %}"></script>   
-    <script>
-        document.querySelectorAll('.play-button').forEach(function(button) {
-            button.addEventListener('click', function() {
-                var songUrl = button.getAttribute('data-url');
-                var songImage = button.getAttribute('data-image');
-                var songArtist = button.getAttribute('data-artist');
-                var songName = button.getAttribute('data-name');
+        <script>
+            document.querySelectorAll('.play-button').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var songUrl = button.getAttribute('data-url');
+                    var songImage = button.getAttribute('data-image');
+                    var songArtist = button.getAttribute('data-artist');
+                    var songName = button.getAttribute('data-name');
 
-                musicPlayer.playSong(songUrl, songImage, songArtist, songName);
+                    musicPlayer.playSong(songUrl, songImage, songArtist, songName);
+                });
             });
-        });
 
-        document.querySelectorAll('.add-button').forEach(function(button) {
-            button.addEventListener('click', function() {
-                var songUrl = button.getAttribute('data-url');
-                var songImage = button.getAttribute('data-image');
-                var songArtist = button.getAttribute('data-artist');
-                var songName = button.getAttribute('data-name');
+            document.querySelectorAll('.add-button').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var songUrl = button.getAttribute('data-url');
+                    var songImage = button.getAttribute('data-image');
+                    var songArtist = button.getAttribute('data-artist');
+                    var songName = button.getAttribute('data-name');
 
-                musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
-            });
-        });
-       
-        document.querySelectorAll('.add-album-button').forEach(function(button) {
-            button.addEventListener('click', function() {
-                var albumInfo = button.getAttribute('data-album');
-                var songInfoArray = JSON.parse(albumInfo);
-                
-                songInfoArray.forEach(function(songInfo) {
-                    var songUrl = songInfo.stream_url;
-                    var songImage = songInfo.image_uri;
-                    var songArtist = songInfo.artist_name;
-                    var songName = songInfo.song_name;
-        
                     musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
                 });
             });
-        });
 
-    </script>
+            document.querySelectorAll('.add-album-button').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var albumInfo = button.getAttribute('data-album');
+                    var songInfoArray = JSON.parse(albumInfo);
+
+                    songInfoArray.forEach(function (songInfo) {
+                        var songUrl = songInfo.stream_url;
+                        var songImage = songInfo.image_uri;
+                        var songArtist = songInfo.artist_name;
+                        var songName = songInfo.song_name;
+
+                        musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
+                    });
+                });
+            });
+
+        </script>
+    </div>
+    <div hx-preserve="true" id="music-player" class="music-player">
+        <div class="song-bar">
+            <div class="song-infos">
+                <div class="image-container">
+                    <img src="{{ MEDIA_URL }}{{ '/media/image/song/default.png' }}" alt=""/>
+                </div>
+                <div class="song-description">
+                    <p class="title">
+                        Name
+                    </p>
+                    <p class="artist">Artist</p>
+                </div>
+            </div>
+        </div>
+        <div class="progress-controller">
+            <div class="control-buttons">
+                <i class="fas fa-random"></i>
+                <i class="fas fa-step-backward"></i>
+                <i class="play-pause pause"></i>
+                <i class="fas fa-step-forward"></i>
+                <i class="fas fa-undo-alt"></i>
+            </div>
+            <div class="progress-container">
+                <span style="width: 30px; margin-right: 2px;">0:00</span>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+                <span style="width: 30px;">0:00</span>
+            </div>
+        </div>
+        <div class="other-features">
+            <div class="volume-bar">
+                <i class="fas fa-volume-down"></i>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+            </div>
+        </div>
         
-    
+    </div>
+
+    <script src="{% static 'js/music-player.js' %}"></script>
+
+
+
 {% endblock %}

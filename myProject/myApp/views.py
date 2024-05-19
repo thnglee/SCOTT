@@ -379,9 +379,7 @@ def update_song(request, song_id):
                 song.albums.set(form.cleaned_data['albums'])
 
             form.save_m2m()
-            return render(request, 'user/artist/workspace.html',
-                          {'artist': artist, 'songs': artist.songs, 'albums': artist.album_set,
-                           'current_user': request.user})
+            return redirect('artist_workspace')
     else:
         form = UpdateSongForm(instance=song, profile=profile)
 
@@ -391,10 +389,6 @@ def update_song(request, song_id):
 @require_POST
 def delete_song(request, song_id):
     song = get_object_or_404(Song, id=song_id)
-    current_user = request.user
-    profile = UserProfile.objects.get(user=current_user)
-    songs = Song.objects.filter(artists=profile.artist)
-    albums = Album.objects.filter(artist=profile.artist)
     # Delete the song file and image file
     if song.uri:
         default_storage.delete('audio/' + song.uri)
@@ -402,9 +396,7 @@ def delete_song(request, song_id):
     if song.image_uri != 'default.png':
         default_storage.delete('image/song/' + song.image_uri)
     song.delete()
-    return render(request, 'user/artist/workspace.html',
-                  {'artist': profile.artist, 'songs': songs, 'albums': albums,
-                   'current_user': request.user})
+    return redirect('artist_workspace')
 
 
 def artist_profile(request, artist_name):
@@ -457,12 +449,18 @@ def create_album(request):
                 album.image_uri = 'default.png'
 
             album.save()
+
+            # Songs
+            if 'songs' in form.cleaned_data:
+                for song in form.cleaned_data['songs']:
+                    album.songs.add(song)
+
             form.save_m2m()
-            return redirect('home')
+            return redirect('artist_workspace')
     else:
         form = CreateAlbumForm(profile=profile)
 
-    return render(request, 'album/create.html', {'form': form})
+    return render(request, 'album/create.html', {'form': form, 'current_user': request.user})
 
 
 def album_info(request, album_name):
@@ -510,7 +508,7 @@ def delete_album(request, album_id):
     if album.image_uri != 'default.png':
         default_storage.delete('image/album/' + album.image_uri)
     album.delete()
-    return redirect('home')
+    return redirect('artist_workspace')
 
 
 @login_required(login_url='/login/')

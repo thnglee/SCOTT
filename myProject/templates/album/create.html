@@ -1,10 +1,108 @@
-{% extends "templates/base.html" %}
+{% extends "templates/home_base.html" %}
+{% load static %}
+{% block header %}
+    <div class="search-title">Create Album</div>
+{% endblock %}
+{% block main %}
+   <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
+        <form
+                id="createAlbumForm"
+                hx-post="{% url "create_album" %}"
+                hx-encoding="multipart/form-data"
+                hx-target="#swap"
+                hx-swap="outerHTML"
+        >
+            {% csrf_token %}
+            <div class="input-box" style="width: 400px">
+                {% if form.album_name.errors %}
+                    <div class="error text-xs">{{ form.album_name.errors }}</div>
+                {% endif %}
+                <label for="{{ form.album_name.id_for_label }}">{{ form.album_name.label }}:
+                    <input class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
+                           type="text" name="{{ form.album_name.name }}" style="width: 400px">
+                </label>
+            </div>
+        
+            <div class="input-box">
+                {% if form.image_file.errors %}
+                    <div class="error text-xs">{{ form.image_file.errors }}</div>
+                {% endif %}
+                <label for="{{ form.image_file.id_for_label }}">{{ form.image_file.label }}:
+                    <input type="file" id="image_file" name="{{ form.image_file.name }}"
+                           class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1" accept="image/*">
+                </label>
+            </div>
+            <img id="albumImage" src="{{ MEDIA_URL }}{{ '/media/image/album/default.png' }}" alt="Album Image"
+                 height="120" width="120">
+            <br>
+            
+            <div class="input-box">
+                {% if form.songs.errors %}
+                    <div class="error text-xs mb-1">{{ form.songs.errors }}</div>
+                {% endif %}
+                <label for="{{ form.songs.id_for_label }}">{{ form.songs.label }}: <br>
+                    <select id="id_songs" multiple class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
+                            name="{{ form.songs.name }}">
+                        {% for value, name in form.songs.field.choices %}
+                            <option value="{{ value }}">{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            
+            <br>
+            <button id="create" type="submit" class="gradient-button font-bold py-2.5 px-6 rounded mb-4">Create</button>
+        </form>
+        <div id="loading" style="display: none;">
+            <p>Creating album, please wait...</p>
+        </div>
+   
+   </section>
+    <script>
+        var albumImageInput = document.getElementById('image_file');
+        var albumImage = document.getElementById('albumImage');
+        var createButton = document.getElementById('create');
+        var loading = document.getElementById('loading');
+        
+        document.getElementById('createAlbumForm').addEventListener('submit', function() {
+            createButton.style.display = 'none';
+            loading.style.display = 'block';
+        });
+        
+        document.getElementById('createAlbumForm').addEventListener('invalid', function() {
+            createButton.style.display = 'block';
+            loading.style.display = 'none';
+        }, true);
+        
+        albumImageInput.addEventListener('change', function () {
+            if (albumImageInput.files && albumImageInput.files[0]) {
+                var reader = new FileReader();
 
-{% block content %}
-  <h2>Create Album</h2>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create Album</button>
-  </form>
+                reader.onload = function (e) {
+                    albumImage.src = e.target.result;
+                }
+
+                reader.readAsDataURL(albumImageInput.files[0]);
+            }
+        });
+        
+    </script>
+   
+    <script>
+    $(document).ready(function() {
+        $('#id_songs').mousedown(function(e) {
+            e.preventDefault();
+    
+            var select = this;
+            var scroll = select.scrollTop;
+    
+            e.target.selected = !e.target.selected;
+    
+            setTimeout(function(){select.scrollTop = scroll;}, 0);
+    
+            $(select).focus();
+        }).mousemove(function(e){e.preventDefault()});
+    });
+    </script>
+    
 {% endblock %}

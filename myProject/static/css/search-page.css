@@ -1,0 +1,450 @@
+
+.content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    margin-right: 0;
+    max-width: 80vw;
+}
+
+.suggestion-list {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+.suggestion-list h2 {
+    color: #ffffff;
+    font-size: 20px;
+    margin-bottom: 0;
+}
+
+.suggestion-list .search-list {
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    gap: 28px;
+    overflow: scroll;
+}
+
+.suggestion-list .search-list::-webkit-scrollbar {
+    height: 16px;
+    width: 0;
+}
+
+.suggestion-list .search-list::-webkit-scrollbar-thumb {
+    background: #b3b3b3;
+    border-radius: 8px;
+}
+
+.suggestion-list .search-list::-webkit-scrollbar-thumb:hover {
+    background: #3d3d3d;
+}
+
+.suggestion-list .search-list .item {
+    min-width: 140px;
+    width: 160px;
+    transition: all ease 0.4s;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    margin: 26px;
+}
+
+.item-image {
+    min-width: 120px;
+    background-color: #1D1D1F;
+    border-radius: 50%;
+    transition: all ease 0.4s;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.item-image img {
+    height: 100%;
+    width: auto;
+
+}
+
+.suggestion-list .search-list .item .artist-name h4 {
+    color: #ffffff;
+    font-size: 16px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-top: 8px;
+    text-align: center;
+}
+
+.suggestion-list .search-list .item:hover {
+    transform: scale(1.1);
+}
+
+.suggestion-list .search-list .item img {
+    border-radius: 50px;
+}
+
+.suggestion-list .search-list .item .play {
+    position: relative;
+}
+
+.suggestion-list hr {
+    margin: 64px 0 0;
+    border-color: #636363;
+}
+
+.scott-playlists .search-list {
+    gap: 12px;
+
+}
+
+.scott-playlists .search-list .item {
+    min-width: 200px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    background-color: #181818;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all ease 0.4s;
+    justify-content: normal;
+}
+
+.scott-playlists .search-list .item:hover {
+    background-color: #252525;
+}
+
+.scott-playlists .search-list .item img {
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.scott-playlists .search-list .item .play {
+    position: relative;
+}
+
+.scott-playlists .search-list .item .play .fa {
+    position: absolute;
+    right: 10px;
+    top: -60px;
+    padding: 18px;
+    background-color: #1db954;
+    border-radius: 100%;
+    opacity: 0;
+    transition: all ease 0.4s;
+}
+
+.scott-playlists .search-list .item:hover .play .fa {
+    opacity: 1;
+    transform: translateY(-20px);
+    transition: all ease 0.4s;
+}
+
+.scott-playlists .search-list .item h4 {
+    margin: 8px 0;
+    color: #ffffff;
+}
+
+.scott-playlists .search-list .item p {
+    color: #989898;
+    margin: 0;
+    font-size: 12px;
+    line-height: 8px;
+    font-weight: 600;
+}
+
+.scott-playlists hr {
+    margin: 64px 0 0;
+    border-color: #636363;
+}
+
+.content .search-navigation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.content .search-content {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.search-navigation a {
+    text-decoration: none;
+}
+
+.search-navigation .nav {
+    width: max-content;
+    background-color: #3d3d3d;
+    border-radius: 48px;
+    align-content: center;
+}
+
+.search-navigation .active {
+    background-color: #ffffff;
+}
+
+.search-navigation .inactive p {
+    padding: 8px 12px;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    color: #f6f6f6;
+}
+
+.search-navigation .inactive:hover {
+    background-color: #636363;
+}
+
+.search-navigation .active p {
+    padding: 8px 12px;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    color: #1D1D1F;
+}
+
+.search-content .top-suggestions {
+    padding-bottom: 16px;
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.search-content .top-suggestions::-webkit-scrollbar {
+    margin-top: 4px;
+    height: 6px;
+}
+
+.search-content .top-suggestions::-webkit-scrollbar-thumb {
+    background: #b3b3b3;
+    border-radius: 4px;
+}
+
+.search-content .top-suggestions::-webkit-scrollbar-thumb:hover {
+    background: #3d3d3d;
+}
+
+.search-content .top-suggestions h1 {
+    font-family: 'Poppins', sans-serif;
+    color: #ffffff;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.search-content .top-suggestions .top-result {
+    width: 30%;
+    min-width: 384px;
+    padding: 8px 8px 0 0;
+    gap: 16px;
+    display: flex;
+    flex-direction: column;
+
+}
+
+
+.search-content .top-suggestions .top-result .result {
+    flex: 1;
+    width: 100%;
+    border-radius: 16px;
+    padding: 8px;
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    background-color: #252525;
+    transition: all ease 0.3s;
+}
+
+.search-content .top-suggestions .top-result .result:hover {
+    background-color: #FFFFFF33;
+}
+
+.search-content .top-suggestions .top-result .result .info {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: normal;
+    gap: 8px;
+    margin-left: 6px;
+}
+
+.search-content .top-suggestions .top-result .info .img {
+    height: 160px;
+    width: 160px;
+    min-height: 150px;
+    min-width: 150px;
+    border-radius: 10px;
+    transition: all ease 0.4s;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-content .top-suggestions .top-result .result .info h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+    white-space: wrap;
+    overflow: auto;
+
+}
+
+.search-content .top-suggestions .top-result .result .info p {
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    color: rgba(218, 96, 118, 0.89);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.search-content .top-suggestions .top-result .result .song-buttons {
+    top: 0;
+    right: 0;
+    transition: all ease 0.5s;
+    position: relative;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.search-content .top-suggestions .top-result .result:hover .song-buttons {
+    opacity: 1;
+}
+
+.search-content .song-results {
+    flex: 1;
+    min-width: 648px;
+    max-width: 648px;
+    height: 330px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-content .song-results .songs {
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(1, auto);
+    grid-template-rows: repeat(4, auto);
+}
+
+.search-content .songs .song {
+    height: 64px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: #252525;
+    margin-top: 5px;
+}
+
+.search-content .songs .song:hover {
+    background-color: rgba(168, 168, 168, 0.2);
+}
+
+.search-content .songs .song .img {
+    justify-content: center;
+    padding: 4px;
+    height: 64px;
+    width: 64px;
+    display: flex;
+}
+
+.search-content .songs .song p {
+    font-family: 'Poppins', sans-serif;
+    color: #ffffff;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.search-content .songs .song .song-content {
+    flex: 1;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.search-content .songs .song .play-add-button {
+    display: flex;
+    flex-direction: row;
+    margin-right: 16px;
+    gap: 30px;
+}
+
+.search-content .songs .song:hover .play-add-button .play-button {
+    opacity: 1;
+}
+
+.search-content .songs .song .play-add-button .play-button {
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+
+.search-content .songs .song .play-add-button .play-button:hover {
+    cursor: pointer;
+    color: #1db954;
+}
+.search-content .songs .song .play-add-button .play-button:active {
+    color: #ffffff;
+}
+
+.search-content .songs .song:hover .play-add-button .add-button {
+    opacity: 1;
+}
+
+.search-content .songs .song .play-add-button .add-button {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.search-content .songs .song .play-add-button .add-button:hover {
+    cursor: pointer;
+    color: #df4b68;
+}
+
+.search-content .songs .song .play-add-button .add-button:active {
+    color: #ffffff;
+}
+
+
+ul li:hover span:nth-child(4) {
+    opacity: 1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

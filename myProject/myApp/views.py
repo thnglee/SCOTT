@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, \
     PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.core.files.storage import default_storage
-from django.db.models import Q
+from django.db.models import Q, Case, When, Value, IntegerField
 from django.http import Http404, FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -543,6 +543,67 @@ def delete_playlist(request, playlist_id):
     playlist = get_object_or_404(Playlist, id=playlist_id)
     playlist.delete()
     return redirect('home')
+
+
+def search_all(request):
+    query = request.GET.get('q', '')
+    song_results = Song.objects.filter(name__icontains=query)
+    artist_results = Artist.objects.filter(Artist_name__icontains=query)
+    album_results = Album.objects.filter(name__icontains=query)
+    user_results = User.objects.filter(username__icontains=query)
+    playlist_results = Playlist.objects.filter(name__icontains=query)
+    song_result = Song.objects.annotate(
+        exact_match=Case(
+            When(name__iexact=query, then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField(),
+        )
+    ).filter(name__icontains=query).order_by('-exact_match').first()
+
+    artist_result = Artist.objects.annotate(
+        exact_match=Case(
+            When(Artist_name__iexact=query, then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField(),
+        )
+    ).filter(Artist_name__icontains=query).order_by('-exact_match').first()
+
+    album_result = Album.objects.annotate(
+        exact_match=Case(
+            When(name__iexact=query, then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField(),
+        )
+    ).filter(name__icontains=query).order_by('-exact_match').first()
+
+    # Create a list of the results
+    results = [song_result, artist_result, album_result]
+
+    # Select the first non-None result
+    top_result = next((result for result in results if result is not None), None)
+
+    # If no exact match, get the first result that contains the query
+    if top_result is None:
+        song_result = Song.objects.filter(name__icontains=query).first()
+        artist_result = Artist.objects.filter(Artist_name__icontains=query).first()
+        album_result = Album.objects.filter(name__icontains=query).first()
+        results = [song_result, artist_result, album_result]
+        top_result = next((result for result in results if result is not None), None)
+    top_result_type = None
+    if top_result is not None:
+        top_result_type = top_result.__class__.__name__
+
+    results = {
+        'songs': song_results,
+        'artists': artist_results,
+        'albums': album_results,
+        'users': user_results,
+        'playlists': playlist_results,
+        'top_result': top_result,
+        'top_result_type': top_result_type,
+    }
+
+    return render(request, 'search/all.html', {'search_results': results, 'current_user': request.user})
 
 
 def clean_filename(filename):

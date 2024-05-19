@@ -96,7 +96,11 @@
                     <span class="sidebar-link-icon">🏠</span>
                     <b>Home</b>
                 </a>
-                <a href="{% url 'home' %}" class="sidebar-link">
+                <a href="{% url 'search_all' %}" 
+                   hx-get="{% url 'search_all' %}"
+                   hx-target="#swap"
+                   hx-swap="outerHTML"
+                   class="sidebar-link {% if request.resolver_match.url_name == 'search_all' %}active{% endif %}">
                     <span class="sidebar-link-icon">🔍</span>
                     <strong>Search</strong>
                 </a>
@@ -105,23 +109,14 @@
 
         </div>
 
-        <div style="margin-left:190px; padding: 20px 20px 100px;">
+        <div style="margin-left:190px; padding: 0 20px 100px;">
             <header id="header" class="header-container">
-                <form action="{% url 'home' %}" method="GET">
-                    {% csrf_token %}
-                    <div class="search-bar" style="width: 400px;">
-                        <input type="search" name="q" placeholder="What do you want to listen to?" aria-label="Search">
-                        <button type="submit" aria-label="Search">
-                            🔍
-                        </button>
-                    </div>
-                </form>
                 {% block header %}
                 {% endblock %}
             </header>
 
 
-            <main id="main" style="padding-top:20px;">
+            <main id="main">
                 {% block main %}
 
                 {% endblock %}

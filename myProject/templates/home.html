@@ -1,11 +1,9 @@
 {% extends 'templates/home_base.html' %}
 {% load static %}
-{% block header %}
-	<div class="search-title">Top Artists</div>
-{% endblock %}
 
 {% block main %}
-    <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
+    <div class="browse-all-title">Top Artists</div>
+    <section style=" margin-top:0; padding:0; margin-right: 0; overflow-x: visible; white-space:nowrap;">
         <div class="artist-list">
             {% for artist in artists %}
                 {% if forloop.counter <= 6 %}
@@ -29,7 +27,7 @@
   
     <div class="browse-all-title">Top Songs</div>
 
-    <div class="browse-all" style="margin-left: 10px">
+    <div class="browse-all" style="margin-left: 20px">
         <!-- Category Card -->
         {% for song in songs %}
             {% if forloop.counter <= 12 %}

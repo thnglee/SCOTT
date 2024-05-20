@@ -42,7 +42,7 @@
                 {% endif %}
                 <label for="{{ form.songs.id_for_label }}">{{ form.songs.label }}: <br>
                     <select id="id_songs" multiple class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
-                            name="{{ form.songs.name }}">
+                            name="{{ form.songs.name }}" style="width: 300px; height: 150px">
                         {% for value, name in form.songs.field.choices %}
                             <option value="{{ value }}">{{ name }}</option>
                         {% endfor %}

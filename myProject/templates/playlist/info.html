@@ -1,31 +1,47 @@
-{% extends "base.html" %}
+{% extends "templates/home_base.html" %}
+{% block header %}
+    <div class="search-title">Playlists</div>
+{% endblock %}
 
-{% block content %}
-  <div class="container">
-    <h2>{{ playlist.name }}</h2>
-      <div class="playlist">
+{% block main %}
+    
+    <section class="mt-0 py-0 overflow-x-visible whitespace-nowrap list">
         <ul>
-        {% for song in playlist.songs.all %}
-            <div class="row mb-3 col-12 align-items-center">
-                <div>
-                    <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="song cover" class="img-fluid" height="130" width="130">
-                </div>
-                <div class="col-md-4" >
-                    <h5>{{ song.name }}</h5>
-                    <audio controls class="default_vol">
-                        <source src="{% url 'stream_song' song.id %}" type="{{ song.get_mime_type }}">
-                        Your browser does not support the audio element.
-                    </audio>
-                </div>
-            </div>`
-        {% empty %}
-            <li>No songs in this playlist yet.</li>
-        {% endfor %}
+            {% for playlist in current_user.userprofile.playlist_set.all %}
+                <li class="flex items-center">
+                    <span> <strong class="text-xl">{{ forloop.counter }}</strong> </span>
+                    <span>
+                        <a class="text-white-500 hover:underline">
+                           <strong> {{ playlist.name }} </strong>
+                        </a>    
+                    </span>
+                    <span>
+                        <a href="{% url 'update_playlist' playlist.id %}"
+                           hx-get="{% url 'update_playlist' playlist.id %}"
+                           hx-target="#swap"
+                           hx-swap="outerHTML"
+                           class="btn btn-primary hover:underline">Update</a>
+                    </span>
+                    <span>
+                        <a class="play-all-button" data-album="{{ playlist.get_song_info }}"><i class="fas fa-play "></i></a>
+                    </span>
+                    <span>
+                        <a class="add-all-button" data-album="{{ playlist.get_song_info }}"><i class="fas fa-plus "></i></a>
+                    </span>
+                </li>
+                {% empty %}
+                <li><strong>No playlists available.</strong></li>
+            {% endfor %}
         </ul>
-    </div>
-  
-    {% if request.user == playlist.user.user %}
-      <a href="{% url 'delete_playlist' playlist.id %}">Delete this playlist</a>
-    {% endif %}
-  </div>
+        <br>
+        <a href="{% url 'create_playlist' %}"
+           hx-get="{% url "create_playlist" %}"
+           hx-target="#swap"
+           hx-swap="outerHTML"
+           class="other-button font-bold py-2.5 px-6 rounded mb-4 mt-4"
+        >
+            Add Playlist
+        </a>
+    </section>
+
 {% endblock %}

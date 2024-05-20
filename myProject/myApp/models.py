@@ -140,3 +140,15 @@ class Playlist(models.Model):
 
     def get_all_songs(self):
         return self.songs.all()
+
+    def get_song_info(self):
+        song_info = []
+        for song in self.songs.all():
+            info = {
+                'stream_url': reverse('stream_song', args=[str(song.id)]),
+                'image_uri': song.get_image_uri(),
+                'artist_name': song.get_artist_name(),
+                'song_name': song.name,
+            }
+            song_info.append(info)
+        return json.dumps(song_info)

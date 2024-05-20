@@ -91,7 +91,14 @@ var MusicPlayer = MusicPlayer || (function() {
             document.querySelector('.song-description .title').textContent = songName;
             document.querySelector('.song-description .artist').textContent = songArtist;
 
+
             if (songUrl !== '') {
+                document.querySelectorAll('.playlist .songs p').forEach(function(song) {
+                    song.classList.remove('playing');
+                    if (song.textContent === songName) {
+                        song.classList.add('playing');
+                    }
+                });
                 audioElement.src = songUrl;
                 audioElement.play()
             }
@@ -110,10 +117,14 @@ var MusicPlayer = MusicPlayer || (function() {
                 artist: songArtist,
                 name: songName
             });
-
+            loadSongIntoPlaylist();
             if (audioElement.ended || !audioElement.src) {
                 playSong(songUrl, songImage, songArtist, songName);
             }
+
+        }
+        function clearPlaylist() {
+            playlist = [];
         }
 
         nextButton.addEventListener('click', function() {
@@ -258,7 +269,10 @@ var MusicPlayer = MusicPlayer || (function() {
 
         return {
             playSong: playSong,
-            addToPlaylist: addToPlaylist
+            addToPlaylist: addToPlaylist,
+            playlist: playlist,
+            audioElement: audioElement,
+            clearPlaylist: clearPlaylist
         };
     }
 

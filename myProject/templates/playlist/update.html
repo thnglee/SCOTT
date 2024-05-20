@@ -1,13 +1,13 @@
 {% extends "templates/home_base.html" %}
 {% load static %}
 {% block header %}
-    <div class="search-title">Create Playlist</div>
+    <div class="search-title">Update Playlist</div>
 {% endblock %}
 {% block main %}
    <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
         <form
-                id="createForm"
-                hx-post="{% url "create_playlist" %}"
+                id="updateForm"
+                hx-post="{% url "update_playlist" form.instance.id %}"
                 hx-encoding="multipart/form-data"
                 hx-target="#swap"
                 hx-swap="outerHTML"
@@ -30,7 +30,7 @@
                 {% endif %}
                 <label for="{{ form.songs.id_for_label }}">{{ form.songs.label }}: <br>
                     <select id="id_songs" multiple class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
-                            name="{{ form.songs.name }}" style="width: 300px; height: 350px" >
+                            name="{{ form.songs.name }}" style="width: 300px; height: 350px">
                         {% for value, name in form.songs.field.choices %}
                             <option value="{{ value }}" {% if value in form.songs.value %}selected{% endif %}>{{ name }}</option>
                         {% endfor %}
@@ -39,23 +39,33 @@
             </div>
             
             <br>
-            <button id="create" type="submit" class="gradient-button font-bold py-2.5 px-6 rounded mb-4">Create Playlist</button>
+            <button id="update" type="submit" class="gradient-button font-bold py-2.5 px-6 rounded mb-4">Update</button>
         </form>
         <div id="loading" style="display: none;">
-            <p>Creating playlist, please wait...</p>
+            <p>Updating playlist, please wait...</p>
         </div>
+   
+        <form 
+                hx-post="{% url 'delete_playlist' form.instance.id %}"
+                hx-target="#swap"
+                hx-swap="outerHTML"
+        >
+            {% csrf_token %}
+            <button type="submit" class="danger-button font-bold py-2.5 px-6 rounded mb-4">Delete Playlist</button>
+        </form>
+   
    </section>
     <script>
-        var createButton = document.getElementById('create');
+        var updateButton = document.getElementById('update');
         var loading = document.getElementById('loading');
         
-        document.getElementById('createForm').addEventListener('submit', function() {
-            createButton.style.display = 'none';
+        document.getElementById('updateForm').addEventListener('submit', function() {
+            updateButton.style.display = 'none';
             loading.style.display = 'block';
         });
         
-        document.getElementById('createForm').addEventListener('invalid', function() {
-            createButton.style.display = 'block';
+        document.getElementById('updateForm').addEventListener('invalid', function() {
+            updateButton.style.display = 'block';
             loading.style.display = 'none';
         }, true);
     </script>
@@ -75,4 +85,5 @@
         }).mousemove(function(e){e.preventDefault()});
     });
     </script>
+    
 {% endblock %}

@@ -131,3 +131,21 @@ class CreatePlaylistForm(forms.ModelForm):
             self.fields['songs'].queryset = Song.objects.filter(name__icontains=search_query)
         else:
             self.fields['songs'].queryset = Song.objects.all()
+
+
+class UpdatePlaylistForm(forms.ModelForm):
+    songs = forms.ModelMultipleChoiceField(
+        queryset=Song.objects.none(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+
+    class Meta:
+        model = Playlist
+        fields = ['name', 'songs']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['songs'].queryset = Song.objects.all()
+        if self.instance:
+            self.fields['songs'].initial = self.instance.songs.all()

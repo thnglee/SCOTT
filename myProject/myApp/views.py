@@ -18,7 +18,8 @@ from django.views.decorators.http import require_POST
 from pydub import AudioSegment
 
 from myApp.forms import (CreateUserForm, UploadSongForm, UpdateSongForm, UpdateUserForm,
-                         UpdateUserProfileForm, CreateAlbumForm, CreatePlaylistForm, UpdateAlbumForm)
+                         UpdateUserProfileForm, CreateAlbumForm, CreatePlaylistForm, UpdateAlbumForm,
+                         UpdatePlaylistForm)
 from myApp.models import Song, UserProfile, Artist, Album, Playlist
 
 
@@ -498,7 +499,7 @@ def update_album(request, album_id):
 
     else:
         form = UpdateAlbumForm(instance=album, profile=request.user.userprofile)
-    return render(request, 'album/update.html', {'form': form})
+    return render(request, 'album/update.html', {'form': form, 'current_user': request.user})
 
 
 @login_required(login_url='/login/')
@@ -524,18 +525,36 @@ def create_playlist(request):
                 playlist.songs.add(song)
 
             form.save_m2m()
-            return redirect('home')
+            return redirect('playlist_info')
     else:
         form = CreatePlaylistForm(initial={'search_query': search_query})
 
-    return render(request, 'playlist/create.html', {'form': form})
+    return render(request, 'playlist/create.html', {'form': form, 'current_user': request.user})
 
 
 @login_required(login_url='/login/')
-def playlist_info(request, playlist_name):
-    profile = UserProfile.objects.get(user=request.user)
-    playlist = get_object_or_404(Playlist, name=playlist_name, user=profile)
-    return render(request, 'playlist/info.html', {'playlist': playlist})
+def update_playlist(request, playlist_id):
+    playlist = get_object_or_404(Playlist, id=playlist_id)
+    if request.method == 'POST':
+        form = UpdatePlaylistForm(request.POST, instance=playlist)
+        if form.is_valid():
+            playlist = form.save(commit=False)
+            if 'name' in form.changed_data:
+                playlist.name = form.cleaned_data['name']
+            form.save()
+            if 'songs' in form.changed_data:
+                playlist.songs.set(form.cleaned_data['songs'])
+            form.save_m2m()
+            return redirect('playlist_info')
+    else:
+        form = UpdatePlaylistForm(instance=playlist)
+    return render(request, 'playlist/update.html', {'form': form, 'current_user': request.user})
+
+
+@login_required(login_url='/login/')
+def playlist_info(request):
+    playlists = Playlist.objects.filter(user=request.user.userprofile)
+    return render(request, 'playlist/info.html', {'playlists': playlists, 'current_user': request.user})
 
 
 @login_required(login_url='/login/')
@@ -606,6 +625,13 @@ def search_all(request):
     return render(request, 'search/all.html', {'search_results': results, 'current_user': request.user})
 
 
+def search_song(request):
+    query = request.GET.get('q', '')
+    song_results = Song.objects.filter(name__icontains=query)
+
+    return render(request, 'search/songs.html', {'search_results': song_results, 'current_user': request.user})
+
+
 def clean_filename(filename):
     invalid_chars_pattern = r'[\\/*?:"<>|]'
 
@@ -613,7 +639,7 @@ def clean_filename(filename):
     return cleaned_filename
 
 
-def search_song(query):
+def search_songs(query):
     return Song.objects.filter(Q(name__icontains=query))
 
 

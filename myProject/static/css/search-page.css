@@ -48,25 +48,25 @@
     transition: all ease 0.4s;
     overflow: hidden;
     display: flex;
+    object-fit: cover;
     flex-direction: column;
     justify-content: flex-end;
     margin: 26px;
 }
 
-.item-image {
+.suggestion-list .search-list .item .item-image {
     min-width: 120px;
     background-color: #1D1D1F;
     border-radius: 50%;
     transition: all ease 0.4s;
     overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
-.item-image img {
-    height: 100%;
-    width: auto;
+.suggestion-list .search-list .item .item-image img {
+    border-radius: 50%;
+    object-fit: cover;
+    height: 150px;
+    width: 150px;
 
 }
 
@@ -81,10 +81,6 @@
 
 .suggestion-list .search-list .item:hover {
     transform: scale(1.1);
-}
-
-.suggestion-list .search-list .item img {
-    border-radius: 50px;
 }
 
 .suggestion-list .search-list .item .play {
@@ -271,7 +267,6 @@
     flex-direction: column;
     justify-content: normal;
     gap: 8px;
-    margin-left: 6px;
 }
 
 .search-content .top-suggestions .top-result .info .img {
@@ -308,12 +303,8 @@
 }
 
 .search-content .top-suggestions .top-result .result .song-buttons {
-    top: 0;
-    right: 0;
     transition: all ease 0.5s;
     position: relative;
-    margin-right: 10px;
-    margin-top: 10px;
 }
 
 .search-content .top-suggestions .top-result .result:hover .song-buttons {
@@ -343,7 +334,8 @@
     flex-direction: row;
     align-items: center;
     background-color: #252525;
-    margin-top: 5px;
+    margin-top: 3px;
+    margin-bottom: 3px;
 }
 
 .search-content .songs .song:hover {

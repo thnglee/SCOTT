@@ -10,7 +10,7 @@
         <div class="profile-card">
             <!-- Update profile form -->
             <form hx-post="{% url 'update_profile' %}"
-                  hx-encoding="multipart/form-data" 
+                  hx-encoding="multipart/form-data"
                   hx-target="#swap"
                   hx-swap="outerHTML"
             >
@@ -29,60 +29,66 @@
 
                     </div>
                 {% endfor %}
+                <div style="flex-direction: row; display: flex; gap:50px;">
+                    <div class="input-box">
+                        {% if profile_form.age.errors %}
+                            <div class="error text-xs mb-1">{{ profile_form.age.errors }}</div>
+                        {% endif %}
+                        <label for="{{ profile_form.age.id_for_label }}">{{ profile_form.age.label }}:
+                            <input type="text" name="{{ profile_form.age.name }}"
+                                   class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
+                                   style="width: 40px;"
+                                   value="{{ profile_form.age.value }}">
+                        </label>
 
-                <div class="input-box">
-                    {% if profile_form.age.errors %}
-                        <div class="error text-xs mb-1">{{ profile_form.age.errors }}</div>
-                    {% endif %}
-                    <label for="{{ profile_form.age.id_for_label }}">{{ profile_form.age.label }}:
-                        <input type="text" name="{{ profile_form.age.name }}"
-                               class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
-                               style="width: 40px;"
-                               value="{{ profile_form.age.value }}">
-                    </label>
-
+                    </div>
+                    <div class="input-box">
+                        {% if profile_form.sex.errors %}
+                            <div class="error text-xs mb-1">{{ profile_form.sex.errors }}</div>
+                        {% endif %}
+                        <label for="{{ profile_form.sex.id_for_label }}">{{ profile_form.sex.label }}:
+                            <select class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
+                                    name="{{ profile_form.sex.name }}" style="height: 35px">
+                                {% for value, name in profile_form.sex.field.choices %}
+                                    <option value="{{ value }}"
+                                            {% if profile_form.sex.value == value %}selected{% endif %}>{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    </div>
                 </div>
-                <div class="input-box">
-                    {% if profile_form.sex.errors %}
-                        <div class="error text-xs mb-1">{{ profile_form.sex.errors }}</div>
-                    {% endif %}
-                    <label for="{{ profile_form.sex.id_for_label }}">{{ profile_form.sex.label }}:
-                        <select class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
-                                name="{{ profile_form.sex.name }}">
-                            {% for value, name in profile_form.sex.field.choices %}
-                                <option value="{{ value }}" {% if profile_form.sex.value == value %}selected{% endif %}>{{ name }}</option>
-                            {% endfor %}
-                        </select>
-                    </label>
-                </div>
+                <div style="flex-direction: row; display: flex; gap:50px;">
+                    <div class="input-box">
+                        {% if profile_form.image_file.errors %}
+                            <div class="error text-xs mb-1">{{ profile_form.image_file.errors }}</div>
+                        {% endif %}
+                        <label for="{{ profile_form.image_file.id_for_label }}">{{ profile_form.image_file.label }}: <br>
+                            <input type="file" id="id_image_file" name="{{ profile_form.image_file.name }}"
+                                   class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
+                                   accept="image/*">
+                        </label>
+                        <img id="userImage" src="{{ MEDIA_URL }}{{ profile_form.instance.get_image_uri }}" alt="User Image"
+                            height="120" width="120">
+                    </div>
+                    
+                    <div>
+                        <div class="input-box">
+                            <label for="{{ profile_form.become_artist.id_for_label }}">{{ profile_form.become_artist.label }}? </label>
+                            {{ profile_form.become_artist }}
+                        </div>
 
-                <div class="input-box">
-                    {% if profile_form.image_file.errors %}
-                        <div class="error text-xs mb-1">{{ profile_form.image_file.errors }}</div>
-                    {% endif %}
-                    <label for="{{ profile_form.image_file.id_for_label }}">{{ profile_form.image_file.label }}:
-                        <input type="file" id="id_image_file" name="{{ profile_form.image_file.name }}"
-                               class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1" accept="image/*">
-                    </label>
-                </div>
-                <img id="userImage" src="{{ MEDIA_URL }}{{ profile_form.instance.get_image_uri }}" alt="User Image"
-                     height="120" width="120">
-                <br>
-
-                <div class="input-box">
-                    <label for="{{ profile_form.become_artist.id_for_label }}">{{ profile_form.become_artist.label }}? </label>
-                    {{ profile_form.become_artist }}
-                </div>
-
-                <div class="input-box">
-                    {% if profile_form.artist_name.errors %}
-                        <div class="error text-xs mb-1">{{ profile_form.artist_name.errors }}</div>
-                    {% endif %}
-                    <label for="artist_name">{{ profile_form.artist_name.label }}: <br>
-                        <input type="text" id="artist_name" name="artist_name"
-                               class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
-                               value="{{ profile_form.artist_name.value }}">
-                    </label>
+                        <div class="input-box">
+                            {% if profile_form.artist_name.errors %}
+                                <div class="error text-xs mb-1">{{ profile_form.artist_name.errors }}</div>
+                            {% endif %}
+                            <label for="artist_name">{{ profile_form.artist_name.label }}: <br>
+                                <input type="text" id="artist_name" name="artist_name"
+                                       class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
+                                       value="{{ profile_form.artist_name.value }}">
+                            </label>
+                        </div>
+                    </div>
+                
                 </div>
                 <br>
                 <button type="submit" class="gradient-button font-bold py-2.5 px-6 rounded mb-4">Update</button>
@@ -92,7 +98,7 @@
                 <button type="submit" class="danger-button font-bold py-2.5 px-6 rounded mb-4">Delete User</button>
             </form>
         </div>
-   
+
     </section>
     <script>
         var becomeArtistCheckbox = document.getElementById('become_artist');
@@ -130,7 +136,7 @@
                 reader.readAsDataURL(imageInput.files[0]);
             }
         });
-        
+
     </script>
-    
+
 {% endblock %}

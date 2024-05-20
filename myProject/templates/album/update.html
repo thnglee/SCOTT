@@ -17,39 +17,44 @@
                 {% if form.name.errors %}
                     <div class="error text-xs">{{ form.name.errors }}</div>
                 {% endif %}
-                <label for="{{ form.name.id_for_label }}">{{ form.name.label }}:
+                <label for="{{ form.name.id_for_label }}">{{ form.name.label }}: <br>
                     <input class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
                            type="text" name="{{ form.name.name }}" style="width: 400px"
                             value="{{ form.name.value }}">
                 </label>
             </div>
-        
-            <div class="input-box">
-                {% if form.image_file.errors %}
-                    <div class="error text-xs">{{ form.image_file.errors }}</div>
-                {% endif %}
-                <label for="{{ form.image_file.id_for_label }}">{{ form.image_file.label }}:
-                    <input type="file" id="image_file" name="{{ form.image_file.name }}"
-                           class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1" accept="image/*">
-                </label>
+            <div style="flex-direction: row; display: flex; gap:50px;">
+                <div class="input-box" >
+                    {% if form.image_file.errors %}
+                        <div class="error text-xs">{{ form.image_file.errors }}</div>
+                    {% endif %}
+                    <label for="{{ form.image_file.id_for_label }}">{{ form.image_file.label }}: <br>
+                        <input type="file" id="image_file" name="{{ form.image_file.name }}"
+                               class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1" accept="image/*"
+                                style="width: 400px"
+                        >
+                    </label>
+                    <img id="albumImage" src="{{ MEDIA_URL }}{{ form.instance.get_image_uri }}" alt="Album Image"
+                     height="120" width="120">
+                </div>
+                
+                <br>
+                
+                <div class="input-box">
+                    {% if form.songs.errors %}
+                        <div class="error text-xs mb-1">{{ form.songs.errors }}</div>
+                    {% endif %}
+                    <label for="{{ form.songs.id_for_label }}">{{ form.songs.label }}: <br>
+                        <select id="id_songs" multiple class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
+                                name="{{ form.songs.name }}" style="width: 300px; height: 200px">
+                            {% for value, name in form.songs.field.choices %}
+                                <option value="{{ value }}" {% if value in form.songs.value %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </div>
             </div>
-            <img id="albumImage" src="{{ MEDIA_URL }}{{ form.instance.get_image_uri }}" alt="Album Image"
-                 height="120" width="120">
-            <br>
             
-            <div class="input-box">
-                {% if form.songs.errors %}
-                    <div class="error text-xs mb-1">{{ form.songs.errors }}</div>
-                {% endif %}
-                <label for="{{ form.songs.id_for_label }}">{{ form.songs.label }}: <br>
-                    <select id="id_songs" multiple class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
-                            name="{{ form.songs.name }}">
-                        {% for value, name in form.songs.field.choices %}
-                            <option value="{{ value }}" {% if value in form.songs.value %}selected{% endif %}>{{ name }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
             
             <br>
             <button id="update" type="submit" class="gradient-button font-bold py-2.5 px-6 rounded mb-4">Update</button>

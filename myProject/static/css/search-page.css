@@ -334,7 +334,8 @@
     flex-direction: row;
     align-items: center;
     background-color: #252525;
-    margin-top: 5px;
+    margin-top: 3px;
+    margin-bottom: 3px;
 }
 
 .search-content .songs .song:hover {

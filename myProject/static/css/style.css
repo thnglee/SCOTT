@@ -311,7 +311,6 @@ section {
     width: 250px;
     height: 100vh;
     position: fixed;
-    overflow: auto;
     padding: 9px;
     display: flex;
     flex-direction: column;
@@ -324,7 +323,6 @@ section {
     margin-bottom: 5px;
     padding-left: 4px;
     padding-right: 4px;
-    overflow: hidden;
 }
 
 .sidebar-link {
@@ -431,7 +429,6 @@ section {
     border-radius: 50%;
     width: 40px;
     height: 40px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
     background: linear-gradient(to bottom right, #00b76c, #ff6a92);
     display: flex;
     justify-content: center;
@@ -562,13 +559,29 @@ ul li span:nth-child(4) {
 ul li:hover span:nth-child(4) {
     opacity: 1;
 }
-ul li span:nth-child(4):hover {
+ul li span:nth-child(4) a:hover {
    color: #ffffff;
 }
-ul li span:nth-child(4):active {
+ul li span:nth-child(4) a:active {
     color: #bababa;
 }
-ul li span:nth-child(5)
+ul li span:nth-child(5) {
+    width: 100px;
+    color: #bababa;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+ul li:hover span:nth-child(5) {
+    opacity: 1;
+}
+ul li span:nth-child(5) a:hover {
+   color: #ffffff;
+}
+ul li span:nth-child(5) a:active {
+    color: #bababa;
+}
+ul li span:nth-child(6)
 {
     text-align: right;
 }
@@ -612,8 +625,40 @@ ul li span:nth-child(5)
     background: #074470;
 }
 
-.library {
-    max-height: fit-content;
-    overflow-y: auto;
-    padding: 10px;
+.playlist {
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    min-height: 211px;
+    max-height: 211px;
+
+}
+.playlist .songs {
+    display: flex;
+    flex-direction: column;
+    justify-content: normal;
+    white-space: nowrap;
+    margin-bottom: 3px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.playlist .songs .playing {
+    font-weight: bold;
+    color: rgb(0,183,108);
+}
+
+.playlist:hover {
+    min-width: 300px;
+}
+
+.playlist.songs::-webkit-scrollbar {
+    border-radius: 0 10px 10px 0;
+    width: 10px;
+    height: 10px;
+}
+
+.playlist.songs::-webkit-scrollbar-corner {
+    background: #0e0e0e;
+    border-radius: 0 0 5px 0;
 }

@@ -38,6 +38,7 @@
                             <i class="fas fa-play "></i>
                         </a>
                     </span>
+                    <span></span>
                     <span class="text-gray-400"> {{ song.get_genre }} </span>
 
                 </li>
@@ -62,7 +63,10 @@
                             </a>    
                     </span>
                     <span>
-                           <a class="add-album-button" data-album="{{ album.get_song_info }}"><i class="fas fa-play "></i></a>
+                        <a class="play-all-button" data-album="{{ album.get_song_info }}"><i class="fas fa-play "></i></a>
+                    </span>
+                    <span>
+                        <a class="add-all-button" data-album="{{ album.get_song_info }}"><i class="fas fa-plus "></i></a>
                     </span>
                 </li>
                 {% empty %}

@@ -29,6 +29,7 @@
                             <i class="fas fa-play "></i>
                         </a> 
                     </span>
+                    <span></span>
                     <span>
                         <a href="{% url 'update_song' song.id %}"
                            hx-get="{% url 'update_song' song.id %}"
@@ -65,9 +66,11 @@
                                <strong> {{ album.name }} </strong>
                             </a>    
                     </span>
+                   <span>
+                        <a class="play-all-button" data-album="{{ album.get_song_info }}"><i class="fas fa-play "></i></a>
+                    </span>
                     <span>
-                           <a class="add-album-button" data-album="{{ album.get_song_info }}"><i
-                                   class="fas fa-play "></i></a>
+                        <a class="add-all-button" data-album="{{ album.get_song_info }}"><i class="fas fa-plus "></i></a>
                     </span>
                     <span>
                             <a href="{% url 'update_album' album.id %}"

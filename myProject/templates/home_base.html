@@ -21,7 +21,7 @@
 
 {% block content %}
     <div hx-history-elt>
-        <div class="sidebar" style="padding-bottom: 100px;">
+        <div class="sidebar">
             <div class="logo-container ">
                 <a href="{% url 'home' %}"
                    hx-get="{% url 'home' %}"
@@ -107,16 +107,21 @@
 
             </div>
 
-            <div class="sidebar-section">
-                <div class="sidebar-link">
+            <div hx-preserve="true" id="pl" class="sidebar-section playlist" >
+                <a href="{% url 'playlist_info' %}"
+                    hx-get="{% url 'playlist_info' %}"
+                    hx-target="#swap"
+                    hx-swap="outerHTML"
+                    class="sidebar-link {% if request.resolver_match.url_name == 'playlist_info' %}active{% endif %}"
+                >
                     <span class="sidebar-link-icon">🎶</span>
                     <b>Library</b>
+                </a>
+            
+                <div  id="playlist" class="songs">
+                    
                 </div>
-                <div id="library" class="library">
-                    {% for playlist in current_user.userprofile.playlist_set.all %}
-                        <p>{{ playlist.name }}</p>
-                    {% endfor %}
-                </div>
+                
             </div>
 
         </div>
@@ -136,6 +141,28 @@
             </main>
         </div>
         <script>
+            function loadSongIntoPlaylist() {
+            var playlist = document.getElementById('playlist');
+            var MPplaylist = musicPlayer.playlist;
+                
+            var MPplaylistSet = new Set(MPplaylist.map(song => song.name));
+                
+            Array.from(playlist.children).forEach(function(songElement) {
+                if (!MPplaylistSet.has(songElement.textContent)) {
+                    playlist.removeChild(songElement);
+                }
+            });
+                
+            for (var i = 0; i < MPplaylist.length; i++) {
+                var song = MPplaylist[i];
+                if (!Array.from(playlist.children).some(songElement => songElement.textContent === song.name)) {
+                    var p = document.createElement('p');
+                    p.textContent = song.name;
+                    playlist.appendChild(p);
+                }
+            }
+        }
+            
             document.querySelectorAll('.play-button').forEach(function (button) {
                 button.addEventListener('click', function () {
                     var songUrl = button.getAttribute('data-url');
@@ -158,7 +185,7 @@
                 });
             });
 
-            document.querySelectorAll('.add-album-button').forEach(function (button) {
+            document.querySelectorAll('.add-all-button').forEach(function (button) {
                 button.addEventListener('click', function () {
                     var albumInfo = button.getAttribute('data-album');
                     var songInfoArray = JSON.parse(albumInfo);
@@ -169,6 +196,26 @@
                         var songArtist = songInfo.artist_name;
                         var songName = songInfo.song_name;
 
+                        musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
+                        
+                    });
+                });
+            });
+            
+
+            document.querySelectorAll('.play-all-button').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var albumInfo = button.getAttribute('data-album');
+                    var songInfoArray = JSON.parse(albumInfo);
+                    musicPlayer.clearPlaylist();
+                    document.getElementById('playlist').innerHTML = '';
+                    console.log(musicPlayer.playlist)
+                    songInfoArray.forEach(function (songInfo) {
+                        var songUrl = songInfo.stream_url;
+                        var songImage = songInfo.image_uri;
+                        var songArtist = songInfo.artist_name;
+                        var songName = songInfo.song_name;
+            
                         musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
                     });
                 });

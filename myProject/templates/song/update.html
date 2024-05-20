@@ -46,41 +46,38 @@
             <img id="songImage" src="{{ MEDIA_URL }}{{ form.instance.get_image_uri }}" alt="User Image"
                  height="120" width="120">
             <br>
+            <div style="flex-direction: row; display: flex; gap:50px;">
+                <div class="input-box">
+                    {% if form.genres.errors %}
+                        <div class="error text-xs mb-1">{{ form.genres.errors }}</div>
+                    {% endif %}
+                    <label for="{{ form.genres.id_for_label }}">{{ form.genres.label }}: <br>
+                        <select class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
+                                name="{{ form.genres.name }}">
+                            {% for value, name in form.genres.field.choices %}
+                                <option value="{{ value }}" {% if form.genres.value == value %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </div>
             
-            <div class="input-box">
-                {% if form.genres.errors %}
-                    <div class="error text-xs mb-1">{{ form.genres.errors }}</div>
-                {% endif %}
-                <label for="{{ form.genres.id_for_label }}">{{ form.genres.label }}:
-                    <select class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
-                            name="{{ form.genres.name }}">
-                        {% for value, name in form.genres.field.choices %}
-                            <option value="{{ value }}" {% if form.genres.value == value %}selected{% endif %}>{{ name }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
+                <div class="input-box">
+                    {% if form.albums.errors %}
+                        <div class="error text-xs mb-1">{{ form.albums.errors }}</div>
+                    {% endif %}
+                    <label for="{{ form.albums.id_for_label }}">{{ form.albums.label }}: <br>
+                        <select multiple class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
+                                name="{{ form.albums.name }}">
+                            {% for value, name in form.albums.field.choices %}
+                                <option value="{{ value }}" {% if value in form.albums.value %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </div>
             </div>
-        
-            <div class="input-box">
-                {% if form.albums.errors %}
-                    <div class="error text-xs mb-1">{{ form.albums.errors }}</div>
-                {% endif %}
-                <label for="{{ form.albums.id_for_label }}">{{ form.albums.label }}: <br>
-                    <select multiple class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
-                            name="{{ form.albums.name }}">
-                        {% for value, name in form.albums.field.choices %}
-                            <option value="{{ value }}" {% if value in form.albums.value %}selected{% endif %}>{{ name }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
-            
             <br>
             <button id="update" type="submit" class="gradient-button font-bold py-2.5 px-6 rounded mb-4">Update</button>
         </form>
-        <div id="loading" style="display: none;">
-            <p>Updating song, please wait...</p>
-        </div>
    
         <form 
                 hx-post="{% url 'delete_song' form.instance.id %}"
@@ -90,6 +87,11 @@
             {% csrf_token %}
             <button type="submit" class="danger-button font-bold py-2.5 px-6 rounded mb-4">Delete Song</button>
         </form>
+        <div id="loading" style="display: none;">
+            <p>Updating song, please wait...</p>
+        </div>
+   
+        
    
    </section>
     <script>

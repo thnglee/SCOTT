@@ -1,0 +1,27 @@
+{% extends 'templates/home_base.html' %}
+
+{% block main %}
+    <div class="search-content">
+        <!-- Top suggestion-->
+        <div class="songs">
+            {% for i in range(1, 9) %}
+                <div class="s{{i}} song">
+                    <div class="order-number">
+                        <p>{{i}}</p>
+                    </div>
+                    <div class="song-content">
+                        <div class="img">
+                        </div>
+                        <div class="about">
+                            <p> Song name </p>
+                            <p> Artist name </p>
+                        </div>
+                    </div>
+                    <div class="song-time-duration">
+                        <p> 00:00</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

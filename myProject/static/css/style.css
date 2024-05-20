@@ -46,7 +46,7 @@ body {
 /* Header Styles */
 header {
     background-color: #181818;
-    padding: 20px;
+    padding: 0 20px 20px 20px;
     display: flex;
     justify-content: space-between;
 }
@@ -203,11 +203,12 @@ section {
     font-size: 14px;
 }
 
-.artist-card {
 
+
+.artist-card {
     max-width: 200px;
     min-width: 160px;
-    height: 235px;
+    height: 230px;
     width: auto;
     background: linear-gradient(to bottom right, #00b76c, #ff6a92);
     border-radius: 10px;
@@ -216,14 +217,13 @@ section {
     text-align: center;
     position: relative;
     overflow: hidden;
-    margin: 0 7px 10px;
+    margin: 0 5px 10px;
     display: inline-block;
-    transition: all ease 0.7s;
+    transition: all ease 0.5s;
 }
 .artist-card:hover {
+    padding-top: 0;
     background: linear-gradient(to bottom right, rgb(0, 255, 149), rgb(255, 132, 164));
-    transform: scale(1.05);
-
 }
 
 .artist-card img {
@@ -261,9 +261,10 @@ section {
 
 .header-container {
     background: #121212;
-    padding: 20px;
+    padding: 4px 20px 20px 20px;
     display: flex;
     flex-direction: column;
+    z-index: 2;
 }
 
 .search-bar {
@@ -283,7 +284,8 @@ section {
     padding-left: 20px;
     padding-right: 20px;
     color: #fff;
-    font-size: 18px; /* Increase font size for bigger appearance */
+    font-size: 18px;
+    outline: none;
 }
 
 .search-bar button {
@@ -296,9 +298,11 @@ section {
 }
 
 .search-title {
-    color: #fff;
-    font-size: 22px;
-    padding-top: 20px;
+    color: #ffffff ;
+    text-decoration: underline;
+    font-size: 30px;
+    font-weight: bold;
+    padding-top: 4px;
 }
 
 /* Sidebar Styles */
@@ -383,7 +387,7 @@ section {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     height: 250px;
     width: 320px;
-    transition: all ease 0.4s;
+    transition: all ease 0.3s;
     overflow: hidden;
 }
 .category-card:hover {
@@ -401,7 +405,7 @@ section {
 
 .category-title {
     text-align: left;
-    font-size: 14px;
+    font-size: 16px;
     margin-bottom: 8px;
     overflow: hidden;
     white-space: nowrap;
@@ -411,17 +415,16 @@ section {
 
 
 .category-card:hover .song-buttons {
-    display: block;
+    opacity: 1;
 }
 
-
-
 .song-buttons {
-    display: none;
+    opacity: 0;
     position: absolute;
     top: 15px;
     right: 32px;
     gap: 25px;
+    transition: all ease 0.5s;
 }
 
 .round-button {
@@ -493,10 +496,6 @@ section {
     /* other styles */
 }
 
-.header-container {
-    z-index: 2;
-    /* other styles */
-}
 
 .main {
     z-index: 1;
@@ -574,12 +573,17 @@ ul li span:nth-child(5)
     text-align: right;
 }
 
-.artist-block {
-    margin-top: 5px;
+.purple-block {
     background: rgb(182,129,136);
     background: linear-gradient(90deg, rgba(182,129,136,0.7) 0%, rgba(182,129,136,0.5) 18%, rgba(182,129,136,0.3) 34%, rgba(182,129,136,0.1) 59%, rgba(182,129,136,0) 100%);
     border-radius: 8px;
     width: 920px;
+}
+
+.mix-block {
+    background: rgb(111,140,118);
+    background: linear-gradient(127deg, rgba(111,140,118,0.8) 0%, rgba(111,140,118,0.4) 18%, rgba(111,140,118,0.2) 34%, rgba(111,140,118,0.4) 59%, rgba(111,140,118,0.8) 100%);
+    border-radius: 8px;
 }
 
 .error {

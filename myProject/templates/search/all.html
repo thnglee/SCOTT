@@ -1,0 +1,192 @@
+{% extends 'templates/home_base.html' %}
+{% load static %}
+{% block header %}
+    <div hx-preserve="true" id="search" class="search-bar" style="width: 400px; margin-top: 14px">
+        <input type="search" id="search-input" name="q" placeholder="What do you want to listen to?" aria-label="Search"
+               hx-get="{% url 'search_all' %}"
+               hx-trigger="input changed delay:500ms"
+               hx-target="#swap"
+        >
+        <p aria-label="Search">
+            🔍
+        </p>
+    </div>
+    <script hx-swap-oob>
+        if (window.location.pathname.includes('search')) {
+            document.getElementById('search-input').focus();
+        }
+    </script>
+{% endblock %}
+
+{% block main %}
+    <section class="content" >
+        <nav class="search-navigation">
+            <a href="#" class="active nav"><p> All </p></a>
+            <a href="#" class="inactive nav"><p> Songs </p></a>
+            <a href="#" class="inactive nav"><p> Artists </p></a>
+            <a href="#" class="inactive nav"><p> Albums </p></a>
+        </nav>
+        
+        <div class="search-content">
+            <!-- Top suggestion-->
+            <div class="top-suggestions">
+                <div class="top-result">
+                    <h1>
+                        <b style="font-size: 24px;
+                           text-decoration: underline;
+                           cursor: default;
+                           text-decoration-thickness: 3px;">
+                            Top result
+                        </b>
+                    </h1>
+                    <div class="result">
+                        {% if search_results.top_result_type == None %}
+                        {% else %}
+                            {%if search_results.top_result_type == "Artist" %}
+                                <div class="info">
+                                        <a href="{% url 'artist_profile' search_results.top_result.Artist_name %}" style="text-decoration: none;"
+                                        hx-get="{% url 'artist_profile' search_results.top_result.Artist_name %}"
+                                        hx-target="#swap"
+                                        hx-swap="outerHTML"
+                                    >
+                                        <div class="img">
+                                            <img src="{{ MEDIA_URL }}{{ search_results.top_result.user.get_image_uri }}" alt="Image">
+                                        </div>
+                                        <h1>
+                                            {{ search_results.top_result.Artist_name }}
+                                        </h1>
+                                        <p>
+                                            {{ search_results.top_result_type }}
+                                        </p>
+                                    </a>
+                                </div>
+                            {% else %}
+                                <div class="info">
+                                    <div class="img">
+                                        <img src="{{ MEDIA_URL }}{{ search_results.top_result.get_image_uri }}" alt="Image">
+                                    </div>
+                                    <h1>
+                                        {{ search_results.top_result.name }}
+                                    </h1>
+                                    <p>
+                                        {{ search_results.top_result_type }}
+                                    </p>
+                                </div>
+                                
+                                {% if search_results.top_result_type == "Song" %}
+                                    <div class="song-buttons">
+                                        <button class="play-button round-button mb-2" 
+                                                data-url="{% url 'stream_song' search_results.top_result.id %}" 
+                                                data-image="{{ MEDIA_URL }}{{ search_results.top_result.get_image_uri }}"
+                                                data-artist="{{  search_results.top_result.get_artist_name  }}"
+                                                data-name="{{ search_results.top_result.name }}">
+                                            <i class="fas fa-play "></i>
+                                        </button>
+                                        <button class="add-button round-button" 
+                                                data-url="{% url 'stream_song' search_results.top_result.id %}" 
+                                                data-image="{{ MEDIA_URL }}{{ search_results.top_result.get_image_uri }}"
+                                                data-artist="{{ search_results.top_result.get_artist_name }}"
+                                                data-name="{{ search_results.top_result.name }}">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                {% else %}
+                                    <div class="song-buttons">
+                                        <button class="add-album-button round-button" 
+                                                data-album="{{ search_results.top_result.get_song_info }}">
+                                            <i class="fas fa-play "></i>
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="song-results mix-block">
+                    <h1>
+                        <b style="font-size: 24px;cursor: default;">Songs</b>
+                    </h1>
+                    
+                    <div class="songs">
+                        {% for song in search_results.songs %}
+                            {% if forloop.counter <= 4 %}
+                                <div class="song">
+                                    <div class="img">
+                                        <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="Image">
+                                    </div>
+                                    <div class="song-content">
+                                        <p style="cursor: default;"> {{ song.name }} </p>
+                                        <p style="color: #0bae83; font-size: 15px; cursor:default; font-weight: bold"> {{ song.get_artist_name }} </p>
+                                    </div>
+                                    <div class="play-add-button">
+                                        <a class="play-button" 
+                                                data-url="{% url 'stream_song' song.id %}" 
+                                                data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
+                                                data-artist="{{  song.get_artist_name  }}"
+                                                data-name="{{ song.name }}">
+                                            <i class="fas fa-play "></i>
+                                        </a>
+                                        <a class="add-button" 
+                                                data-url="{% url 'stream_song' song.id %}" 
+                                                data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
+                                                data-artist="{{ song.get_artist_name }}"
+                                                data-name="{{ song.name }}">
+                                            <i class="fas fa-plus"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Artists -->
+            <div class="famous-artist suggestion-list">
+                <h2 style="font-size: 24px;
+                           text-decoration: underline;
+                           cursor: default;
+                           text-decoration-thickness: 3px;">Artist</h2>
+
+                <div class="search-list">
+                    {% for artist in search_results.artists %}
+                        <div class="item">
+                            <a href="{% url 'artist_profile' artist.Artist_name %}" style="text-decoration: none;"
+                                hx-get="{% url 'artist_profile' artist.Artist_name %}"
+                                hx-target="#swap"
+                                hx-swap="outerHTML"
+                            >
+                                <div class="item-image">
+                                    <img src="{{ MEDIA_URL }}{{ artist.user.get_image_uri }}" alt="">
+                                </div>
+                                <div class="artist-name">
+                                    <h4>{{ artist.Artist_name }}</h4>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="scott-playlists suggestion-list">
+                <h2 style="font-size: 24px;
+                           text-decoration: underline;
+                           cursor: default;
+                           text-decoration-thickness: 3px;">Albums</h2>
+                <div class="search-list">
+                    {% for album in search_results.albums %}
+                         <div class="item">
+                            <img src="{{ MEDIA_URL }}{{ album.get_image_uri }}" alt="">
+                            <div class="play">
+                                <span class="fa fa-play add-album-button" data-album="{{ album.get_song_info }}"></span>
+                            </div>
+                            <h4>{{ album.name }}</h4>
+                            <p>{{ album.artist.Artist_name }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

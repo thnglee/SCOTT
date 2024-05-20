@@ -606,6 +606,13 @@ def search_all(request):
     return render(request, 'search/all.html', {'search_results': results, 'current_user': request.user})
 
 
+def search_song(request):
+    query = request.GET.get('q', '')
+    song_results = Song.objects.filter(name__icontains=query)
+
+    return render(request, 'search/songs.html', {'search_results': song_results, 'current_user': request.user})
+
+
 def clean_filename(filename):
     invalid_chars_pattern = r'[\\/*?:"<>|]'
 
@@ -613,7 +620,7 @@ def clean_filename(filename):
     return cleaned_filename
 
 
-def search_song(query):
+def search_songs(query):
     return Song.objects.filter(Q(name__icontains=query))
 
 

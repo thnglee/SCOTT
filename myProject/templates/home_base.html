@@ -107,6 +107,18 @@
 
             </div>
 
+            <div class="sidebar-section">
+                <div class="sidebar-link">
+                    <span class="sidebar-link-icon">🎶</span>
+                    <b>Library</b>
+                </div>
+                <div id="library" class="library">
+                    {% for playlist in current_user.userprofile.playlist_set.all %}
+                        <p>{{ playlist.name }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
         </div>
 
         <div style="margin-left:190px; padding: 0 20px 100px;">

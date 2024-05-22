@@ -29,7 +29,15 @@
                             <i class="fas fa-play "></i>
                         </a> 
                     </span>
-                    <span></span>
+                    <span>
+                        <a class="add-button" 
+                                data-url="{% url 'stream_song' song.id %}" 
+                                data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
+                                data-artist="{{ song.get_artist_name }}"
+                                data-name="{{ song.name }}">
+                            <i class="fas fa-plus"></i>
+                        </a>
+                    </span>
                     <span>
                         <a href="{% url 'update_song' song.id %}"
                            hx-get="{% url 'update_song' song.id %}"

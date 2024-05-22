@@ -561,7 +561,7 @@ def playlist_info(request):
 def delete_playlist(request, playlist_id):
     playlist = get_object_or_404(Playlist, id=playlist_id)
     playlist.delete()
-    return redirect('home')
+    return redirect('playlist_info')
 
 
 def search_all(request):

@@ -142,26 +142,22 @@
         </div>
         <script>
             function loadSongIntoPlaylist() {
-            var playlist = document.getElementById('playlist');
-            var MPplaylist = musicPlayer.playlist;
+                var playlist = document.getElementById('playlist');
+                var MPplaylist = musicPlayer.playlist;
                 
-            var MPplaylistSet = new Set(MPplaylist.map(song => song.name));
+                playlist.innerHTML = '';
                 
-            Array.from(playlist.children).forEach(function(songElement) {
-                if (!MPplaylistSet.has(songElement.textContent)) {
-                    playlist.removeChild(songElement);
-                }
-            });
-                
-            for (var i = 0; i < MPplaylist.length; i++) {
-                var song = MPplaylist[i];
-                if (!Array.from(playlist.children).some(songElement => songElement.textContent === song.name)) {
+                for (var i = 0; i < MPplaylist.length; i++) {
+                    var song = MPplaylist[i];
                     var p = document.createElement('p');
                     p.textContent = song.name;
                     playlist.appendChild(p);
+                    if (musicPlayer.audioElement.src.includes(song.url)) {
+                        p.classList.add('playing');
+                    }
                 }
+            
             }
-        }
             
             document.querySelectorAll('.play-button').forEach(function (button) {
                 button.addEventListener('click', function () {
@@ -197,7 +193,6 @@
                         var songName = songInfo.song_name;
 
                         musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
-                        
                     });
                 });
             });
@@ -208,16 +203,16 @@
                     var albumInfo = button.getAttribute('data-album');
                     var songInfoArray = JSON.parse(albumInfo);
                     musicPlayer.clearPlaylist();
-                    document.getElementById('playlist').innerHTML = '';
-                    console.log(musicPlayer.playlist)
+                    musicPlayer.playSong(songInfoArray[0].stream_url, songInfoArray[0].image_uri, songInfoArray[0].artist_name, songInfoArray[0].song_name);
                     songInfoArray.forEach(function (songInfo) {
                         var songUrl = songInfo.stream_url;
                         var songImage = songInfo.image_uri;
                         var songArtist = songInfo.artist_name;
                         var songName = songInfo.song_name;
-            
+
                         musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
                     });
+                    loadSongIntoPlaylist();
                 });
             });
 
@@ -255,7 +250,7 @@
         </div>
         <div class="other-features">
             <div class="volume-bar">
-                <i class="fas fa-volume-down"></i>
+                <i class="fas fa-volume-up" style="margin-right: 5px"></i>
                 <div class="progress-bar">
                     <div class="progress"></div>
                 </div>

@@ -23,10 +23,9 @@ var MusicPlayer = MusicPlayer || (function() {
         var volumeProgress = document.querySelector('.volume-bar .progress');
         volumeProgress.style.width = '100%';
         var isDragging = false;
-        var volumeButton = document.querySelector('.fas.fa-volume-down');
+        var volumeButton = document.querySelector('.fas.fa-volume-up');
         var isMuted = false;
         var previousVolume = audioElement.volume;
-
 
 
         audioElement.addEventListener('ended', function() {
@@ -49,7 +48,6 @@ var MusicPlayer = MusicPlayer || (function() {
                 end_playlist = true;
             }
         } else if (playlist.length > 0) {
-
             currentSongIndex = 0;
         } else {
             return;
@@ -58,6 +56,7 @@ var MusicPlayer = MusicPlayer || (function() {
         song = playlist[currentSongIndex];
 
         audioElement.src = song.url;
+
         document.querySelector('.image-container img').src = song.image;
         document.querySelector('.song-description .title').textContent = song.name;
         document.querySelector('.song-description .artist').textContent = song.artist;
@@ -67,6 +66,7 @@ var MusicPlayer = MusicPlayer || (function() {
         if (!end_playlist) {
             audioElement.play();
         }
+        loadSongIntoPlaylist();
     });
         audioElement.addEventListener('play', function() {
             playPauseButton.classList.remove('pause');
@@ -93,15 +93,10 @@ var MusicPlayer = MusicPlayer || (function() {
 
 
             if (songUrl !== '') {
-                document.querySelectorAll('.playlist .songs p').forEach(function(song) {
-                    song.classList.remove('playing');
-                    if (song.textContent === songName) {
-                        song.classList.add('playing');
-                    }
-                });
                 audioElement.src = songUrl;
-                audioElement.play()
+                audioElement.play();
             }
+            loadSongIntoPlaylist();
         }
 
         function addToPlaylist(songUrl, songImage, songArtist, songName) {
@@ -117,18 +112,25 @@ var MusicPlayer = MusicPlayer || (function() {
                 artist: songArtist,
                 name: songName
             });
-            loadSongIntoPlaylist();
             if (audioElement.ended || !audioElement.src) {
                 playSong(songUrl, songImage, songArtist, songName);
             }
-
+            loadSongIntoPlaylist();
         }
         function clearPlaylist() {
-            playlist = [];
+            playlist.length = 0;
         }
 
         nextButton.addEventListener('click', function() {
-            currentSongIndex++;
+            var index= -1;
+            for (var i = 0; i < playlist.length; i++) {
+                if (new URL(playlist[i].url, window.location.origin).href === audioElement.src) {
+                    index = i;
+                    break;
+                }
+            }
+
+            currentSongIndex = index + 1;
 
             if (currentSongIndex >= playlist.length) {
                 currentSongIndex = 0;
@@ -140,7 +142,14 @@ var MusicPlayer = MusicPlayer || (function() {
         });
 
         prevButton.addEventListener('click', function() {
-            currentSongIndex--;
+            var index= 1;
+            for (var i = 0; i < playlist.length; i++) {
+                if (new URL(playlist[i].url, window.location.origin).href === audioElement.src) {
+                    index = i;
+                    break;
+                }
+            }
+            currentSongIndex = index - 1;
 
             if (currentSongIndex < 0) {
                 currentSongIndex = playlist.length - 1;
@@ -219,7 +228,17 @@ var MusicPlayer = MusicPlayer || (function() {
             if (currentSeconds < 10) currentSeconds = '0' + currentSeconds;
             currentTimeElement.textContent = currentMinutes + ':' + currentSeconds;
         });
+        audioElement.addEventListener('volumechange', function() {
+            var volume = audioElement.volume;
 
+            if (volume > 0.5) {
+                volumeButton.className = 'fas fa-volume-up';
+            } else if (volume !== 0) {
+                volumeButton.className = 'fas fa-volume-down';
+            } else {
+                volumeButton.className = 'fas fa-volume-mute';
+            }
+        });
         volumeBar.addEventListener('mousedown', function(e) {
             isDragging = true;
             updateVolume(e);
@@ -250,14 +269,14 @@ var MusicPlayer = MusicPlayer || (function() {
 
         volumeButton.addEventListener('click', function() {
             if (isMuted) {
-                // Unmute the audio
+
                 audioElement.volume = previousVolume;
                 volumeProgress.style.width = (previousVolume * 100) + '%';
                 volumeButton.classList.remove('fa-volume-mute');
                 volumeButton.classList.add('fa-volume-down');
                 isMuted = false;
-            } else {
-                // Mute the audio
+            } else if (audioElement.volume > 0) {
+
                 previousVolume = audioElement.volume;
                 audioElement.volume = 0;
                 volumeProgress.style.width = '0%';
@@ -272,7 +291,7 @@ var MusicPlayer = MusicPlayer || (function() {
             addToPlaylist: addToPlaylist,
             playlist: playlist,
             audioElement: audioElement,
-            clearPlaylist: clearPlaylist
+            clearPlaylist: clearPlaylist,
         };
     }
 

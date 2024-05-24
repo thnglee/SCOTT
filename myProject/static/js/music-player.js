@@ -231,7 +231,7 @@ var MusicPlayer = MusicPlayer || (function() {
         audioElement.addEventListener('volumechange', function() {
             var volume = audioElement.volume;
 
-            if (volume > 0.5) {
+            if (volume > 0.4) {
                 volumeButton.className = 'fas fa-volume-up';
             } else if (volume !== 0) {
                 volumeButton.className = 'fas fa-volume-down';
@@ -272,16 +272,12 @@ var MusicPlayer = MusicPlayer || (function() {
 
                 audioElement.volume = previousVolume;
                 volumeProgress.style.width = (previousVolume * 100) + '%';
-                volumeButton.classList.remove('fa-volume-mute');
-                volumeButton.classList.add('fa-volume-down');
                 isMuted = false;
             } else if (audioElement.volume > 0) {
 
                 previousVolume = audioElement.volume;
                 audioElement.volume = 0;
                 volumeProgress.style.width = '0%';
-                volumeButton.classList.remove('fa-volume-down');
-                volumeButton.classList.add('fa-volume-mute');
                 isMuted = true;
             }
         });

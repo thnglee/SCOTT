@@ -16,6 +16,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from pydub import AudioSegment
+from concurrent.futures import ThreadPoolExecutor
 
 from myApp.forms import (CreateUserForm, UploadSongForm, UpdateSongForm, UpdateUserForm,
                          UpdateUserProfileForm, CreateAlbumForm, CreatePlaylistForm, UpdateAlbumForm,
@@ -264,14 +265,9 @@ def upload_song(request):
 
             # Audio
             song_file = request.FILES['song_file']
-            new_song_filename = new_name + os.path.splitext(song_file.name)[1]
-            temp_path = 'audio/temp/' + new_song_filename
-            final_path = 'audio/' + new_song_filename
-            save = default_storage.save(temp_path, song_file)
-            if save:
-                compress_audio('media/' + temp_path, 'media/' + final_path)
-                default_storage.delete(temp_path)
-            song.uri = new_song_filename
+            executor = ThreadPoolExecutor()
+            executor.submit(compress_and_save, song_file, new_name, song)
+            executor.shutdown(wait=False)
 
             # Genre
             song.genres = form.cleaned_data['genres']
@@ -322,6 +318,7 @@ def stream_song(request, song_id):
     return response
 
 
+@login_required(login_url='/login/')
 def update_song(request, song_id):
     try:
         song = get_object_or_404(Song, id=song_id)
@@ -671,3 +668,15 @@ def rename_file_album(album, new_name):
             default_storage.delete('image/album/' + album.image_uri)
         album.image_uri = new_image_name
     album.save()
+
+
+def compress_and_save(song_file, new_name, song):
+    new_song_filename = new_name + os.path.splitext(song_file.name)[1]
+    temp_path = 'audio/temp/' + new_song_filename
+    final_path = 'audio/' + new_song_filename
+    save = default_storage.save(temp_path, song_file)
+    if save:
+        compress_audio('media/' + temp_path, 'media/' + final_path)
+        default_storage.delete(temp_path)
+    song.uri = new_song_filename
+    song.save()

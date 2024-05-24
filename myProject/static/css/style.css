@@ -53,7 +53,8 @@ header {
 
 /* Section Styles */
 section {
-    margin: 20px;
+    margin: 20px 0 20px 20px;
+    min-width: 80vw;
 }
 
 /* Card Styles */
@@ -359,17 +360,16 @@ section {
     text-transform: uppercase;
 }
 
-/* Additional styles for other sidebar elements */
 
 /* Additional styles */
 .browse-all {
-    width: 85%;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    column-gap: 195px;
+    display: flex;
+    column-gap: 60px;
     row-gap: 50px;
     padding: 5px;
-    background-color: #121212; /* or any other color you prefer */
+    background-color: #121212;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .category-card {
@@ -438,7 +438,7 @@ section {
 }
 
 .round-button:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
     display: flex;
 
 }
@@ -448,17 +448,17 @@ section {
 }
 .round-button i {
     color: #0e0e0e;
-    font-size: 14px;
-    margin-top: 1px;
-    margin-left: 1px;
+    font-size: 16px;
     transition: all ease 0.5s;
 }
 .round-button:hover i {
     color: #0e0e0e;
-    font-size: 14px;
-    transform: rotate(90deg);
-    margin-top: 1px;
-    margin-left: 1px;
+}
+.round-button img {
+    width: 15px;
+    height: 15px;
+    margin-bottom: 0;
+    border-radius: 0;
 }
 .round-button:active {
     transform: scale(0.9);
@@ -654,11 +654,19 @@ ul li span:nth-child(6)
 
 .playlist.songs::-webkit-scrollbar {
     border-radius: 0 10px 10px 0;
+    display: none;
     width: 10px;
     height: 10px;
+}
+.playlist.songs:hover::-webkit-scrollbar {
+    display: block;
 }
 
 .playlist.songs::-webkit-scrollbar-corner {
     background: #0e0e0e;
     border-radius: 0 0 5px 0;
 }
+
+
+
+

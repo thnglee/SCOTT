@@ -3,39 +3,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.4/dist/tailwind.min.css" rel="stylesheet">
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-            integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-        />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.4/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
 
-        <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
-        <link rel="stylesheet" type="text/css" href="{% static 'css/search-page.css' %}"/>
-        <link rel="stylesheet" type="text/css" href="{% static 'css/login-style.css' %}"/>
-        <link rel="stylesheet" type="text/css" href="{% static 'css/music-player.css' %}"/>
-  
-        <title>
-            SCOTT
-        </title>
-        <link rel="icon" type="image/x-icon" href="{% static 'image/favicon.png' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/search-page.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login-style.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/music-player.css' %}"/>
+
+    <title>
+        SCOTT
+    </title>
+    <link rel="icon" type="image/x-icon" href="{% static 'image/favicon.png' %}">
     {% block styles %}
     {% endblock %}
 </head>
 
-<body id="swap" hx-push-url="true" class="{% block body_class %} {% endblock %}" style="{% block body_style %} {% endblock %}">
+<body id="swap" hx-push-url="true" class="{% block body_class %} {% endblock %}"
+      style="{% block body_style %} {% endblock %}">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://unpkg.com/htmx.org@1.6.1"></script>
- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <main>
-    
-        {% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<main>
 
-        {% endblock %}
-    </main>
+    {% block content %}
+
+    {% endblock %}
+</main>
 
 </body>
 </html>

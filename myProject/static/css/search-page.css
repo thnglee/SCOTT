@@ -43,8 +43,7 @@
 }
 
 .suggestion-list .search-list .item {
-    min-width: 140px;
-    width: 160px;
+    max-width: 160px;
     transition: all ease 0.4s;
     overflow: hidden;
     display: flex;
@@ -125,7 +124,7 @@
 .scott-playlists .search-list .item .play .fa {
     position: absolute;
     right: 10px;
-    top: -60px;
+    top: -55px;
     padding: 18px;
     background-color: #1db954;
     border-radius: 100%;
@@ -135,8 +134,13 @@
 
 .scott-playlists .search-list .item:hover .play .fa {
     opacity: 1;
-    transform: translateY(-20px);
+    transform: scale(0.9) translateY(-20px);
     transition: all ease 0.4s;
+}
+
+.scott-playlists .search-list .item .play .fa:active {
+    cursor: pointer;
+    transform: scale(0.8);
 }
 
 .scott-playlists .search-list .item h4 {

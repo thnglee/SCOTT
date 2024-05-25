@@ -32,7 +32,11 @@
         {% for song in songs %}
             {% if forloop.counter <= 12 %}
                 <div class="category-card">
-                    <a style="text-decoration: none; color: white;" href="/music/{{ track.id }}">
+                    <a style="text-decoration: none; color: white;" href="{% url 'song_info' song.id %}"
+                        hx-get="{% url 'song_info' song.id %}"
+                        hx-target="#swap"
+                        hx-swap="outerHTML"
+                    >
                         <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="{{ song.name }}">
                         <div class="category-title">{{  song.name  }}</div>
                     </a>

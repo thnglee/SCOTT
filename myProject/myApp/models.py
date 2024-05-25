@@ -63,14 +63,15 @@ class Song(models.Model):
         "OTHER": "Other",
     }
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     image_uri = models.CharField(max_length=255, default="default.png")
     uri = models.CharField(max_length=255, unique=True)
-    like_count = models.IntegerField(default=0)
     genres = models.CharField(max_length=255, choices=GENRE, default="Other")
     artists = models.ManyToManyField('Artist', related_name='songs')
     albums = models.ManyToManyField('Album', related_name='songs', blank=True)
     playlists = models.ManyToManyField('Playlist', related_name='songs', blank=True)
+    upload_date = models.DateTimeField(auto_now_add=True)
+    view_count = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -84,8 +85,15 @@ class Song(models.Model):
     def get_uri(self):
         return "/audio/" + self.uri
 
+    def inc_view_count(self):
+        self.view_count += 1
+        self.save()
+
     def get_artist_name(self):
         return self.artists.all()[0].Artist_name
+
+    def get_artist(self):
+        return self.artists.all()[0]
 
     def get_genre(self):
         return self.genres

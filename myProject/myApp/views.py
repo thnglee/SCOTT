@@ -1,3 +1,4 @@
+import json
 import os
 import random
 import re
@@ -11,9 +12,10 @@ from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordRes
     PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.core.files.storage import default_storage
 from django.db.models import Q, Case, When, Value, IntegerField
-from django.http import Http404, FileResponse
+from django.http import Http404, FileResponse, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from pydub import AudioSegment
 from concurrent.futures import ThreadPoolExecutor
@@ -247,42 +249,11 @@ def upload_song(request):
         form = UploadSongForm(request.POST, request.FILES, profile=profile)
         if form.is_valid():
             song = form.save(commit=False)
-            profile = UserProfile.objects.get(user=request.user)
             artist = Artist.objects.get(user=profile)
-            new_name = artist.Artist_name + "_" + clean_filename(form.cleaned_data['song_name'])
 
-            # Name
-            song.name = form.cleaned_data['song_name']
-
-            # Image
-            if 'image_file' in request.FILES:
-                image = request.FILES['image_file']
-                new_image_name = new_name + os.path.splitext(image.name)[1]
-                default_storage.save('image/song/' + new_image_name, image)
-            else:
-                new_image_name = 'default.png'
-            song.image_uri = new_image_name
-
-            # Audio
-            song_file = request.FILES['song_file']
             executor = ThreadPoolExecutor()
-            executor.submit(compress_and_save, song_file, new_name, song)
+            executor.submit(save_song, song, form, request, artist)
             executor.shutdown(wait=False)
-
-            # Genre
-            song.genres = form.cleaned_data['genres']
-
-            # Save the song object
-            song.save()
-
-            # Album
-            if 'albums' in form.changed_data:
-                song.albums.set(form.cleaned_data['albums'])
-
-            # Artist
-            song.artists.add(artist)
-
-            form.save_m2m()  # save many-to-many data
             return render(request, 'user/artist/workspace.html',
                           {'artist': artist, 'songs': artist.songs, 'albums': artist.album_set,
                            'current_user': request.user})
@@ -395,6 +366,21 @@ def delete_song(request, song_id):
         default_storage.delete('image/song/' + song.image_uri)
     song.delete()
     return redirect('artist_workspace')
+
+
+@csrf_exempt
+@require_POST
+def increment_view_count(request):
+    try:
+        data = json.loads(request.body)
+        song_name = data.get('song_name')
+        if song_name:
+            song = Song.objects.get(name=song_name)
+            song.inc_view_count()
+            return HttpResponse(status=204)
+    except (Song.DoesNotExist, json.JSONDecodeError):
+        pass
+    return HttpResponse(status=400)
 
 
 def artist_profile(request, artist_name):
@@ -670,7 +656,24 @@ def rename_file_album(album, new_name):
     album.save()
 
 
-def compress_and_save(song_file, new_name, song):
+def save_song(song, form, request, artist):
+    new_name = artist.Artist_name + "_" + clean_filename(form.cleaned_data['song_name'])
+
+    # Name
+    song.name = form.cleaned_data['song_name']
+
+    # Image
+    if 'image_file' in request.FILES:
+        image = request.FILES['image_file']
+        new_image_name = new_name + os.path.splitext(image.name)[1]
+        default_storage.save('image/song/' + new_image_name, image)
+    else:
+        new_image_name = 'default.png'
+    song.image_uri = new_image_name
+
+    # Audio
+    song_file = request.FILES['song_file']
+
     new_song_filename = new_name + os.path.splitext(song_file.name)[1]
     temp_path = 'audio/temp/' + new_song_filename
     final_path = 'audio/' + new_song_filename
@@ -679,4 +682,18 @@ def compress_and_save(song_file, new_name, song):
         compress_audio('media/' + temp_path, 'media/' + final_path)
         default_storage.delete(temp_path)
     song.uri = new_song_filename
+
+    # Genre
+    song.genres = form.cleaned_data['genres']
+
+    # Save the song object
     song.save()
+
+    # Album
+    if 'albums' in form.changed_data:
+        song.albums.set(form.cleaned_data['albums'])
+
+    # Artist
+    song.artists.add(artist)
+
+    form.save_m2m()

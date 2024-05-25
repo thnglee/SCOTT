@@ -593,6 +593,10 @@ ul li span:nth-child(6)
     width: 920px;
 }
 
+.song-block {
+    width: 80vw;
+}
+
 .mix-block {
     background: rgb(111,140,118);
     background: linear-gradient(127deg, rgba(111,140,118,0.8) 0%, rgba(111,140,118,0.4) 18%, rgba(111,140,118,0.2) 34%, rgba(111,140,118,0.4) 59%, rgba(111,140,118,0.8) 100%);
@@ -667,6 +671,28 @@ ul li span:nth-child(6)
     border-radius: 0 0 5px 0;
 }
 
+.song-info {
+    overflow-wrap: normal;
+}
+.song-info img {
+    height: 170px;
+    box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    margin: 0 20px 20px 20px;
+}
+.song-info h1 {
+    margin: 0 0 10px 0;
+    font-size: 42px;
+    font-weight: bold;
+    font-stretch: ultra-expanded;
+}
+.song-info p {
+    margin: 5px 0;
+    font-size: 16px;
+}
 
+.song-info b {
+    font-size: 24px;
+}
 
 

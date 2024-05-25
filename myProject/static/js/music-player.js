@@ -64,10 +64,10 @@ var MusicPlayer = MusicPlayer || (function() {
         playPauseButton.classList.add('pause');
         progress.style.width = '0%';
         if (!end_playlist) {
-            audioElement.play();
-        }
-        loadSongIntoPlaylist();
-    });
+                audioElement.play();
+            }
+            loadSongIntoPlaylist();
+        });
         audioElement.addEventListener('play', function() {
             playPauseButton.classList.remove('pause');
             playPauseButton.classList.add('play');
@@ -95,6 +95,7 @@ var MusicPlayer = MusicPlayer || (function() {
             if (songUrl !== '') {
                 audioElement.src = songUrl;
                 audioElement.play();
+                inc_view_count(songName);
             }
             loadSongIntoPlaylist();
         }
@@ -120,6 +121,7 @@ var MusicPlayer = MusicPlayer || (function() {
         function clearPlaylist() {
             playlist.length = 0;
         }
+
 
         nextButton.addEventListener('click', function() {
             var index= -1;

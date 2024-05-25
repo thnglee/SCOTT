@@ -11,7 +11,9 @@
         .pause {
             background-image: url({% static 'image/play.png' %})
         }
+       
     </style>
+   
 
 {% endblock %}
 
@@ -156,7 +158,30 @@
                         p.classList.add('playing');
                     }
                 }
+            }
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
             
+            function inc_view_count(songName) {
+                var xhr = new XMLHttpRequest();
+                var domain = window.location.host;
+                var csrftoken = getCookie('csrftoken');
+                xhr.open('POST','http://' + domain + '/song/inc_view_count/', true);
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                xhr.send(JSON.stringify({ song_name: songName }));
             }
             
             document.querySelectorAll('.play-button').forEach(function (button) {

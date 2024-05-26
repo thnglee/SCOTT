@@ -65,7 +65,7 @@
                                     <div class="img mb-5">
                                         <img src="{{ MEDIA_URL }}{{ search_results.0.get_image_uri }}" alt="Image">
                                     </div>
-                                    <h1>
+                                    <h1 style="font-size: 16px">
                                         {{ search_results.0.name }}
                                     </h1>
                                     <a href="{% url 'artist_profile' search_results.0.get_artist.Artist_name %}"
@@ -106,7 +106,12 @@
                                     <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="Image">
                                 </div>
                                 <div class="song-content">
-                                    <p style="cursor: default;"> {{ song.name }} </p>
+                                    <a href="{% url 'song_info' song.id %}"
+                                        hx-get="{% url 'song_info' song.id %}"
+                                        hx-target="#swap"
+                                        hx-swap="outerHTML">
+                                        <p class="hover:underline"> {{ song.name }} </p>
+                                    </a>
                                     <p style="color: #0bae83; font-size: 15px; cursor:default; font-weight: bold"> {{ song.get_artist_name }} </p>
                                 </div>
                                 <div class="play-add-button">

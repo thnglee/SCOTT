@@ -16,7 +16,11 @@
                                  style="border-radius: 5px; color: White;">
                         </span>
                     <span> 
-                            <a href="{% url 'song_info' song.id %}" class="text-white-500 hover:underline">
+                            <a href="{% url 'song_info' song.id %}"
+                               hx-get="{% url 'song_info' song.id %}"
+                               hx-target="#swap"
+                               hx-swap="outerHTML"
+                               class="text-white-500 hover:underline">
                                <strong> {{ song.name }} </strong>
                             </a>    
                         </span>
@@ -30,11 +34,11 @@
                         </a> 
                     </span>
                     <span>
-                        <a class="add-button" 
-                                data-url="{% url 'stream_song' song.id %}" 
-                                data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
-                                data-artist="{{ song.get_artist_name }}"
-                                data-name="{{ song.name }}">
+                        <a class="add-button"
+                           data-url="{% url 'stream_song' song.id %}"
+                           data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
+                           data-artist="{{ song.get_artist_name }}"
+                           data-name="{{ song.name }}">
                             <i class="fas fa-list"></i>
                         </a>
                     </span>
@@ -70,7 +74,7 @@
                                  style="border-radius: 5px; color: White;">
                     </span>
                     <span> 
-                            <a href="{% url 'album_info' album.name %}" 
+                            <a href="{% url 'album_info' album.name %}"
                                hx-get="{% url 'album_info' album.name %}"
                                hx-target="#swap"
                                hx-swap="outerHTML"
@@ -78,11 +82,13 @@
                                <strong> {{ album.name }} </strong>
                             </a>    
                     </span>
-                   <span>
-                        <a class="play-all-button" data-album="{{ album.get_song_info }}"><i class="fas fa-play "></i></a>
+                    <span>
+                        <a class="play-all-button" data-album="{{ album.get_song_info }}"><i
+                                class="fas fa-play "></i></a>
                     </span>
                     <span>
-                        <a class="add-all-button" data-album="{{ album.get_song_info }}"><i class="fas fa-list "></i></a>
+                        <a class="add-all-button" data-album="{{ album.get_song_info }}"><i
+                                class="fas fa-list "></i></a>
                     </span>
                     <span>
                             <a href="{% url 'update_album' album.id %}"

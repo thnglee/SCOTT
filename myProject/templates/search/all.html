@@ -81,12 +81,27 @@
                                     <div class="img">
                                         <img src="{{ MEDIA_URL }}{{ search_results.top_result.get_image_uri }}" alt="Image">
                                     </div>
-                                    <h1>
-                                        {{ search_results.top_result.name }}
-                                    </h1>
-                                    <p>
-                                        {{ search_results.top_result_type }}
-                                    </p>
+                                    {% if search_results.top_result_type == "Song" %}
+                                        <a href="{% url 'song_info' search_results.top_result.id %}"
+                                            hx-get="{% url 'song_info' search_results.top_result.id %}"
+                                            hx-target="#swap"
+                                            hx-swap="outerHTML">
+                                            <h1 class="hover:underline"> {{ search_results.top_result.name }} </h1>
+                                        </a>
+                                        <p>
+                                            {{ search_results.top_result_type }}
+                                        </p>
+                                    {% else %}
+                                        <a href="{% url 'album_info' search_results.top_result.name %}"
+                                            hx-get="{% url 'album_info' search_results.top_result.name %}"
+                                            hx-target="#swap"
+                                            hx-swap="outerHTML">
+                                            <h1 class="hover:underline"> {{ search_results.top_result.name }} </h1>
+                                        </a>
+                                        <p>
+                                            {{ search_results.top_result_type }}
+                                        </p>
+                                    {% endif %}
                                 </div>
                                 
                                 {% if search_results.top_result_type == "Song" %}
@@ -108,9 +123,13 @@
                                     </div>
                                 {% else %}
                                     <div class="song-buttons">
-                                        <button class="add-album-button round-button" 
+                                        <button class="play-all-button round-button mb-2" 
                                                 data-album="{{ search_results.top_result.get_song_info }}">
                                             <i class="fas fa-play "></i>
+                                        </button>
+                                        <button class="add-all-button round-button" 
+                                                data-album="{{ search_results.top_result.get_song_info }}">
+                                            <i class="fas fa-list "></i>
                                         </button>
                                     </div>
                                 {% endif %}

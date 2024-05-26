@@ -27,7 +27,6 @@ var MusicPlayer = MusicPlayer || (function() {
         var isMuted = false;
         var previousVolume = audioElement.volume;
 
-
         audioElement.addEventListener('ended', function() {
         var song;
         var index = -1;
@@ -65,12 +64,18 @@ var MusicPlayer = MusicPlayer || (function() {
         progress.style.width = '0%';
         if (!end_playlist) {
                 audioElement.play();
+                inc_view_count(song.name);
             }
             loadSongIntoPlaylist();
         });
         audioElement.addEventListener('play', function() {
             playPauseButton.classList.remove('pause');
             playPauseButton.classList.add('play');
+            if (audioElement.loop) {
+                let songName = document.querySelector('.song-description .title').textContent;
+                console.log(songName);
+                inc_view_count(songName);
+           }
         });
         audioElement.addEventListener('pause', function() {
             playPauseButton.classList.remove('play');

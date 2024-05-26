@@ -44,6 +44,7 @@
 
 .suggestion-list .search-list .item {
     max-width: 160px;
+    min-width: 145px;
     transition: all ease 0.4s;
     overflow: hidden;
     display: flex;

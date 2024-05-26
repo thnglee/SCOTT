@@ -70,7 +70,11 @@
                                  style="border-radius: 5px; color: White;">
                     </span>
                     <span> 
-                            <a href="{% url 'album_info' album.name %}" class="text-white-500 hover:underline">
+                            <a href="{% url 'album_info' album.name %}" 
+                               hx-get="{% url 'album_info' album.name %}"
+                               hx-target="#swap"
+                               hx-swap="outerHTML"
+                               class="text-white-500 hover:underline">
                                <strong> {{ album.name }} </strong>
                             </a>    
                     </span>

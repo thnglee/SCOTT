@@ -193,12 +193,17 @@
                 <div class="search-list">
                     {% for album in search_results.albums %}
                          <div class="item">
-                            <img src="{{ MEDIA_URL }}{{ album.get_image_uri }}" alt="">
-                            <div class="play">
-                                <span class="fa fa-play play-all-button" data-album="{{ album.get_song_info }}"></span>
-                            </div>
-                            <h4>{{ album.name }}</h4>
-                            <p>{{ album.artist.Artist_name }}</p>
+                            <a href="{% url 'album_info' album.name %}"
+                               hx-get="{% url 'album_info' album.name %}"
+                               hx-target="#swap"
+                               hx-swap="outerHTML">
+                                <img src="{{ MEDIA_URL }}{{ album.get_image_uri }}" alt="">
+                                <div class="play">
+                                    <span class="fa fa-play play-all-button" data-album="{{ album.get_song_info }}"></span>
+                                </div>
+                                <h4>{{ album.name }}</h4>
+                                <p>{{ album.artist.Artist_name }}</p>
+                            </a>
                         </div>
                     {% endfor %}
                 </div>

@@ -123,6 +123,9 @@ class Album(models.Model):
     def get_image_uri(self):
         return "/media/image/album/" + self.image_uri
 
+    def get_view_count(self):
+        return sum(song.view_count for song in self.songs.all())
+
     def get_song_info(self):
         song_info = []
         for song in self.songs.all():

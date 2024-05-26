@@ -433,7 +433,6 @@ section {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all ease 0.5s;
     cursor: pointer;
 }
 

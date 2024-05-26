@@ -102,7 +102,8 @@
                    hx-get="{% url 'search_all' %}"
                    hx-target="#swap"
                    hx-swap="outerHTML"
-                   class="sidebar-link {% if request.resolver_match.url_name == 'search_all' %}active{% endif %}">
+                   class="sidebar-link {% if request.resolver_match.url_name == 'search_all' %}active{% endif %}
+                                        {% if request.resolver_match.url_name == 'search_song' %}active{% endif %}">
                     <span class="sidebar-link-icon">🔍</span>
                     <strong>Search</strong>
                 </a>
@@ -143,6 +144,9 @@
             </main>
         </div>
         <script>
+            document.addEventListener('htmx:afterSwap', function () {
+                window.scrollTo(0, 0);
+            });
             function loadSongIntoPlaylist() {
                 var playlist = document.getElementById('playlist');
                 var MPplaylist = musicPlayer.playlist;

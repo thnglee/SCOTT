@@ -44,7 +44,6 @@ class UpdateUserProfileForm(forms.ModelForm):
 
 
 class UploadSongForm(forms.ModelForm):
-    song_name = forms.CharField(max_length=100, required=True)
     song_file = forms.FileField(required=True)
     image_file = forms.ImageField(required=False)
     genres = forms.ChoiceField(choices=Song.GENRE)
@@ -58,7 +57,7 @@ class UploadSongForm(forms.ModelForm):
 
     class Meta:
         model = Song
-        fields = ['song_name', 'song_file', 'image_file', 'genres', 'albums']
+        fields = ['name', 'song_file', 'image_file', 'genres', 'albums']
 
 
 class UpdateSongForm(forms.ModelForm):

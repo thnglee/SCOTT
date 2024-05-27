@@ -18,7 +18,7 @@
         }
     </script>
     <script>
-        document.addEventListener('htmx:afterSwap', function(evt) {
+        document.addEventListener('htmx:afterSwap', function (evt) {
             if (evt.detail.target.id === 'swap') {
                 const searchInput = document.getElementById('search-input');
                 if (searchInput) {
@@ -33,7 +33,7 @@
 {% endblock %}
 
 {% block main %}
-    <section class="content" >
+    <section class="content">
         <nav class="search-navigation">
             <a class="active nav" style="cursor: default"><p> All </p></a>
             <a href="{% url 'search_song' %}?q={{ request.GET.q }}"
@@ -42,7 +42,7 @@
                hx-swap="outerHTML"
                class="inactive nav"><p> Songs </p></a>
         </nav>
-        
+
         <div class="search-content">
             <!-- Top suggestion-->
             <div class="top-suggestions">
@@ -58,15 +58,17 @@
                     <div class="result">
                         {% if search_results.top_result_type == None %}
                         {% else %}
-                            {%if search_results.top_result_type == "Artist" %}
+                            {% if search_results.top_result_type == "Artist" %}
                                 <div class="info">
-                                        <a href="{% url 'artist_profile' search_results.top_result.Artist_name %}" style="text-decoration: none;"
-                                        hx-get="{% url 'artist_profile' search_results.top_result.Artist_name %}"
-                                        hx-target="#swap"
-                                        hx-swap="outerHTML"
+                                    <a href="{% url 'artist_profile' search_results.top_result.Artist_name %}"
+                                       style="text-decoration: none;"
+                                       hx-get="{% url 'artist_profile' search_results.top_result.Artist_name %}"
+                                       hx-target="#swap"
+                                       hx-swap="outerHTML"
                                     >
                                         <div class="img">
-                                            <img src="{{ MEDIA_URL }}{{ search_results.top_result.user.get_image_uri }}" alt="Image">
+                                            <img src="{{ MEDIA_URL }}{{ search_results.top_result.user.get_image_uri }}"
+                                                 alt="Image">
                                         </div>
                                         <h1>
                                             {{ search_results.top_result.Artist_name }}
@@ -79,13 +81,14 @@
                             {% else %}
                                 <div class="info">
                                     <div class="img">
-                                        <img src="{{ MEDIA_URL }}{{ search_results.top_result.get_image_uri }}" alt="Image">
+                                        <img src="{{ MEDIA_URL }}{{ search_results.top_result.get_image_uri }}"
+                                             alt="Image">
                                     </div>
                                     {% if search_results.top_result_type == "Song" %}
                                         <a href="{% url 'song_info' search_results.top_result.id %}"
-                                            hx-get="{% url 'song_info' search_results.top_result.id %}"
-                                            hx-target="#swap"
-                                            hx-swap="outerHTML">
+                                           hx-get="{% url 'song_info' search_results.top_result.id %}"
+                                           hx-target="#swap"
+                                           hx-swap="outerHTML">
                                             <h1 class="hover:underline"> {{ search_results.top_result.name }} </h1>
                                         </a>
                                         <p>
@@ -93,9 +96,9 @@
                                         </p>
                                     {% else %}
                                         <a href="{% url 'album_info' search_results.top_result.name %}"
-                                            hx-get="{% url 'album_info' search_results.top_result.name %}"
-                                            hx-target="#swap"
-                                            hx-swap="outerHTML">
+                                           hx-get="{% url 'album_info' search_results.top_result.name %}"
+                                           hx-target="#swap"
+                                           hx-swap="outerHTML">
                                             <h1 class="hover:underline"> {{ search_results.top_result.name }} </h1>
                                         </a>
                                         <p>
@@ -103,19 +106,21 @@
                                         </p>
                                     {% endif %}
                                 </div>
-                                
+
                                 {% if search_results.top_result_type == "Song" %}
                                     <div class="song-buttons">
-                                        <button class="play-button round-button mb-2" 
-                                                data-url="{% url 'stream_song' search_results.top_result.id %}" 
-                                                data-image="{{ MEDIA_URL }}{{ search_results.top_result.get_image_uri }}"
-                                                data-artist="{{  search_results.top_result.get_artist_name  }}"
+                                        <button class="play-button round-button mb-2"
+                                                data-url="{% url 'stream_song' search_results.top_result.id %}"
+                                                data-image="
+                                                        {{ MEDIA_URL }}{{ search_results.top_result.get_image_uri }}"
+                                                data-artist="{{ search_results.top_result.get_artist_name }}"
                                                 data-name="{{ search_results.top_result.name }}">
                                             <i class="fas fa-play "></i>
                                         </button>
-                                        <button class="add-button round-button" 
-                                                data-url="{% url 'stream_song' search_results.top_result.id %}" 
-                                                data-image="{{ MEDIA_URL }}{{ search_results.top_result.get_image_uri }}"
+                                        <button class="add-button round-button"
+                                                data-url="{% url 'stream_song' search_results.top_result.id %}"
+                                                data-image="
+                                                        {{ MEDIA_URL }}{{ search_results.top_result.get_image_uri }}"
                                                 data-artist="{{ search_results.top_result.get_artist_name }}"
                                                 data-name="{{ search_results.top_result.name }}">
                                             <i class="fas fa-list"></i>
@@ -123,11 +128,11 @@
                                     </div>
                                 {% else %}
                                     <div class="song-buttons">
-                                        <button class="play-all-button round-button mb-2" 
+                                        <button class="play-all-button round-button mb-2"
                                                 data-album="{{ search_results.top_result.get_song_info }}">
                                             <i class="fas fa-play "></i>
                                         </button>
-                                        <button class="add-all-button round-button" 
+                                        <button class="add-all-button round-button"
                                                 data-album="{{ search_results.top_result.get_song_info }}">
                                             <i class="fas fa-list "></i>
                                         </button>
@@ -142,7 +147,7 @@
                     <h1>
                         <b style="font-size: 24px;cursor: default;">Songs</b>
                     </h1>
-                    
+
                     <div class="songs">
                         {% for song in search_results.songs %}
                             {% if forloop.counter <= 4 %}
@@ -151,22 +156,29 @@
                                         <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="Image">
                                     </div>
                                     <div class="song-content">
-                                        <p style="cursor: default;"> {{ song.name }} </p>
+                                        <a href="{% url 'song_info' song.id %}"
+                                           hx-get="{% url 'song_info' song.id %}"
+                                           hx-target="#swap"
+                                           hx-swap="outerHTML">
+                                            <p class="hover:underline"> {{ song.name }} </p>
+                                        </a>
                                         <p style="color: #0bae83; font-size: 15px; cursor:default; font-weight: bold"> {{ song.get_artist_name }} </p>
                                     </div>
                                     <div class="play-add-button">
-                                        <a class="play-button" 
-                                                data-url="{% url 'stream_song' song.id %}" 
-                                                data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
-                                                data-artist="{{  song.get_artist_name  }}"
-                                                data-name="{{ song.name }}">
+                                        <a class="play-button"
+                                           data-url="{% url 'stream_song' song.id %}"
+                                           data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
+                                           data-artist="{{ song.get_artist_name }}"
+                                           data-name="{{ song.name }}"
+                                           data-id="{{ song.id }}">
                                             <i class="fas fa-play "></i>
                                         </a>
-                                        <a class="add-button" 
-                                                data-url="{% url 'stream_song' song.id %}" 
-                                                data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
-                                                data-artist="{{ song.get_artist_name }}"
-                                                data-name="{{ song.name }}">
+                                        <a class="add-button"
+                                           data-url="{% url 'stream_song' song.id %}"
+                                           data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
+                                           data-artist="{{ song.get_artist_name }}"
+                                           data-name="{{ song.name }}"
+                                           data-id="{{ song.id }}">
                                             <i class="fas fa-list"></i>
                                         </a>
                                     </div>
@@ -188,9 +200,9 @@
                     {% for artist in search_results.artists %}
                         <div class="item">
                             <a href="{% url 'artist_profile' artist.Artist_name %}" style="text-decoration: none;"
-                                hx-get="{% url 'artist_profile' artist.Artist_name %}"
-                                hx-target="#swap"
-                                hx-swap="outerHTML"
+                               hx-get="{% url 'artist_profile' artist.Artist_name %}"
+                               hx-target="#swap"
+                               hx-swap="outerHTML"
                             >
                                 <div class="item-image">
                                     <img src="{{ MEDIA_URL }}{{ artist.user.get_image_uri }}" alt="">
@@ -211,15 +223,21 @@
                            text-decoration-thickness: 3px;">Albums</h2>
                 <div class="search-list">
                     {% for album in search_results.albums %}
-                         <div class="item">
+                        <div class="item">
                             <a href="{% url 'album_info' album.name %}"
                                hx-get="{% url 'album_info' album.name %}"
                                hx-target="#swap"
                                hx-swap="outerHTML">
                                 <img src="{{ MEDIA_URL }}{{ album.get_image_uri }}" alt="">
-                                <div class="play">
-                                    <span class="fa fa-play play-all-button" data-album="{{ album.get_song_info }}"></span>
-                                </div>
+                            </a>
+                            <div class="play">
+                                <span class="fa fa-play play-all-button"
+                                      data-album="{{ album.get_song_info }}"></span>
+                            </div>
+                            <a href="{% url 'album_info' album.name %}"
+                               hx-get="{% url 'album_info' album.name %}"
+                               hx-target="#swap"
+                               hx-swap="outerHTML">
                                 <h4>{{ album.name }}</h4>
                                 <p>{{ album.artist.Artist_name }}</p>
                             </a>

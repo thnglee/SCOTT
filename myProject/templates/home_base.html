@@ -11,9 +11,9 @@
         .pause {
             background-image: url({% static 'image/play.png' %})
         }
-       
+
     </style>
-   
+
 
 {% endblock %}
 
@@ -98,7 +98,7 @@
                     <span class="sidebar-link-icon">🏠</span>
                     <b>Home</b>
                 </a>
-                <a href="{% url 'search_all' %}" 
+                <a href="{% url 'search_all' %}"
                    hx-get="{% url 'search_all' %}"
                    hx-target="#swap"
                    hx-swap="outerHTML"
@@ -110,21 +110,21 @@
 
             </div>
 
-            <div hx-preserve="true" id="pl" class="sidebar-section playlist" >
+            <div hx-preserve="true" hx-history="false"  id="pl" class="sidebar-section playlist">
                 <a href="{% url 'playlist_info' %}"
-                    hx-get="{% url 'playlist_info' %}"
-                    hx-target="#swap"
-                    hx-swap="outerHTML"
-                    class="sidebar-link {% if request.resolver_match.url_name == 'playlist_info' %}active{% endif %}"
+                   hx-get="{% url 'playlist_info' %}"
+                   hx-target="#swap"
+                   hx-swap="outerHTML"
+                   class="sidebar-link {% if request.resolver_match.url_name == 'playlist_info' %}active{% endif %}"
                 >
                     <span class="sidebar-link-icon">🎶</span>
                     <b>Library</b>
                 </a>
-            
-                <div  id="playlist" class="songs">
-                    
+
+                <div hx-history="false" id="playlist" class="songs">
+
                 </div>
-                
+
             </div>
 
         </div>
@@ -146,23 +146,31 @@
         <script>
             document.addEventListener('htmx:afterSwap', function () {
                 window.scrollTo(0, 0);
+                loadSongIntoPlaylist();
             });
             function loadSongIntoPlaylist() {
                 var playlist = document.getElementById('playlist');
                 var MPplaylist = musicPlayer.playlist;
-                
+
                 playlist.innerHTML = '';
-                
+
                 for (var i = 0; i < MPplaylist.length; i++) {
                     var song = MPplaylist[i];
-                    var p = document.createElement('p');
-                    p.textContent = song.name;
-                    playlist.appendChild(p);
+                    var a = document.createElement('a');
+                    a.href = '/song/' + song.id +"/info/"
+                    a.setAttribute('hx-get', '/song/' + song.id +"/info/");
+                    a.setAttribute('hx-target', '#swap');
+                    a.setAttribute('hx-swap', 'outerHTML');
+                    a.textContent = song.name;
+
+                    playlist.appendChild(a);
                     if (musicPlayer.audioElement.src.includes(song.url)) {
-                        p.classList.add('playing');
+                        a.classList.add('playing');
                     }
                 }
+                htmx.process(playlist);
             }
+
             function getCookie(name) {
                 let cookieValue = null;
                 if (document.cookie && document.cookie !== '') {
@@ -177,25 +185,25 @@
                 }
                 return cookieValue;
             }
-            
+
             function inc_view_count(songName) {
                 var xhr = new XMLHttpRequest();
                 var domain = window.location.host;
                 var csrftoken = getCookie('csrftoken');
-                xhr.open('POST','http://' + domain + '/song/inc_view_count/', true);
+                xhr.open('POST', 'http://' + domain + '/song/inc_view_count/', true);
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
                 xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                xhr.send(JSON.stringify({ song_name: songName }));
+                xhr.send(JSON.stringify({song_name: songName}));
             }
-            
+
             document.querySelectorAll('.play-button').forEach(function (button) {
                 button.addEventListener('click', function () {
                     var songUrl = button.getAttribute('data-url');
                     var songImage = button.getAttribute('data-image');
                     var songArtist = button.getAttribute('data-artist');
                     var songName = button.getAttribute('data-name');
-
-                    musicPlayer.playSong(songUrl, songImage, songArtist, songName);
+                    var songId = button.getAttribute('data-id');
+                    musicPlayer.playSong(songUrl, songImage, songArtist, songName, songId);
                 });
             });
 
@@ -205,8 +213,8 @@
                     var songImage = button.getAttribute('data-image');
                     var songArtist = button.getAttribute('data-artist');
                     var songName = button.getAttribute('data-name');
-
-                    musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
+                    var songId = button.getAttribute('data-id');
+                    musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName, songId);
                 });
             });
 
@@ -220,26 +228,28 @@
                         var songImage = songInfo.image_uri;
                         var songArtist = songInfo.artist_name;
                         var songName = songInfo.song_name;
+                        var songId = songInfo.id;
 
-                        musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
+                        musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName, songId);
                     });
                 });
             });
-            
+
 
             document.querySelectorAll('.play-all-button').forEach(function (button) {
                 button.addEventListener('click', function () {
                     var albumInfo = button.getAttribute('data-album');
                     var songInfoArray = JSON.parse(albumInfo);
                     musicPlayer.clearPlaylist();
-                    musicPlayer.playSong(songInfoArray[0].stream_url, songInfoArray[0].image_uri, songInfoArray[0].artist_name, songInfoArray[0].song_name);
+                    musicPlayer.playSong(songInfoArray[0].stream_url, songInfoArray[0].image_uri, songInfoArray[0].artist_name, songInfoArray[0].song_name, songInfoArray[0].id);
                     songInfoArray.forEach(function (songInfo) {
                         var songUrl = songInfo.stream_url;
                         var songImage = songInfo.image_uri;
                         var songArtist = songInfo.artist_name;
                         var songName = songInfo.song_name;
+                        var songId = songInfo.id;
 
-                        musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
+                        musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName, songId);
                     });
                     loadSongIntoPlaylist();
                 });
@@ -254,10 +264,8 @@
                     <img src="{{ MEDIA_URL }}{{ '/media/image/song/default.png' }}" alt=""/>
                 </div>
                 <div class="song-description">
-                    <p class="title">
-                        Name
-                    </p>
-                    <p class="artist">Artist</p>
+                    <p class="title"></p>
+                    <p class="artist"></p>
                 </div>
             </div>
         </div>
@@ -285,7 +293,7 @@
                 </div>
             </div>
         </div>
-        
+
     </div>
 
     <script src="{% static 'js/music-player.js' %}"></script>

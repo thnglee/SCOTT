@@ -44,15 +44,17 @@
                         <button class="play-button round-button mb-2" 
                                 data-url="{% url 'stream_song' song.id %}" 
                                 data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
-                                data-artist="{{  song.get_artist_name  }}"
-                                data-name="{{ song.name }}">
+                                data-artist="{{ song.get_artist_name  }}"
+                                data-name="{{ song.name }}"
+                                data-id="{{ song.id }}">
                             <i class="fas fa-play "></i>
                         </button>
                         <button class="add-button round-button" 
                                 data-url="{% url 'stream_song' song.id %}" 
                                 data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
                                 data-artist="{{ song.get_artist_name }}"
-                                data-name="{{ song.name }}">
+                                data-name="{{ song.name }}"
+                                data-id="{{ song.id }}">
                             <i class="fas fa-list"></i>
                         </button>
                     </div>

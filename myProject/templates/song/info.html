@@ -1,5 +1,65 @@
 {% extends "templates/home_base.html" %}
+{% block header %}
+    <script>
+        $(document).ready(function () {
 
+            const colorThief = new ColorThief();
+            const img = document.getElementById('song_image');
+            var palette = colorThief.getPalette(img);
+            var firstNonGrayColor = getFirstNonGrayColor(palette, 50); // Adjust the threshold as needed
+
+            const rgbColor = 'rgb(' + firstNonGrayColor;
+            document.querySelector('.song-block').style.background = 'linear-gradient(to bottom,'
+                + rgbColor + ')' + '0%, '
+                + rgbColor + ',0.9)' + '18%, '
+                + rgbColor + ',0.85)' + '34%, '
+                + rgbColor + ',0.8)' + '100%)';
+            document.getElementById('block2').style.background = 'linear-gradient(to bottom,'
+                + rgbColor + ',0.4)' + '0%, '
+                + rgbColor + ',0.25)' + '30%, '
+                + rgbColor + ',0.1)' + '60%, '
+                + rgbColor + ',0.0)' + '100%) ';
+            var mostColorfulColor = getMostColorfulColor(palette);
+            if (mostColorfulColor) {
+                document.querySelector('.play-button').style.background = 'rgb(' + mostColorfulColor + ')';
+            }
+
+            function isColorTooGray(color, threshold) {
+                var r = color[0];
+                var g = color[1];
+                var b = color[2];
+                return Math.abs(r - g) <= threshold && Math.abs(g - b) <= threshold && Math.abs(b - r) <= threshold;
+            }
+
+            function getFirstNonGrayColor(palette, threshold) {
+                for (var i = 0; i < palette.length; i++) {
+                    if (!isColorTooGray(palette[i], threshold)) {
+                        return palette[i];
+                    }
+                }
+                return null;
+            }
+
+            function getColorfulness(color) {
+                return Math.max(color[0], color[1], color[2]) - Math.min(color[0], color[1], color[2]);
+            }
+
+            function getMostColorfulColor(palette) {
+                var mostColorfulColor = null;
+                var maxColorfulness = -1;
+                for (var i = 0; i < palette.length; i++) {
+                    var colorfulness = getColorfulness(palette[i]);
+                    if (colorfulness > maxColorfulness) {
+                        maxColorfulness = colorfulness;
+                        mostColorfulColor = palette[i];
+                    }
+                }
+                return mostColorfulColor;
+            }
+        });
+
+    </script>
+{% endblock %}
 {% block main %}
     <div style="margin-left: 25px">
         <div class="song-block song-info" style="display: flex; padding-top: 70px;">
@@ -36,15 +96,17 @@
                         data-url="{% url 'stream_song' song.id %}"
                         data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
                         data-artist="{{ song.get_artist_name }}"
-                        data-name="{{ song.name }}">
+                        data-name="{{ song.name }}"
+                        data-id="{{ song.id }}">
                     <i class="fas fa-play" style="font-size: 20px; margin-left: 3px"></i>
                 </button>
                 <a class="add-button" style="margin:0 20px 20px 20px;"
                    data-url="{% url 'stream_song' song.id %}"
                    data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
                    data-artist="{{ song.get_artist_name }}"
-                   data-name="{{ song.name }}">
-                    <i class="fas fa-list" style="font-size: 26px"></i>
+                   data-name="{{ song.name }}"
+                   data-id="{{ song.id }}">
+                    <i class="fas fa-list" style="font-size: 26px; cursor: pointer"></i>
                 </a>
                 {% if current_user == song.get_artist.user.user %}
                     <a href="{% url 'update_song' song.id %}"
@@ -70,7 +132,7 @@
                             </span>
                             <span> 
                                 <label>
-                                    <a href="{% url 'song_info' song.id %}" 
+                                    <a href="{% url 'song_info' song.id %}"
                                        hx-get="{% url 'song_info' song.id %}"
                                        hx-target="#swap"
                                        hx-swap="outerHTML"
@@ -85,7 +147,8 @@
                                    data-url="{% url 'stream_song' song.id %}"
                                    data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
                                    data-artist="{{ song.get_artist_name }}"
-                                   data-name="{{ song.name }}">
+                                   data-name="{{ song.name }}"
+                                   data-id="{{ song.id }}">
                                     <i class="fas fa-play "></i>
                                 </a>
                             </span>
@@ -94,7 +157,8 @@
                                    data-url="{% url 'stream_song' song.id %}"
                                    data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
                                    data-artist="{{ song.get_artist_name }}"
-                                   data-name="{{ song.name }}">
+                                   data-name="{{ song.name }}"
+                                   data-id="{{ song.id }}">
                                     <i class="fas fa-list"></i>
                                 </a>
                             </span>
@@ -119,7 +183,7 @@
                                          style="border-radius: 5px; color: White;">
                                 </span>
                             <span> 
-                                    <a href="{% url 'song_info' song.id %}" 
+                                    <a href="{% url 'song_info' song.id %}"
                                        hx-get="{% url 'song_info' song.id %}"
                                        hx-target="#swap"
                                        hx-swap="outerHTML"
@@ -132,7 +196,8 @@
                                        data-url="{% url 'stream_song' song.id %}"
                                        data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
                                        data-artist="{{ song.get_artist_name }}"
-                                       data-name="{{ song.name }}">
+                                       data-name="{{ song.name }}"
+                                       data-id="{{ song.id }}">
                                         <i class="fas fa-play "></i>
                                     </a>
                                 </span>
@@ -141,7 +206,8 @@
                                        data-url="{% url 'stream_song' song.id %}"
                                        data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
                                        data-artist="{{ song.get_artist_name }}"
-                                       data-name="{{ song.name }}">
+                                       data-name="{{ song.name }}"
+                                       data-id="{{ song.id }}">
                                         <i class="fas fa-list"></i>
                                     </a>
                                 </span>
@@ -152,22 +218,28 @@
                         <li><strong>No songs available.</strong></li>
                     {% endfor %}
                 </ul>
-            
+
                 <h2 class="text-2xl font-bold pl-5" style="margin-top: 60px">
                     Popular Albums by {{ song.get_artist_name }}
                 </h2>
-                 <div class="scott-playlists suggestion-list whitespace-warp" style="margin-top: 0">
+                <div class="scott-playlists suggestion-list whitespace-warp" style="margin-top: 0">
                     <div class="search-list ">
                         {% for album in artist_albums %}
-                             <div class="item" style="word-wrap: normal">
+                            <div class="item" style="word-wrap: normal">
                                 <a href="{% url 'album_info' album.name %}"
                                    hx-get="{% url 'album_info' album.name %}"
                                    hx-target="#swap"
                                    hx-swap="outerHTML">
                                     <img src="{{ MEDIA_URL }}{{ album.get_image_uri }}" alt="">
-                                    <div class="play">
-                                        <span class="fa fa-play play-all-button" data-album="{{ album.get_song_info }}"></span>
-                                    </div>
+                                </a>
+                                <div class="play">
+                                    <span class="fa fa-play play-all-button"
+                                          data-album="{{ album.get_song_info }}"></span>
+                                </div>
+                                <a href="{% url 'album_info' album.name %}"
+                                   hx-get="{% url 'album_info' album.name %}"
+                                   hx-target="#swap"
+                                   hx-swap="outerHTML">
                                     <h4>{{ album.name }}</h4>
                                 </a>
                             </div>
@@ -177,63 +249,5 @@
             </div>
         </div>
 
-        <script>
-            $(document).ready(function () {
-
-                const colorThief = new ColorThief();
-                const img = document.getElementById('song_image');
-                var palette = colorThief.getPalette(img);
-                var firstNonGrayColor = getFirstNonGrayColor(palette, 50); // Adjust the threshold as needed
-
-                const rgbColor = 'rgb(' + firstNonGrayColor;
-                document.querySelector('.song-block').style.background = 'linear-gradient(to bottom,'
-                    + rgbColor + ')' + '0%, '
-                    + rgbColor + ',0.9)' + '18%, '
-                    + rgbColor + ',0.85)' + '34%, '
-                    + rgbColor + ',0.8)' + '100%)';
-                document.getElementById('block2').style.background = 'linear-gradient(to bottom,'
-                    + rgbColor + ',0.4)' + '0%, '
-                    + rgbColor + ',0.25)' + '30%, '
-                    + rgbColor + ',0.1)' + '60%, '
-                    + rgbColor + ',0.0)' + '100%) ';
-                var mostColorfulColor = getMostColorfulColor(palette);
-                if (mostColorfulColor) {
-                    document.querySelector('.play-button').style.background = 'rgb(' + mostColorfulColor + ')';
-                }
-            });
-
-            function isColorTooGray(color, threshold) {
-                var r = color[0];
-                var g = color[1];
-                var b = color[2];
-                return Math.abs(r - g) <= threshold && Math.abs(g - b) <= threshold && Math.abs(b - r) <= threshold;
-            }
-
-            function getFirstNonGrayColor(palette, threshold) {
-                for (var i = 0; i < palette.length; i++) {
-                    if (!isColorTooGray(palette[i], threshold)) {
-                        return palette[i];
-                    }
-                }
-                return null;
-            }
-
-            function getColorfulness(color) {
-                return Math.max(color[0], color[1], color[2]) - Math.min(color[0], color[1], color[2]);
-            }
-
-            function getMostColorfulColor(palette) {
-                var mostColorfulColor = null;
-                var maxColorfulness = -1;
-                for (var i = 0; i < palette.length; i++) {
-                    var colorfulness = getColorfulness(palette[i]);
-                    if (colorfulness > maxColorfulness) {
-                        maxColorfulness = colorfulness;
-                        mostColorfulColor = palette[i];
-                    }
-                }
-                return mostColorfulColor;
-            }
-        </script>
     </div>
 {% endblock %}

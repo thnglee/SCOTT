@@ -29,7 +29,8 @@
                            data-url="{% url 'stream_song' song.id %}"
                            data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
                            data-artist="{{ song.get_artist_name }}"
-                           data-name="{{ song.name }}">
+                           data-name="{{ song.name }}"
+                           data-id="{{ song.id }}">
                             <i class="fas fa-play "></i>
                         </a> 
                     </span>
@@ -38,7 +39,8 @@
                            data-url="{% url 'stream_song' song.id %}"
                            data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
                            data-artist="{{ song.get_artist_name }}"
-                           data-name="{{ song.name }}">
+                           data-name="{{ song.name }}"
+                           data-id="{{ song.id }}">
                             <i class="fas fa-list"></i>
                         </a>
                     </span>

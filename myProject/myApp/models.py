@@ -134,6 +134,7 @@ class Album(models.Model):
                 'image_uri': song.get_image_uri(),
                 'artist_name': song.get_artist_name(),
                 'song_name': song.name,
+                'id': song.id,
             }
             song_info.append(info)
         return json.dumps(song_info)
@@ -160,6 +161,7 @@ class Playlist(models.Model):
                 'image_uri': song.get_image_uri(),
                 'artist_name': song.get_artist_name(),
                 'song_name': song.name,
+                'id': song.id,
             }
             song_info.append(info)
         return json.dumps(song_info)

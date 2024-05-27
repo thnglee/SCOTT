@@ -436,6 +436,7 @@ section {
     cursor: pointer;
 }
 
+
 .round-button:hover {
     transform: scale(1.05);
     display: flex;
@@ -595,6 +596,9 @@ ul li span:nth-child(6)
 .song-block {
     width: 80vw;
 }
+.song-block .round-button {
+    background: transparent;
+}
 
 .mix-block {
     background: rgb(111,140,118);
@@ -644,6 +648,10 @@ ul li span:nth-child(6)
     margin-bottom: 3px;
     overflow-x: hidden;
     overflow-y: scroll;
+}
+.playlist .songs a {
+    margin: 0;
+    padding: 0;
 }
 
 .playlist .songs .playing {

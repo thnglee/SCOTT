@@ -89,7 +89,6 @@ i:hover{
     gap: 1em;
 }
 .progress-controller{
-    z-index: 2;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -98,6 +97,7 @@ i:hover{
     color: var(--secondary-color);
 }
 .control-buttons{
+    z-index: 2;
     display: flex;
     align-items: center;
     gap: 2em;
@@ -155,7 +155,6 @@ i:hover{
     gap: 1em;
 }
 .volume-bar{
-    z-index: 3;
     display: flex;
     align-items: center;
     gap: .7em;

@@ -14,7 +14,6 @@
 
     </style>
 
-
 {% endblock %}
 
 {% block body_style %}
@@ -107,10 +106,6 @@
                     <span class="sidebar-link-icon">🔍</span>
                     <strong>Search</strong>
                 </a>
-
-            </div>
-
-            <div hx-preserve="true" hx-history="false"  id="pl" class="sidebar-section playlist">
                 <a href="{% url 'playlist_info' %}"
                    hx-get="{% url 'playlist_info' %}"
                    hx-target="#swap"
@@ -120,11 +115,6 @@
                     <span class="sidebar-link-icon">🎶</span>
                     <b>Library</b>
                 </a>
-
-                <div hx-history="false" id="playlist" class="songs">
-
-                </div>
-
             </div>
 
         </div>
@@ -143,120 +133,14 @@
 
             </main>
         </div>
-        <script>
-            document.addEventListener('htmx:afterSwap', function () {
-                window.scrollTo(0, 0);
-                loadSongIntoPlaylist();
-            });
-            function loadSongIntoPlaylist() {
-                var playlist = document.getElementById('playlist');
-                var MPplaylist = musicPlayer.playlist;
-
-                playlist.innerHTML = '';
-
-                for (var i = 0; i < MPplaylist.length; i++) {
-                    var song = MPplaylist[i];
-                    var a = document.createElement('a');
-                    a.href = '/song/' + song.id +"/info/"
-                    a.setAttribute('hx-get', '/song/' + song.id +"/info/");
-                    a.setAttribute('hx-target', '#swap');
-                    a.setAttribute('hx-swap', 'outerHTML');
-                    a.textContent = song.name;
-
-                    playlist.appendChild(a);
-                    if (musicPlayer.audioElement.src.includes(song.url)) {
-                        a.classList.add('playing');
-                    }
-                }
-                htmx.process(playlist);
-            }
-
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-
-            function inc_view_count(songName) {
-                var xhr = new XMLHttpRequest();
-                var domain = window.location.host;
-                var csrftoken = getCookie('csrftoken');
-                xhr.open('POST', 'http://' + domain + '/song/inc_view_count/', true);
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                xhr.send(JSON.stringify({song_name: songName}));
-            }
-
-            document.querySelectorAll('.play-button').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var songUrl = button.getAttribute('data-url');
-                    var songImage = button.getAttribute('data-image');
-                    var songArtist = button.getAttribute('data-artist');
-                    var songName = button.getAttribute('data-name');
-                    var songId = button.getAttribute('data-id');
-                    musicPlayer.playSong(songUrl, songImage, songArtist, songName, songId);
-                });
-            });
-
-            document.querySelectorAll('.add-button').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var songUrl = button.getAttribute('data-url');
-                    var songImage = button.getAttribute('data-image');
-                    var songArtist = button.getAttribute('data-artist');
-                    var songName = button.getAttribute('data-name');
-                    var songId = button.getAttribute('data-id');
-                    musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName, songId);
-                });
-            });
-
-            document.querySelectorAll('.add-all-button').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var albumInfo = button.getAttribute('data-album');
-                    var songInfoArray = JSON.parse(albumInfo);
-
-                    songInfoArray.forEach(function (songInfo) {
-                        var songUrl = songInfo.stream_url;
-                        var songImage = songInfo.image_uri;
-                        var songArtist = songInfo.artist_name;
-                        var songName = songInfo.song_name;
-                        var songId = songInfo.id;
-
-                        musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName, songId);
-                    });
-                });
-            });
-
-
-            document.querySelectorAll('.play-all-button').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var albumInfo = button.getAttribute('data-album');
-                    var songInfoArray = JSON.parse(albumInfo);
-                    musicPlayer.clearPlaylist();
-                    musicPlayer.playSong(songInfoArray[0].stream_url, songInfoArray[0].image_uri, songInfoArray[0].artist_name, songInfoArray[0].song_name, songInfoArray[0].id);
-                    songInfoArray.forEach(function (songInfo) {
-                        var songUrl = songInfo.stream_url;
-                        var songImage = songInfo.image_uri;
-                        var songArtist = songInfo.artist_name;
-                        var songName = songInfo.song_name;
-                        var songId = songInfo.id;
-
-                        musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName, songId);
-                    });
-                    loadSongIntoPlaylist();
-                });
-            });
-
-        </script>
     </div>
+    
+    <div hx-preserve="true" class="playlist-box">
+        <div id="playlist" class="songs">
+    
+        </div>
+    </div>
+    <script src="{% static 'js/home_base.js' %}"></script>
     <div hx-preserve="true" id="music-player" class="music-player">
         <div class="song-bar">
             <div class="song-infos">
@@ -286,6 +170,9 @@
             </div>
         </div>
         <div class="other-features">
+            <div class="queue">
+                <i class="fas fa-bars" style="font-size: 20px"></i>
+            </div>
             <div class="volume-bar">
                 <i class="fas fa-volume-up" style="width: 15px"></i>
                 <div class="progress-bar">
@@ -297,7 +184,8 @@
     </div>
 
     <script src="{% static 'js/music-player.js' %}"></script>
-
+    <script src="{% static 'js/playlist-controller.js' %}"></script>
+    
 
 
 {% endblock %}

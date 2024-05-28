@@ -31,7 +31,6 @@ var MusicPlayer = MusicPlayer || (function () {
             var song;
             var index = -1;
             var end_playlist = false;
-
             for (var i = 0; i < playlist.length; i++) {
                 if (new URL(playlist[i].url, window.location.origin).href === audioElement.src) {
                     index = i;
@@ -64,14 +63,12 @@ var MusicPlayer = MusicPlayer || (function () {
             if (!end_playlist) {
                 audioElement.play();
             }
-            loadSongIntoPlaylist();
+            playlistController.loadSongIntoPlaylist();
         });
         audioElement.addEventListener('play', function () {
             playPauseButton.classList.remove('pause');
             playPauseButton.classList.add('play');
-            if (audioElement.currentTime / audioElement.duration < 0.01) {
-                view_inc_check = true;
-            }
+
         });
         audioElement.addEventListener('pause', function () {
             playPauseButton.classList.remove('play');
@@ -93,7 +90,7 @@ var MusicPlayer = MusicPlayer || (function () {
                 audioElement.src = songUrl;
                 audioElement.play();
             }
-            loadSongIntoPlaylist();
+            playlistController.loadSongIntoPlaylist();
         }
 
         function setSongInfo(songUrl, songImage, songArtist, songName) {
@@ -119,7 +116,7 @@ var MusicPlayer = MusicPlayer || (function () {
             if (audioElement.ended || !audioElement.src) {
                 playSong(songUrl, songImage, songArtist, songName, songId);
             }
-            loadSongIntoPlaylist();
+            playlistController.loadSongIntoPlaylist();
         }
 
         function clearPlaylist() {
@@ -190,8 +187,10 @@ var MusicPlayer = MusicPlayer || (function () {
             var currentSeconds = Math.floor(audioElement.currentTime % 60);
             if (currentSeconds < 10) currentSeconds = '0' + currentSeconds;
             currentTimeElement.textContent = currentMinutes + ':' + currentSeconds;
-
-            if ((audioElement.currentTime / audioElement.duration > 0.1) && view_inc_check) {
+            if (audioElement.currentTime / audioElement.duration < 0.05) {
+                view_inc_check = true;
+            }
+            if ((audioElement.currentTime / audioElement.duration > 0.25) && view_inc_check) {
                 let songName = document.querySelector('.song-description .title').textContent;
                 inc_view_count(songName);
                 view_inc_check = false;
@@ -290,6 +289,9 @@ var MusicPlayer = MusicPlayer || (function () {
                 volumeProgress.style.width = '0%';
                 isMuted = true;
             }
+        });
+        document.querySelector('.queue').addEventListener('click', function () {
+            playlistController.toggleDisplay();
         });
 
         return {

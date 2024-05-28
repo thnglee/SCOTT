@@ -2,12 +2,27 @@ var PlaylistController = (function () {
     var instance;
 
     function createInstance() {
-        var playlistBox = document.querySelector('.playlist-box');
-        var obj = {
-            toggleDisplay: function() {
-                playlistBox.style.display = playlistBox.style.display === 'none' ? 'flex' : 'none';
-            },
-            loadSongIntoPlaylist: function() {
+        document.querySelector('.playlist-box');
+
+        var playlistBox = document.querySelector('.playlist-box .songs');
+
+        playlistBox.addEventListener('wheel', function(e) {
+            var atTop = playlistBox.scrollTop === 0;
+            var atBottom = playlistBox.scrollHeight - playlistBox.scrollTop === playlistBox.clientHeight;
+
+            var delta = e.deltaY;
+
+            if ((delta < 0 && atTop) || (delta > 0 && atBottom)) {
+                e.preventDefault();
+            } else {
+                e.stopPropagation();
+            }
+        }, { passive: false });
+
+
+        return {
+
+            loadSongIntoPlaylist: function () {
                 var playlist = document.getElementById('playlist');
                 var MPplaylist = musicPlayer.playlist;
 
@@ -30,7 +45,6 @@ var PlaylistController = (function () {
                 htmx.process(playlist);
             }
         };
-        return obj;
     }
 
     return {

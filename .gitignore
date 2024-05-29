@@ -1,0 +1,7 @@
+
+/myProject/venv
+/myProject/.idea
+/myProject/myApp/__pycache__
+/myProject/myProject/__pycache__
+/myProject/myApp/migrations/__pycache__
+*.pyc

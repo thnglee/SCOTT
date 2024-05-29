@@ -77,6 +77,10 @@ i:hover{
     -webkit-line-clamp: 1;
     overflow: hidden;
 }
+.title:hover,
+.artist:hover {
+    text-decoration: underline;
+}
 .artist{
     color: var(--secondary-color);
 }
@@ -179,29 +183,23 @@ i:hover{
 }
 
 .playlist-box {
-    display: flex;
+    display: none;
     flex-direction: column;
-    z-index: 2;
     position: fixed;
-    bottom: 85px;
-    left: 9px;
-    background: #181818;
-    width: 182px;
-    min-height: 175px;
-    max-height: 175px;
+    top: 0;
+    right: 0;
+    background: #111;
+    width: 300px;
+    height: 100vh;
 }
-
-.playlist-box:hover {
-    min-width: 300px;
-}
-
 .playlist-box .songs {
     display: flex;
     flex-direction: column;
     justify-content: normal;
     white-space: nowrap;
+    margin-bottom: 3px;
     overflow-x: hidden;
-    font-size: 14px;
+    overflow-y: scroll;
 }
 .playlist-box .songs {
     padding: 6px;

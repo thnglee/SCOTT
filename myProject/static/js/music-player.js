@@ -290,6 +290,9 @@ var MusicPlayer = MusicPlayer || (function () {
                 isMuted = true;
             }
         });
+        document.querySelector('.queue').addEventListener('click', function () {
+            playlistController.toggleDisplay();
+        });
 
         return {
             playSong: playSong,

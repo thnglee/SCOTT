@@ -107,13 +107,12 @@
         var imageInput = document.getElementById('id_image_file');
         var userImage = document.getElementById('userImage');
 
-        // Hide the artist name field and label initially if become_artist is not checked
+        
         if (!becomeArtistCheckbox.checked) {
             artistNameLabel.style.display = 'none';
             artistNameField.style.display = 'none';
         }
-
-        // Add an event listener to the become_artist checkbox
+        
         becomeArtistCheckbox.addEventListener('change', function () {
             if (becomeArtistCheckbox.checked) {
                 artistNameLabel.style.display = 'block';

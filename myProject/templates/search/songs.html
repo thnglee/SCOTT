@@ -18,7 +18,7 @@
         }
     </script>
     <script>
-        document.addEventListener('htmx:afterSwap', function(evt) {
+        document.addEventListener('htmx:afterSwap', function (evt) {
             if (evt.detail.target.id === 'swap') {
                 const searchInput = document.getElementById('search-input');
                 if (searchInput) {
@@ -33,7 +33,7 @@
 {% endblock %}
 
 {% block main %}
-    <section class="content" >
+    <section class="content">
         <nav class="search-navigation">
             <a href="{% url 'search_all' %}?q={{ request.GET.q }}"
                hx-get="{% url 'search_all' %}?q={{ request.GET.q }}"
@@ -42,11 +42,10 @@
                class="inactive nav"><p> All </p></a>
             <a class="active nav" style="cursor: default"><p> Songs </p></a>
         </nav>
-        
+
         <div class="search-content">
-            <!-- Top suggestion-->
-            <div class="top-suggestions" >
-                <div class="top-result" >
+            <div class="top-suggestions">
+                <div class="top-result">
                     <h1>
                         <b style="font-size: 24px;
                            text-decoration: underline;
@@ -57,24 +56,38 @@
                     </h1>
                     <div class="result">
                         {% if search_results %}
-                            <div class="info" style="justify-content: normal">
-                                <div class="img mb-5">
-                                    <img src="{{ MEDIA_URL }}{{ search_results.0.get_image_uri }}" alt="Image">
-                                </div>
-                                <h1>
-                                    {{ search_results.0.name }}
-                                </h1>
+                            <div class="info" style="justify-content: normal; word-wrap: anywhere">
+                                <a href="{% url "song_info" search_results.0.id %}"
+                                   hx-get="{% url "song_info" search_results.0.id %}"
+                                   hx-target="#swap"
+                                   hx-swap="outerHTML"
+                                >
+                                    <div class="img mb-5">
+                                        <img src="{{ MEDIA_URL }}{{ search_results.0.get_image_uri }}" alt="Image">
+                                    </div>
+                                    <h1 style="font-size: 16px">
+                                        {{ search_results.0.name }}
+                                    </h1>
+                                    <a href="{% url 'artist_profile' search_results.0.get_artist.Artist_name %}"
+                                       hx-get="{% url 'artist_profile' search_results.0.get_artist.Artist_name %}"
+                                       hx-target="#swap"
+                                       hx-swap="outerHTML"
+                                       class="text-gray-400 hover:underline"
+                                    >
+                                        {{ search_results.0.get_artist_name }}
+                                    </a>
+                                </a>
                             </div>
                             <div class="song-buttons">
-                                <button class="play-button round-button mb-2" 
-                                        data-url="{% url 'stream_song' search_results.0.id %}" 
+                                <button class="play-button round-button mb-2"
+                                        data-url="{% url 'stream_song' search_results.0.id %}"
                                         data-image="{{ MEDIA_URL }}{{ search_results.0.get_image_uri }}"
-                                        data-artist="{{  search_results.0.get_artist_name  }}"
+                                        data-artist="{{ search_results.0.get_artist_name }}"
                                         data-name="{{ search_results.0.name }}">
                                     <i class="fas fa-play "></i>
                                 </button>
-                                <button class="add-button round-button" 
-                                        data-url="{% url 'stream_song' search_results.0.id %}" 
+                                <button class="add-button round-button"
+                                        data-url="{% url 'stream_song' search_results.0.id %}"
                                         data-image="{{ MEDIA_URL }}{{ search_results.0.get_image_uri }}"
                                         data-artist="{{ search_results.0.get_artist_name }}"
                                         data-name="{{ search_results.0.name }}">
@@ -93,22 +106,29 @@
                                     <img src="{{ MEDIA_URL }}{{ song.get_image_uri }}" alt="Image">
                                 </div>
                                 <div class="song-content">
-                                    <p style="cursor: default;"> {{ song.name }} </p>
+                                    <a href="{% url 'song_info' song.id %}"
+                                       hx-get="{% url 'song_info' song.id %}"
+                                       hx-target="#swap"
+                                       hx-swap="outerHTML">
+                                        <p class="hover:underline"> {{ song.name }} </p>
+                                    </a>
                                     <p style="color: #0bae83; font-size: 15px; cursor:default; font-weight: bold"> {{ song.get_artist_name }} </p>
                                 </div>
                                 <div class="play-add-button">
-                                    <a class="play-button" 
-                                            data-url="{% url 'stream_song' song.id %}" 
-                                            data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
-                                            data-artist="{{  song.get_artist_name  }}"
-                                            data-name="{{ song.name }}">
+                                    <a class="play-button"
+                                       data-url="{% url 'stream_song' song.id %}"
+                                       data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
+                                       data-artist="{{ song.get_artist_name }}"
+                                       data-name="{{ song.name }}"
+                                       data-id="{{ song.id }}">
                                         <i class="fas fa-play "></i>
                                     </a>
-                                    <a class="add-button" 
-                                            data-url="{% url 'stream_song' song.id %}" 
-                                            data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
-                                            data-artist="{{ song.get_artist_name }}"
-                                            data-name="{{ song.name }}">
+                                    <a class="add-button"
+                                       data-url="{% url 'stream_song' song.id %}"
+                                       data-image="{{ MEDIA_URL }}{{ song.get_image_uri }}"
+                                       data-artist="{{ song.get_artist_name }}"
+                                       data-name="{{ song.name }}"
+                                       data-id="{{ song.id }}">
                                         <i class="fas fa-list"></i>
                                     </a>
                                 </div>

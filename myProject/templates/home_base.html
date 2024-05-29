@@ -11,6 +11,7 @@
         .pause {
             background-image: url({% static 'image/play.png' %})
         }
+
     </style>
 
 {% endblock %}
@@ -96,32 +97,24 @@
                     <span class="sidebar-link-icon">🏠</span>
                     <b>Home</b>
                 </a>
-                <a href="{% url 'search_all' %}" 
+                <a href="{% url 'search_all' %}"
                    hx-get="{% url 'search_all' %}"
                    hx-target="#swap"
                    hx-swap="outerHTML"
-                   class="sidebar-link {% if request.resolver_match.url_name == 'search_all' %}active{% endif %}">
+                   class="sidebar-link {% if request.resolver_match.url_name == 'search_all' %}active{% endif %}
+                                        {% if request.resolver_match.url_name == 'search_song' %}active{% endif %}">
                     <span class="sidebar-link-icon">🔍</span>
                     <strong>Search</strong>
                 </a>
-
-            </div>
-
-            <div hx-preserve="true" id="pl" class="sidebar-section playlist" >
                 <a href="{% url 'playlist_info' %}"
-                    hx-get="{% url 'playlist_info' %}"
-                    hx-target="#swap"
-                    hx-swap="outerHTML"
-                    class="sidebar-link {% if request.resolver_match.url_name == 'playlist_info' %}active{% endif %}"
+                   hx-get="{% url 'playlist_info' %}"
+                   hx-target="#swap"
+                   hx-swap="outerHTML"
+                   class="sidebar-link {% if request.resolver_match.url_name == 'playlist_info' %}active{% endif %}"
                 >
                     <span class="sidebar-link-icon">🎶</span>
                     <b>Library</b>
                 </a>
-            
-                <div  id="playlist" class="songs">
-                    
-                </div>
-                
             </div>
 
         </div>
@@ -140,84 +133,14 @@
 
             </main>
         </div>
-        <script>
-            function loadSongIntoPlaylist() {
-                var playlist = document.getElementById('playlist');
-                var MPplaylist = musicPlayer.playlist;
-                
-                playlist.innerHTML = '';
-                
-                for (var i = 0; i < MPplaylist.length; i++) {
-                    var song = MPplaylist[i];
-                    var p = document.createElement('p');
-                    p.textContent = song.name;
-                    playlist.appendChild(p);
-                    if (musicPlayer.audioElement.src.includes(song.url)) {
-                        p.classList.add('playing');
-                    }
-                }
-            
-            }
-            
-            document.querySelectorAll('.play-button').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var songUrl = button.getAttribute('data-url');
-                    var songImage = button.getAttribute('data-image');
-                    var songArtist = button.getAttribute('data-artist');
-                    var songName = button.getAttribute('data-name');
-
-                    musicPlayer.playSong(songUrl, songImage, songArtist, songName);
-                });
-            });
-
-            document.querySelectorAll('.add-button').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var songUrl = button.getAttribute('data-url');
-                    var songImage = button.getAttribute('data-image');
-                    var songArtist = button.getAttribute('data-artist');
-                    var songName = button.getAttribute('data-name');
-
-                    musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
-                });
-            });
-
-            document.querySelectorAll('.add-all-button').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var albumInfo = button.getAttribute('data-album');
-                    var songInfoArray = JSON.parse(albumInfo);
-
-                    songInfoArray.forEach(function (songInfo) {
-                        var songUrl = songInfo.stream_url;
-                        var songImage = songInfo.image_uri;
-                        var songArtist = songInfo.artist_name;
-                        var songName = songInfo.song_name;
-
-                        musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
-                    });
-                });
-            });
-            
-
-            document.querySelectorAll('.play-all-button').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var albumInfo = button.getAttribute('data-album');
-                    var songInfoArray = JSON.parse(albumInfo);
-                    musicPlayer.clearPlaylist();
-                    musicPlayer.playSong(songInfoArray[0].stream_url, songInfoArray[0].image_uri, songInfoArray[0].artist_name, songInfoArray[0].song_name);
-                    songInfoArray.forEach(function (songInfo) {
-                        var songUrl = songInfo.stream_url;
-                        var songImage = songInfo.image_uri;
-                        var songArtist = songInfo.artist_name;
-                        var songName = songInfo.song_name;
-
-                        musicPlayer.addToPlaylist(songUrl, songImage, songArtist, songName);
-                    });
-                    loadSongIntoPlaylist();
-                });
-            });
-
-        </script>
     </div>
+    
+    <div hx-preserve="true" class="playlist-box">
+        <div id="playlist" class="songs">
+    
+        </div>
+    </div>
+    <script src="{% static 'js/home_base.js' %}"></script>
     <div hx-preserve="true" id="music-player" class="music-player">
         <div class="song-bar">
             <div class="song-infos">
@@ -225,10 +148,8 @@
                     <img src="{{ MEDIA_URL }}{{ '/media/image/song/default.png' }}" alt=""/>
                 </div>
                 <div class="song-description">
-                    <p class="title">
-                        Name
-                    </p>
-                    <p class="artist">Artist</p>
+                    <p class="title"></p>
+                    <p class="artist"></p>
                 </div>
             </div>
         </div>
@@ -256,11 +177,12 @@
                 </div>
             </div>
         </div>
-        
+
     </div>
 
     <script src="{% static 'js/music-player.js' %}"></script>
-
+    <script src="{% static 'js/playlist-controller.js' %}"></script>
+    
 
 
 {% endblock %}

@@ -4,7 +4,7 @@
     <div class="search-title">Update Song</div>
 {% endblock %}
 {% block main %}
-   <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
+    <section style=" margin-top:0; padding:0; overflow-x: visible; white-space:nowrap;">
         <form
                 id="updateForm"
                 hx-post="{% url "update_song" form.instance.id %}"
@@ -20,27 +20,29 @@
                 <label for="{{ form.name.id_for_label }}">{{ form.name.label }}:
                     <input class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
                            type="text" name="{{ form.name.name }}" style="width: 400px"
-                            value="{{ form.name.value }}">
+                           value="{{ form.name.value }}">
                 </label>
             </div>
-        
+
             <div class="input-box">
                 {% if form.song_file.errors %}
                     <div class="error text-xs">{{ form.song_file.errors }}</div>
                 {% endif %}
                 <label for="{{ form.song_file.id_for_label }}">{{ form.song_file.label }}:
                     <input type="file" name="{{ form.song_file.name }}"
-                           class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1" accept="audio/*">
+                           class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
+                           accept="audio/*">
                 </label>
             </div>
-        
+
             <div class="input-box">
                 {% if form.image_file.errors %}
                     <div class="error text-xs ">{{ form.image_file.errors }}</div>
                 {% endif %}
                 <label for="{{ form.image_file.id_for_label }}">{{ form.image_file.label }}:
                     <input type="file" id="image_file" name="{{ form.image_file.name }}"
-                           class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1" accept="image/*">
+                           class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
+                           accept="image/*">
                 </label>
             </div>
             <img id="songImage" src="{{ MEDIA_URL }}{{ form.instance.get_image_uri }}" alt="User Image"
@@ -55,12 +57,13 @@
                         <select class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
                                 name="{{ form.genres.name }}">
                             {% for value, name in form.genres.field.choices %}
-                                <option value="{{ value }}" {% if form.genres.value == value %}selected{% endif %}>{{ name }}</option>
+                                <option value="{{ value }}"
+                                        {% if form.genres.value == value %}selected{% endif %}>{{ name }}</option>
                             {% endfor %}
                         </select>
                     </label>
                 </div>
-            
+
                 <div class="input-box">
                     {% if form.albums.errors %}
                         <div class="error text-xs mb-1">{{ form.albums.errors }}</div>
@@ -69,7 +72,8 @@
                         <select multiple class="bg-gray-800 text-white border border-gray-600 rounded py-1 px-1 mb-4"
                                 name="{{ form.albums.name }}">
                             {% for value, name in form.albums.field.choices %}
-                                <option value="{{ value }}" {% if value in form.albums.value %}selected{% endif %}>{{ name }}</option>
+                                <option value="{{ value }}"
+                                        {% if value in form.albums.value %}selected{% endif %}>{{ name }}</option>
                             {% endfor %}
                         </select>
                     </label>
@@ -78,8 +82,8 @@
             <br>
             <button id="update" type="submit" class="gradient-button font-bold py-2.5 px-6 rounded mb-4">Update</button>
         </form>
-   
-        <form 
+
+        <form
                 hx-post="{% url 'delete_song' form.instance.id %}"
                 hx-target="#swap"
                 hx-swap="outerHTML"
@@ -90,26 +94,25 @@
         <div id="loading" style="display: none;">
             <p>Updating song, please wait...</p>
         </div>
-   
-        
-   
-   </section>
+
+
+    </section>
     <script>
         var songImageInput = document.getElementById('image_file');
         var songImage = document.getElementById('songImage');
         var updateButton = document.getElementById('update');
         var loading = document.getElementById('loading');
-        
-        document.getElementById('updateForm').addEventListener('submit', function() {
+
+        document.getElementById('updateForm').addEventListener('submit', function () {
             updateButton.style.display = 'none';
             loading.style.display = 'block';
         });
-        
-        document.getElementById('updateForm').addEventListener('invalid', function() {
+
+        document.getElementById('updateForm').addEventListener('invalid', function () {
             updateButton.style.display = 'block';
             loading.style.display = 'none';
         }, true);
-        
+
         songImageInput.addEventListener('change', function () {
             if (songImageInput.files && songImageInput.files[0]) {
                 var reader = new FileReader();
@@ -121,7 +124,7 @@
                 reader.readAsDataURL(songImageInput.files[0]);
             }
         });
-        
+
     </script>
-    
+
 {% endblock %}

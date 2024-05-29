@@ -433,9 +433,9 @@ section {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all ease 0.5s;
     cursor: pointer;
 }
+
 
 .round-button:hover {
     transform: scale(1.05);
@@ -593,6 +593,13 @@ ul li span:nth-child(6)
     width: 920px;
 }
 
+.song-block {
+    width: 80vw;
+}
+.song-block .round-button {
+    background: transparent;
+}
+
 .mix-block {
     background: rgb(111,140,118);
     background: linear-gradient(127deg, rgba(111,140,118,0.8) 0%, rgba(111,140,118,0.4) 18%, rgba(111,140,118,0.2) 34%, rgba(111,140,118,0.4) 59%, rgba(111,140,118,0.8) 100%);
@@ -624,49 +631,5 @@ ul li span:nth-child(6)
 .other-button:hover {
     background: #074470;
 }
-
-.playlist {
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    min-height: 211px;
-    max-height: 211px;
-
-}
-.playlist .songs {
-    display: flex;
-    flex-direction: column;
-    justify-content: normal;
-    white-space: nowrap;
-    margin-bottom: 3px;
-    overflow-x: hidden;
-    overflow-y: scroll;
-}
-
-.playlist .songs .playing {
-    font-weight: bold;
-    color: rgb(0,183,108);
-}
-
-.playlist:hover {
-    min-width: 300px;
-}
-
-.playlist.songs::-webkit-scrollbar {
-    border-radius: 0 10px 10px 0;
-    display: none;
-    width: 10px;
-    height: 10px;
-}
-.playlist.songs:hover::-webkit-scrollbar {
-    display: block;
-}
-
-.playlist.songs::-webkit-scrollbar-corner {
-    background: #0e0e0e;
-    border-radius: 0 0 5px 0;
-}
-
-
 
 

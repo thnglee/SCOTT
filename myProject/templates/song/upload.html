@@ -14,12 +14,12 @@
         >
             {% csrf_token %}
             <div class="input-box" style="width: 400px">
-                {% if form.song_name.errors %}
-                    <div class="error text-xs">{{ form.song_name.errors }}</div>
+                {% if form.name.errors %}
+                    <div class="error text-xs">{{ form.name.errors }}</div>
                 {% endif %}
-                <label for="{{ form.song_name.id_for_label }}">{{ form.song_name.label }}:
+                <label for="{{ form.name.id_for_label }}">{{ form.name.label }}:
                     <input class="bg-gray-800 text-white border border-gray-600 rounded mb-4 px-1 py-1"
-                           type="text" name="{{ form.song_name.name }}" style="width: 400px">
+                           type="text" name="{{ form.name.name }}" style="width: 400px">
                 </label>
             </div>
         

@@ -1,27 +1,167 @@
-{% extends "templates/base.html" %}
+{% extends "templates/home_base.html" %}
+{% block header %}
+    <script>
+        $(document).ready(function () {
+            const colorThief = new ColorThief();
+            const img = document.getElementById('song_image');
+            var palette = colorThief.getPalette(img);
+            var firstNonGrayColor = getFirstNonGrayColor(palette, 50); // Adjust the threshold as needed
 
-{% block content %}
-  <div class="container">
-    <div class="row">
-      <div class="col mr-5">
-        <h2>{{ album.name }}</h2>
-        <img src="{{ MEDIA_URL }}{{ album.get_image_uri }}" alt="{{ album.name }}" class="img-fluid">
-        {% if request.user == album.artist.user.user %}
-          <a href="{% url 'delete_album' album.id %}">Delete this album</a>
-        {% endif %}
-      </div>
-      <div class="col ml-6">
-        <h3>Songs</h3>
-        <ul class="list-group">
-          {% for song in album.songs.all %}
-            <li class="list-group-item">
-              <a href="{% url 'song_info' song.id %}">{{ song.name }}</a>
-            </li>
-          {% empty %}
-            <li class="list-group-item">No songs available.</li>
-          {% endfor %}
-        </ul>
-      </div>
+            const rgbColor = 'rgb(' + firstNonGrayColor;
+            document.querySelector('.song-block').style.background = 'linear-gradient(to bottom,'
+                + rgbColor + ')' + '0%, '
+                + rgbColor + ',0.9)' + '18%, '
+                + rgbColor + ',0.85)' + '34%, '
+                + rgbColor + ',0.8)' + '100%)';
+            document.getElementById('block2').style.background = 'linear-gradient(to bottom,'
+                + rgbColor + ',0.4)' + '0%, '
+                + rgbColor + ',0.25)' + '30%, '
+                + rgbColor + ',0.1)' + '60%, '
+                + rgbColor + ',0.0)' + '100%) ';
+            var mostColorfulColor = getMostColorfulColor(palette);
+            if (mostColorfulColor) {
+                document.querySelector('.play-all-button').style.background = 'rgb(' + mostColorfulColor + ')';
+            }
+        });
+
+        function isColorTooGray(color, threshold) {
+            var r = color[0];
+            var g = color[1];
+            var b = color[2];
+            return Math.abs(r - g) <= threshold && Math.abs(g - b) <= threshold && Math.abs(b - r) <= threshold;
+        }
+
+        function getFirstNonGrayColor(palette, threshold) {
+            for (var i = 0; i < palette.length; i++) {
+                if (!isColorTooGray(palette[i], threshold)) {
+                    return palette[i];
+                }
+            }
+            return null;
+        }
+
+        function getColorfulness(color) {
+            return Math.max(color[0], color[1], color[2]) - Math.min(color[0], color[1], color[2]);
+        }
+
+        function getMostColorfulColor(palette) {
+            var mostColorfulColor = null;
+            var maxColorfulness = -1;
+            for (var i = 0; i < palette.length; i++) {
+                var colorfulness = getColorfulness(palette[i]);
+                if (colorfulness > maxColorfulness) {
+                    maxColorfulness = colorfulness;
+                    mostColorfulColor = palette[i];
+                }
+            }
+            return mostColorfulColor;
+        }
+    </script>
+{% endblock %}
+{% block main %}
+    <div style="margin-left: 25px">
+        <div class="song-block song-info" style="display: flex; padding-top: 70px;">
+            <img id="song_image" src="{{ MEDIA_URL }}{{ album.get_image_uri }}" alt="{{ album.name }}">
+            <div>
+                <b>Album</b>
+                <h1>{{ album.name }}</h1>
+                <b style="display: flex; flex-direction: row; align-items:center ">
+                    by
+                    <img src="{{ MEDIA_URL }}{{ album.artist.user.get_image_uri }}" alt=""
+                         style="border-radius: 50% ;height: 25px; width: auto; margin: 0 5px 0 5px; box-shadow: none">
+                    <a href="{% url 'artist_profile' album.artist.Artist_name %}"
+                       hx-get="{% url 'artist_profile' album.artist.Artist_name %}"
+                       hx-target="#swap"
+                       hx-swap="outerHTML"
+                       class="hover:underline">
+                        {{ album.artist.Artist_name }}
+                    </a>
+                </b>
+                <div style="display: flex; flex-direction: row">
+                    <p>
+                        {{ duration }}
+                    </p>
+                    <p>
+                        &nbsp;•&nbsp;{{ album.get_view_count }}&nbsp;
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div id="block2" class="song-block">
+            <div style="padding-top: 10px; display: flex; flex-direction: row; align-items: center">
+                <a class="play-all-button round-button"
+                   style="margin:0 20px 20px 58px; width: 60px; height: 60px"
+                   data-album="{{ album.get_song_info }}">
+                    <i class="fas fa-play" style="font-size: 20px; margin-left: 3px"></i>
+                </a>
+                <a class="add-all-button" style="margin:0 20px 20px 20px;"
+                   data-album="{{ album.get_song_info }}">
+                    <i class="fas fa-list" style="font-size: 26px; cursor: pointer"></i>
+                </a>
+                {% if current_user == song.get_artist.user.user %}
+                    <a href="{% url 'update_album' album.id %}"
+                       hx-get="{% url 'update_album' album.id %}"
+                       hx-target="#swap"
+                       hx-swap="outerHTML"
+                       class="update-button" style="margin:0 20px 24px 20px; ">
+                        <p class="hover:underline">Update</p>
+                    </a>
+
+                {% endif %}
+            </div>
+            <div class="mt-0 py-0 overflow-x-visible">
+                <ul>
+                    {% for song in songs %}
+                        <li class="flex items-center">
+                            <span> <strong class="text-xl">{{ forloop.counter }}</strong> </span>
+                            <span>
+                                <img src="{{ MEDIA_URL }}{{ song.song.get_image_uri }}" alt="{{ song.song.name }}"
+                                     class="w-12 h-12"
+                                     style="border-radius: 5px; color: White;">
+                            </span>
+                            <span> 
+                                <label>
+                                    <a href="{% url 'song_info' song.song.id %}"
+                                       hx-get="{% url 'song_info' song.song.id %}"
+                                       hx-target="#swap"
+                                       hx-swap="outerHTML"
+                                       class="text-white-5songsong hover:underline">
+                                       <strong> {{ song.song.name }} </strong>
+                                    </a>  
+                                    <p style="color: gray"> {{ song.song.get_artist_name }}</p>
+                                </label>
+                            </span>
+                            <span>
+                                <a class="play-button"
+                                   data-url="{% url 'stream_song' song.song.id %}"
+                                   data-image="{{ MEDIA_URL }}{{ song.song.get_image_uri }}"
+                                   data-artist="{{ song.song.get_artist_name }}"
+                                   data-name="{{ song.song.name }}"
+                                   data-id="{{ song.song.id }}">
+                                    <i class="fas fa-play "></i>
+                                </a>
+                            </span>
+                            <span>
+                                <a class="add-button"
+                                   data-url="{% url 'stream_song' song.song.id %}"
+                                   data-image="{{ MEDIA_URL }}{{ song.song.get_image_uri }}"
+                                   data-artist="{{ song.song.get_artist_name }}"
+                                   data-name="{{ song.song.name }}"
+                                   data-id="{{ song.song.id }}">
+                                    <i class="fas fa-list"></i>
+                                </a>
+                            </span>
+                            <span class="text-gray-400"> {{ song.duration }} </span>
+
+                        </li>
+                        {% empty %}
+                        <li><strong>No songs available.</strong></li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+        </div>
+
+
     </div>
-  </div>
 {% endblock %}

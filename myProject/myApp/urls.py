@@ -33,6 +33,7 @@ urlpatterns = [
     path('song/<int:song_id>/stream/', views.stream_song, name='stream_song'),
     path('song/<int:song_id>/update/', views.update_song, name='update_song'),
     path('song/<int:song_id>/delete/', views.delete_song, name='delete_song'),
+    path('song/inc_view_count/', views.increment_view_count, name='inc_view_count'),
 
     path('artist/<str:artist_name>/profile/', views.artist_profile, name='artist_profile'),
     path('artist/workspace/', views.artist_workspace, name='artist_workspace'),

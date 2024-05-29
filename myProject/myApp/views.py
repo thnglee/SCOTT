@@ -1,3 +1,4 @@
+import json
 import os
 import random
 import re
@@ -11,12 +12,13 @@ from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordRes
     PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.core.files.storage import default_storage
 from django.db.models import Q, Case, When, Value, IntegerField
-from django.http import Http404, FileResponse
+from django.http import Http404, FileResponse, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from pydub import AudioSegment
-from concurrent.futures import ThreadPoolExecutor
+from pydub.utils import mediainfo
 
 from myApp.forms import (CreateUserForm, UploadSongForm, UpdateSongForm, UpdateUserForm,
                          UpdateUserProfileForm, CreateAlbumForm, CreatePlaylistForm, UpdateAlbumForm,
@@ -249,10 +251,10 @@ def upload_song(request):
             song = form.save(commit=False)
             profile = UserProfile.objects.get(user=request.user)
             artist = Artist.objects.get(user=profile)
-            new_name = artist.Artist_name + "_" + clean_filename(form.cleaned_data['song_name'])
+            new_name = artist.Artist_name + "_" + clean_filename(form.cleaned_data['name'])
 
             # Name
-            song.name = form.cleaned_data['song_name']
+            song.name = form.cleaned_data['name']
 
             # Image
             if 'image_file' in request.FILES:
@@ -265,9 +267,14 @@ def upload_song(request):
 
             # Audio
             song_file = request.FILES['song_file']
-            executor = ThreadPoolExecutor()
-            executor.submit(compress_and_save, song_file, new_name, song)
-            executor.shutdown(wait=False)
+            new_song_filename = new_name + os.path.splitext(song_file.name)[1]
+            temp_path = 'audio/temp/' + new_song_filename
+            final_path = 'audio/' + new_song_filename
+            save = default_storage.save(temp_path, song_file)
+            if save:
+                compress_audio('media/' + temp_path, 'media/' + final_path)
+                default_storage.delete(temp_path)
+            song.uri = new_song_filename
 
             # Genre
             song.genres = form.cleaned_data['genres']
@@ -294,7 +301,13 @@ def upload_song(request):
 
 def song_info(request, song_id):
     song = get_object_or_404(Song, id=song_id)
-    return render(request, 'song/info.html', {'song': song, 'current_user': request.user})
+    duration = convert_ms_to_min_sec(get_audio_duration(settings.MEDIA_ROOT + song.get_uri()))
+    recommended_songs = Song.objects.filter(Q(genres=song.genres) & ~Q(id=song_id)).order_by('?')[:5]
+    same_artist_songs = Song.objects.filter(artists__in=song.artists.all()).exclude(id=song_id)[:5]
+    same_artist_albums = Album.objects.filter(artist__in=song.artists.all())
+    return render(request, 'song/info.html',
+                  {'song': song, 'current_user': request.user, 'recommended_songs': recommended_songs,
+                   'artist_songs': same_artist_songs, 'artist_albums': same_artist_albums, 'duration': duration})
 
 
 def stream_song(request, song_id):
@@ -397,6 +410,21 @@ def delete_song(request, song_id):
     return redirect('artist_workspace')
 
 
+@csrf_exempt
+@require_POST
+def increment_view_count(request):
+    try:
+        data = json.loads(request.body)
+        song_name = data.get('song_name')
+        if song_name:
+            song = Song.objects.get(name=song_name)
+            song.inc_view_count()
+            return HttpResponse(status=204)
+    except (Song.DoesNotExist, json.JSONDecodeError):
+        pass
+    return HttpResponse(status=400)
+
+
 def artist_profile(request, artist_name):
     current_user = request.user
     artist = Artist.objects.get(Artist_name=artist_name)
@@ -463,7 +491,18 @@ def create_album(request):
 
 def album_info(request, album_name):
     album = get_object_or_404(Album, name=album_name)
-    return render(request, 'album/info.html', {'album': album})
+    total_duration_ms = 0
+    songs = []
+    for song in album.songs.all():
+        song_file_path = settings.MEDIA_ROOT + song.get_uri()
+        song_duration_ms = get_audio_duration(song_file_path)
+        song_ifo = {'song': song, 'duration': convert_ms_to_min_sec(song_duration_ms)}
+        songs.append(song_ifo)
+        total_duration_ms += song_duration_ms
+    total_duration_ms = convert_ms_to_min_sec(total_duration_ms)
+    return render(request, 'album/info.html',
+                  {'album': album, 'current_user': request.user,
+                   'duration': total_duration_ms, 'songs': songs})
 
 
 @login_required(login_url='/login/')
@@ -563,48 +602,41 @@ def delete_playlist(request, playlist_id):
 
 def search_all(request):
     query = request.GET.get('q', '')
-    song_results = Song.objects.filter(name__icontains=query)
-    artist_results = Artist.objects.filter(Artist_name__icontains=query)
-    album_results = Album.objects.filter(name__icontains=query)
+    song_results = Song.objects.annotate(
+        match=Case(
+            When(name__istartswith=query, then=Value(2)),
+            When(name__icontains=query, then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField(),
+        )
+    ).filter(name__icontains=query).order_by('-match')
+
+    artist_results = Artist.objects.annotate(
+        match=Case(
+            When(Artist_name__istartswith=query, then=Value(2)),
+            When(Artist_name__icontains=query, then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField(),
+        )
+    ).filter(Artist_name__icontains=query).order_by('-match')
+
+    album_results = Album.objects.annotate(
+        match=Case(
+            When(name__istartswith=query, then=Value(2)),
+            When(name__icontains=query, then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField(),
+        )
+    ).filter(name__icontains=query).order_by('-match')
+
     user_results = User.objects.filter(username__icontains=query)
     playlist_results = Playlist.objects.filter(name__icontains=query)
-    song_result = Song.objects.annotate(
-        exact_match=Case(
-            When(name__iexact=query, then=Value(1)),
-            default=Value(0),
-            output_field=IntegerField(),
-        )
-    ).filter(name__icontains=query).order_by('-exact_match').first()
 
-    artist_result = Artist.objects.annotate(
-        exact_match=Case(
-            When(Artist_name__iexact=query, then=Value(1)),
-            default=Value(0),
-            output_field=IntegerField(),
-        )
-    ).filter(Artist_name__icontains=query).order_by('-exact_match').first()
-
-    album_result = Album.objects.annotate(
-        exact_match=Case(
-            When(name__iexact=query, then=Value(1)),
-            default=Value(0),
-            output_field=IntegerField(),
-        )
-    ).filter(name__icontains=query).order_by('-exact_match').first()
-
-    # Create a list of the results
+    song_result = song_results.first()
+    artist_result = artist_results.first()
+    album_result = album_results.first()
     results = [song_result, artist_result, album_result]
-
-    # Select the first non-None result
     top_result = next((result for result in results if result is not None), None)
-
-    # If no exact match, get the first result that contains the query
-    if top_result is None:
-        song_result = Song.objects.filter(name__icontains=query).first()
-        artist_result = Artist.objects.filter(Artist_name__icontains=query).first()
-        album_result = Album.objects.filter(name__icontains=query).first()
-        results = [song_result, artist_result, album_result]
-        top_result = next((result for result in results if result is not None), None)
     top_result_type = None
     if top_result is not None:
         top_result_type = top_result.__class__.__name__
@@ -624,7 +656,14 @@ def search_all(request):
 
 def search_song(request):
     query = request.GET.get('q', '')
-    song_results = Song.objects.filter(name__icontains=query)
+    song_results = Song.objects.annotate(
+        match=Case(
+            When(name__istartswith=query, then=Value(2)),
+            When(name__icontains=query, then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField(),
+        )
+    ).filter(name__icontains=query).order_by('-match')
 
     return render(request, 'search/songs.html', {'search_results': song_results, 'current_user': request.user})
 
@@ -670,13 +709,13 @@ def rename_file_album(album, new_name):
     album.save()
 
 
-def compress_and_save(song_file, new_name, song):
-    new_song_filename = new_name + os.path.splitext(song_file.name)[1]
-    temp_path = 'audio/temp/' + new_song_filename
-    final_path = 'audio/' + new_song_filename
-    save = default_storage.save(temp_path, song_file)
-    if save:
-        compress_audio('media/' + temp_path, 'media/' + final_path)
-        default_storage.delete(temp_path)
-    song.uri = new_song_filename
-    song.save()
+def get_audio_duration(file_path):
+    info = mediainfo(file_path)
+    duration = int(float(info['duration'])) * 1000  # convert to milliseconds
+    return duration
+
+
+def convert_ms_to_min_sec(milliseconds):
+    seconds = milliseconds // 1000
+    minutes, seconds = divmod(seconds, 60)
+    return f"{minutes}:{seconds:02}"
